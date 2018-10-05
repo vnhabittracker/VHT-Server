@@ -37,13 +37,20 @@ if (isset($result)) {
     );
 
     // convert array object to JSON object
-    print_r(json_encode($user_arr));
+    print_r(json_encode(
+        array(
+            'result' => '1',
+            'user' => $user_arr
+        )
+    ));
 } else {
     // no users
-    echo json_encode(
-        array('message' => 'No Users Found')
-    );
+    print_r(json_encode(
+        array(
+            'result' => '0'
+        )
+    ));
     die();
 }
-  
+
 ?>

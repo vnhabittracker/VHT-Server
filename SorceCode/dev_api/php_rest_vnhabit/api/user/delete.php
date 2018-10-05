@@ -23,11 +23,17 @@ $user->user_id = $data->user_id;
 
 if ($user->delete()) {
     echo json_encode(
-        array('message' => 'user Deleted')
+        array(
+            'result' => '1',
+            'message' => 'user Deleted'
+        )
     );
 } else {
     echo json_encode(
-        array('message' => 'user Not Deleted')
+        array(
+            'result' => '0',
+            'message' => 'user Not Deleted'
+        )
     );
 }
 

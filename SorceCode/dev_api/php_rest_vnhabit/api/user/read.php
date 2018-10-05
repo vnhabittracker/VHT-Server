@@ -44,12 +44,20 @@ if ($num > 0) {
     }
 
     // turn to JSON
-    echo json_encode($users_arr);
+    echo json_encode(
+        array(
+            'result' => '1',
+            'result' => $users_arr
+        )
+    );
 
 } else {
     // no users
     echo json_encode(
-        array('message' => 'No Users Found')
+        array(
+            'result' => '0',
+            'message' => 'No Users Found'
+        )
     );
     die();
 }
