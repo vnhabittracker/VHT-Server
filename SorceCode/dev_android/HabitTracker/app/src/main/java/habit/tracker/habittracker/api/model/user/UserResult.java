@@ -3,34 +3,29 @@ package habit.tracker.habittracker.api.model.user;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class UserResponse {
+public class UserResult {
 
     @SerializedName("result")
     @Expose
     private String result;
 
-    @SerializedName("user")
+    @SerializedName("message")
     @Expose
-    private User user;
-
-    public UserResponse(String result, User user) {
-        this.result = result;
-        this.user = user;
-    }
+    private String message;
 
     public String getResult() {
         return result;
     }
 
-    public User getUser() {
-        return user;
+    public String getMessage() {
+        return message;
     }
 
     public void setResult(String result) {
         this.result = result;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

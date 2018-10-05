@@ -3,8 +3,6 @@
 
     <item
         android:left="5dp"
-        android:drawable="@drawable/fb_ic"
-        android:width="20dp"
-        android:height="20dp" />
+        android:drawable="@drawable/bg_facebook" />
 
 </layer-list >

@@ -22,14 +22,14 @@
 
         <ImageView
             android:padding="10dp"
-            app:srcCompat="@drawable/chart"
+            app:srcCompat="@drawable/calendar"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
 
         <ImageView
             android:padding="10dp"
-            app:srcCompat="@drawable/calendar"
+            app:srcCompat="@drawable/chart"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />

@@ -5,167 +5,136 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:paddingStart="55dp"
+    android:paddingEnd="55dp"
     tools:context=".RegisterActivity">
 
-    <LinearLayout
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:contentDescription="@string/app_name"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp"
+        app:srcCompat="@mipmap/ic_launcher" />
+
+    <EditText
+        android:id="@+id/edit_username"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2">
+        android:layout_height="50dp"
+        android:background="@drawable/bg_input"
+        android:gravity="center"
+        android:hint="@string/username"
+        android:textSize="16sp" />
 
-        <ImageView
-            android:paddingTop="45dp"
-            android:paddingStart="35dp"
-            android:paddingEnd="35dp"
-            android:paddingBottom="35dp"
-            android:id="@+id/imageView"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:contentDescription="@string/app_name"
-            android:visibility="visible"
-            app:srcCompat="@drawable/habit_logo" />
+    <EditText
+        android:id="@+id/edit_email"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/bg_input"
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:hint="@string/email"
+        android:focusableInTouchMode="true"
+        android:textSize="16sp" />
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="50dp"
-            android:layout_marginRight="50dp"
-            android:background="@drawable/input_border"
-            android:gravity="center_horizontal"
-            android:hint="Username"
-            android:paddingBottom="10dp"
-            android:paddingTop="10dp"
-            android:textSize="15sp" />
+    <EditText
+        android:id="@+id/edit_password"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/bg_input"
+        android:gravity="center"
+        android:layout_marginTop="15dp"
+        android:textSize="16sp"
+        android:hint="@string/password"
+        android:inputType="textPassword" />
 
-        <EditText
-            android:gravity="center_horizontal"
-            android:layout_marginRight="50dp"
-            android:layout_marginLeft="50dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/input_border"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:textSize="15sp"
-            android:hint="096 388 423"/>
+    <EditText
+        android:id="@+id/edit_conf_password"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/bg_input"
+        android:gravity="center"
+        android:layout_marginTop="15dp"
+        android:textSize="16sp"
+        android:hint="@string/password_conf"
+        android:focusableInTouchMode="true"
+        android:inputType="textPassword" />
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="50dp"
-            android:layout_marginRight="50dp"
-            android:background="@drawable/input_border"
-            android:gravity="center_horizontal"
-            android:hint="aka@gmail.com"
-            android:paddingBottom="10dp"
-            android:paddingTop="10dp"
-            android:textSize="15sp" />
-
-        <EditText
-            android:gravity="center_horizontal"
-            android:layout_marginRight="50dp"
-            android:layout_marginLeft="50dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/input_border"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:textSize="15sp"
-            android:inputType="textPassword"
-            android:hint="*********"/>
-
-    </LinearLayout>
+    <Button
+        android:id="@+id/btn_register"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:textSize="18sp"
+        android:textAllCaps="false"
+        android:background="@drawable/bg_button_blue"
+        android:layout_marginTop="20dp"
+        android:textColor="#fffd"
+        android:text="@string/register"/>
 
     <LinearLayout
-        android:paddingTop="15dp"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
 
-        <Button
-            android:textSize="16sp"
-            android:textAllCaps="false"
-            android:background="@drawable/button_bg"
-            android:textColor="#fffd"
-            android:layout_marginRight="50dp"
-            android:layout_marginLeft="50dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Register"/>
-
-        <LinearLayout
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="9dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
-            <View
-                android:layout_marginRight="10dp"
-                android:layout_width="50dp"
-                android:layout_height="1dp"
-                android:background="#333" />
-
-            <TextView
-                android:text="or with"
-                android:gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <View
-                android:layout_marginLeft="10dp"
-                android:layout_width="50dp"
-                android:layout_height="1dp"
-                android:background="#333" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_marginRight="50dp"
-            android:layout_marginLeft="50dp"
-            android:layout_marginBottom="8dp"
-            android:gravity="center_horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <Button
-                android:textAlignment="textStart"
-                android:textColor="#486e9d"
-                android:background="@drawable/button_border1"
-                android:layout_marginRight="5dp"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:minHeight="38dp"
-                android:textAllCaps="false"
-                android:drawableLeft="@drawable/fb_bg"
-                android:text="Facebook"/>
-
-            <Button
-                android:textAlignment="textStart"
-                android:textColor="#ff0000"
-                android:background="@drawable/button_border2"
-                android:layout_marginLeft="5dp"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:minHeight="38dp"
-                android:textAllCaps="false"
-                android:drawableLeft="@drawable/gmail_bg"
-                android:text="Google"/>
-        </LinearLayout>
+        <View
+            android:layout_marginRight="10dp"
+            android:layout_width="50dp"
+            android:layout_height="1dp"
+            android:background="#333" />
 
         <TextView
-            android:gravity="center_horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Dont have a account? REGISTER"/>
+            android:text="or with"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
+        <View
+            android:layout_marginLeft="10dp"
+            android:layout_width="50dp"
+            android:layout_height="1dp"
+            android:background="#333" />
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal">
+
+        <Button
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="20dp"
+            android:textAlignment="textStart"
+            android:textAllCaps="false"
+            android:background="@drawable/bg_facebook" />
+
+        <Button
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="20dp"
+            android:textAlignment="textStart"
+            android:textAllCaps="false"
+            android:background="@drawable/bg_google" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/link_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:paddingBottom="20dp"
+        android:text="@string/lb_remind_login"/>
+
 </LinearLayout>

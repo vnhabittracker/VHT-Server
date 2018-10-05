@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">HabitTracker</string>
+
+    <!-- login -->
+    <string name="username">username</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="password_conf">Confirm Password</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="lb_register">Don\'t have a account? REGISTER</string>
+
+    <!-- register -->
+    <string name="lb_remind_login">Already have a account? LOGIN</string>
+
 </resources>

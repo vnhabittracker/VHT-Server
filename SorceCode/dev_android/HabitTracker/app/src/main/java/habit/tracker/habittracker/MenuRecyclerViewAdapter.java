@@ -32,8 +32,8 @@ public class MenuRecyclerViewAdapter extends RecyclerView.Adapter<MenuRecyclerVi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         MenuItem item = mData.get(position);
         holder.tvCatagory.setText(item.getName());
-        holder.tvNumber.setText(item.getAmount());
-        holder.imgTaskIc.setImageResource(item.getMenuIc());
+        holder.tvNumber.setText(item.getAmount() + " tasks");
+        holder.imgTask.setImageResource(item.getMenuIc());
     }
 
     @Override
@@ -42,19 +42,17 @@ public class MenuRecyclerViewAdapter extends RecyclerView.Adapter<MenuRecyclerVi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView tvSetting;
         TextView tvCatagory;
         TextView tvNumber;
-        ImageView imgTaskIc;
+        ImageView imgTask;
 
         ViewHolder(View itemView) {
             super(itemView);
-            tvSetting = itemView.findViewById(R.id.tvSetting);
             itemView.setOnClickListener(this);
 
-            tvCatagory = itemView.findViewById(R.id.tvCatagory);
-            tvNumber = itemView.findViewById(R.id.tvNumber);
-            imgTaskIc = itemView.findViewById(R.id.imgTaskIc);
+            tvCatagory = itemView.findViewById(R.id.tv_catagory);
+            tvNumber = itemView.findViewById(R.id.tv_number);
+            imgTask = itemView.findViewById(R.id.imgTask);
         }
 
         @Override
