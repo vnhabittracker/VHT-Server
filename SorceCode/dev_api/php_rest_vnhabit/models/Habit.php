@@ -1,14 +1,34 @@
 <?php
 
-    class Habit {
+include_once '../../models/Model.php';
+
+    class Habit extends Model {
         // db
         private $conn;
         private $table = 'habit';
+        private $cols;
+        private $params;
+        private $colsArr = array(
+            'habit_id', 
+            'user_id', 
+            'category_id', 
+            'schedule_id', 
+            'goal_id', 
+            'habit_name', 
+            'habit_type', 
+            'unit', 
+            'count_type', 
+            'start_date', 
+            'end_date', 
+            'created_date', 
+            'habit_icon', 
+            'habit_description'
+        );
 
         // habit
         public $habit_id;
         public $user_id;
-        public $catagory_id;
+        public $category_id;
         public $schedule_id;
         public $goal_id;
         public $habit_name;
@@ -21,44 +41,15 @@
         public $habit_icon;
         public $habit_description;
 
-        public function habit_cols() {
-            return '
-            habit_id, 
-            user_id, 
-            catagory_id, 
-            schedule_id, 
-            goal_id, 
-            habit_name, 
-            habit_type, 
-            unit, 
-            count_type, 
-            start_date, 
-            end_date, 
-            created_date, 
-            habit_icon, 
-            habit_description
-            ';
-        }
-
-        public function make_query_param($arr) {
-            $str = '';
-            $arrLength = count($arr);
-            for ($i = 0; $i < $arrLength; $i++) {
-                $str = $str . $arr[$i] . '= :' . $arr;
-                if ($i < $arrLength) {
-                    $str = $str . ', ';
-                }
-            }
-            return $str;
-        }
-
         public function __construct($db) {
             $this->conn = $db;
+            $this->cols = implode(", ", $this->colsArr);
+            $this->params = $this->make_query_param($this->colsArr);
         }
 
         // Get all Habit
         public function read() {
-            $query = 'SELECT ' . $this->habit_cols() . ' FROM ' . $this->table . ' ORDER BY habit_id ASC';
+            $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . ' ORDER BY habit_id ASC';
 
             // Prepare statement
             $stmt = $this->conn->prepare($query);
@@ -71,7 +62,7 @@
 
         public function read_by_user() {
             // Create query
-            $query = 'SELECT ' . $this->habit_cols() . ' FROM ' . $this->table . 
+            $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . 
                 ' WHERE
                     user_id = :user_id 
                     LIMIT 0,1';
@@ -91,7 +82,7 @@
                 $row = $stmt->fetch(PDO::FETCH_ASSOC);
                 $this->habit_id = $row['habit_id'];
                 $this->user_id = $row['user_id'];
-                $this->catagory_id = $row['catagory_id'];
+                $this->category_id = $row['category_id'];
                 $this->schedule_id = $row['schedule_id'];
                 $this->goal_id = $row['goal_id'];
                 $this->habit_name = $row['habit_name'];
@@ -112,31 +103,14 @@
         // Create Habit
         public function create() {
             // create query
-            $query = 'INSERT INTO ' . $this->table . ' SET ' . 
-                $this->make_query_param(
-                        array(
-                            'user_id',
-                            'catagory_id',
-                            'schedule_id',
-                            'goal_id',
-                            'habit_name',
-                            'habit_type',
-                            'unit',
-                            'count_type',
-                            'start_date',
-                            'end_date',
-                            'created_date',
-                            'habit_icon',
-                            'habit_description'
-                        )
-                    );
+            $query = 'INSERT INTO ' . $this->table . ' SET ' . $this->params;
             
             // Prepare statement
             $stmt = $this->conn->prepare($query);
 
             // Bind data
             $stmt->bindParam(':user_id', $this->user_id);
-            $stmt->bindParam(':catagory_id', $this->catagory_id);
+            $stmt->bindParam(':category_id', $this->category_id);
             $stmt->bindParam(':schedule_id', $this->schedule_id);
             $stmt->bindParam(':goal_id', $this->goal_id);
             $stmt->bindParam(':habit_name', $this->habit_name);
@@ -162,24 +136,7 @@
         // Update Habit
         public function update() {
             // create query
-            $query = 'UPDATE ' . $this->table . ' SET ' . 
-                $this->make_query_param(
-                        array(
-                            'user_id',
-                            'catagory_id',
-                            'schedule_id',
-                            'goal_id',
-                            'habit_name',
-                            'habit_type',
-                            'unit',
-                            'count_type',
-                            'start_date',
-                            'end_date',
-                            'created_date',
-                            'habit_icon',
-                            'habit_description'
-                        )
-                    ) . ' WHERE habit_id = :habit_id';
+            $query = 'UPDATE ' . $this->table . ' SET ' . $this->params . ' WHERE habit_id = :habit_id';
 
             // Prepare statement
             $stmt = $this->conn->prepare($query);
@@ -187,7 +144,7 @@
             // Bind data
             $stmt->bindParam(':habit_id', $this->habit_id);
             $stmt->bindParam(':user_id', $this->user_id);
-            $stmt->bindParam(':catagory_id', $this->catagory_id);
+            $stmt->bindParam(':category_id', $this->category_id);
             $stmt->bindParam(':schedule_id', $this->schedule_id);
             $stmt->bindParam(':goal_id', $this->goal_id);
             $stmt->bindParam(':habit_name', $this->habit_name);

@@ -41,11 +41,17 @@ if (isset($result)) {
     );
 
     // convert array object to JSON object
-    print_r(json_encode($habit_arr));
+    echo json_encode(
+        array(
+            'result' => '1',
+            'data' => $habit_arr
+        ));
 } else {
     // no users
     echo json_encode(
-        array('message' => 'No Habits Found')
+        array(
+            'result' => '0'
+        )
     );
     die();
 }

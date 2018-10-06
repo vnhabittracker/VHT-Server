@@ -49,12 +49,19 @@ if ($num > 0) {
     }
 
     // turn to JSON
-    echo json_encode($habits_arr);
+    echo json_encode(
+        array(
+            'result' => '1',
+            'data' => $habits_arr
+        )
+    );
 
 } else {
     // no users
     echo json_encode(
-        array('message' => 'No Habits Found')
+        array(
+            'result' => '0'
+        )
     );
     die();
 }

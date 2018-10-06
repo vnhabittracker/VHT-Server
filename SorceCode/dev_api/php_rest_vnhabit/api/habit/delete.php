@@ -23,11 +23,15 @@ $habit->habit_id = $data->habit_id;
 
 if ($habit->delete()) {
     echo json_encode(
-        array('message' => 'Habit Deleted')
+        array(
+            'result' => '1'
+        )
     );
 } else {
     echo json_encode(
-        array('message' => 'Habit Not Deleted')
+        array(
+            'result' => '0'
+        )
     );
 }
 

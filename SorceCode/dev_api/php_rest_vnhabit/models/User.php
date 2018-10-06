@@ -1,9 +1,24 @@
 <?php
 
-    class User {
+include_once '../../models/Model.php';
+
+    class User extends Model {
         // db
         private $conn;
         private $table = 'user';
+        private $cols;
+        private $params;
+        private $colsArr = array(
+            'user_id', 
+            'username', 
+            'password', 
+            'email', 
+            'date_of_birth', 
+            'gender', 
+            'user_icon', 
+            'avatar', 
+            'user_description' 
+        );
 
         // user
         public $user_id;
@@ -18,22 +33,13 @@
 
         public function __construct($db) {
             $this->conn = $db;
+            $this->cols = implode(", ", $this->colsArr);
+            $this->params = $this->make_query_param($this->colsArr);
         }
 
         // Get all User
         public function read() {
-            $query = 'SELECT
-                    user_id, 
-                    username, 
-                    password, 
-                    email, 
-                    date_of_birth, 
-                    gender, 
-                    user_icon, 
-                    avatar, 
-                    user_description 
-                FROM
-            ' . $this->table . ' ORDER BY user_id ASC';
+            $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . ' ORDER BY user_id ASC';
 
             // Prepare statement
             $stmt = $this->conn->prepare($query);
@@ -47,17 +53,7 @@
         // Get Single User
         public function read_single() {
             // Create query
-            $query = 'SELECT 
-                    user_id, 
-                    username, 
-                    password, 
-                    email, 
-                    date_of_birth, 
-                    gender, 
-                    user_icon, 
-                    avatar, 
-                    user_description 
-                FROM ' . $this->table . 
+            $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . 
                 ' WHERE
                     username = :username and password = :password 
                     LIMIT 0,1';
@@ -94,15 +90,7 @@
         // Create User
         public function create() {
             // create query
-            $query = 'insert into ' . $this->table . ' set 
-                username = :username, 
-                password = :password, 
-                email = :email, 
-                date_of_birth = :date_of_birth, 
-                gender = :gender, 
-                user_icon = :user_icon, 
-                avatar = :avatar, 
-                user_description = :user_description';
+            $query = 'INSERT INTO ' . $this->table . ' SET ' . $this->params;
             
             // Prepare statement
             $stmt = $this->conn->prepare($query);
@@ -140,22 +128,11 @@
         // Update user
         public function update() {
             // create query
-            $query = 'UPDATE ' . $this->table . ' SET 
-                        username = :username, 
-                        password = :password, 
-                        email = :email, 
-                        date_of_birth = :date_of_birth, 
-                        gender = :gender, 
-                        user_icon = :user_icon, 
-                        avatar = :avatar, 
-                        user_description = :user_description
-                    WHERE user_id = :user_id
-                    ';
+            $query = 'UPDATE ' . $this->table . ' SET ' . $this->params . ' WHERE user_id = :user_id';
 
             // Prepare statement
             $stmt = $this->conn->prepare($query);
 
-            // Clean data
             $this->user_id = htmlspecialchars(strip_tags($this->user_id));
             $this->username = htmlspecialchars(strip_tags($this->username));
             $this->password = htmlspecialchars(strip_tags($this->password));

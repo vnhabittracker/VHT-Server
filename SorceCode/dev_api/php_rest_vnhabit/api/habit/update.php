@@ -38,11 +38,15 @@ $habit->habit_description = $data->habit_description;
 
 if ($habit->update()) {
     echo json_encode(
-        array('message' => 'Habit Updated')
+        array(
+            'result' => '1'
+        )
     );
 } else {
     echo json_encode(
-        array('message' => 'Habit Not Updated')
+        array(
+            'result' => '0'
+        )
     );
 }
 

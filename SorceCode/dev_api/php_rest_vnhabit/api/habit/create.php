@@ -36,11 +36,15 @@ $habit->habit_description = $data->habit_description;
 // Create user
 if ($habit->create()) {
     echo json_encode(
-        array('message' => 'Habit Created')
+        array(
+            'result' => '1'
+        )
     );
 } else {
     echo json_encode(
-        array('message' => 'Habit Not Created')
+        array(
+            'result' => '0'
+        )
     );
 }
 
