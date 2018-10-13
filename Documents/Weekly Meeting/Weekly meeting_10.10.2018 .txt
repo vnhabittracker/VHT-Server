@@ -1,0 +1,22 @@
+﻿SỬA VỀ APP:
+- Làm giao diện dễ nhìn, người dúng nhìn vô là biết điền cái gì.
+- nghiên cứu bộ font tốt nhất cho app
+- đổi từ xây dựng và từ bỏ.
+- Dùng từ cẩn thận.
+- sửa lại thành có hay không trong tạo habit.
+- đổi cách theo dõi thành nút tròn.
+- button để ẩn có viền.
+- đổi từ "thêm" trong nhóm habit.
+
+
+--------------------------------------------------------
+VỀ PHÍA NGƯỜI DÙNG:
+- soạn bản khảo sát cho người dùng.
+- Ưu tiên màu cho trạng thái của habit.
+
+
+--------------------------------------------------------
+VỀ THẦY:
+- thứ 6 làm class diagram: làm basic.
+- Xem lại mối quan hệ, tổng quát hóa, inheritance.
+- Vẽ 3 cái sequence diagram quan trọng (ko login, logout)
