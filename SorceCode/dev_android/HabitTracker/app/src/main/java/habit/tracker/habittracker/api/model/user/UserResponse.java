@@ -9,28 +9,28 @@ public class UserResponse {
     @Expose
     private String result;
 
-    @SerializedName("user")
+    @SerializedName("data")
     @Expose
-    private User user;
+    private User data;
 
     public UserResponse(String result, User user) {
         this.result = result;
-        this.user = user;
+        this.data = user;
     }
 
     public String getResult() {
         return result;
     }
 
-    public User getUser() {
-        return user;
+    public User getData() {
+        return data;
     }
 
     public void setResult(String result) {
         this.result = result;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setData(User data) {
+        this.data = data;
     }
 }

@@ -23,24 +23,9 @@ $num = $result->rowCount();
 // check if any users
 if ($num > 0) {
     $users_arr = array();
-    $users_arr['data'] = array();
-    
     while($row = $result->fetch(PDO::FETCH_ASSOC)) {
-        extract($row);
-        $user_item = array(
-            'id' => $user_id,
-            'username' => $username,
-            'password' => $password,
-            'email' => $email,
-            'gender' => $gender,
-            'date_of_birth' => $date_of_birth,
-            'user_icon' => $user_icon,
-            'avatar' => $avatar,
-            'user_description' => $user_description
-        );
-
         // push to "data"
-        array_push($users_arr['data'], $user_item);
+        array_push($users_arr, $row);
     }
 
     // turn to JSON

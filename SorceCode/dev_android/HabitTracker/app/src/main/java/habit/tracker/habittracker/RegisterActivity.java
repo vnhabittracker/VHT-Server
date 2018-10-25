@@ -1,27 +1,28 @@
 package habit.tracker.habittracker;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import habit.tracker.habittracker.api.ApiUtils;
+import habit.tracker.habittracker.api.VnHabitApiUtils;
 import habit.tracker.habittracker.api.model.user.User;
 import habit.tracker.habittracker.api.model.user.UserResult;
-import habit.tracker.habittracker.api.service.ApiService;
+import habit.tracker.habittracker.api.service.VnHabitApiService;
 import habit.tracker.habittracker.common.Validator;
 import habit.tracker.habittracker.common.ValidatorType;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
-
+public class RegisterActivity extends BaseActivity implements View.OnClickListener {
     Button btnRegister;
-    View linkLogin;
-
+    TextView linkLogin;
     EditText edUsername;
     EditText edEmail;
     EditText edPassword;
@@ -36,6 +37,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         btnRegister.setOnClickListener(this);
         linkLogin = findViewById(R.id.link_login);
         linkLogin.setOnClickListener(this);
+        String registerText = getResources().getString(R.string.remind_login);
+        SpannableString content = new SpannableString(registerText);
+        content.setSpan(new UnderlineSpan(), 0, registerText.length(), 0);
+        linkLogin.setText(content);
 
         edUsername = findViewById(R.id.edit_username);
         edEmail = findViewById(R.id.edit_email);
@@ -58,51 +63,75 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     public void showError(ValidatorType type, String key) {
                         switch (type) {
                             case EMPTY:
-                                Toast.makeText(RegisterActivity.this, key + " is empty", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(RegisterActivity.this, key + " không được rỗng", Toast.LENGTH_SHORT).show();
+                                break;
+                            case PHONE:
+                                Toast.makeText(RegisterActivity.this, key + " không đúng", Toast.LENGTH_SHORT).show();
                                 break;
                             case EMAIL:
-                                Toast.makeText(RegisterActivity.this, key + " is not valid", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(RegisterActivity.this, key + " không đúng", Toast.LENGTH_SHORT).show();
                                 break;
-                            case SAME:
-                                Toast.makeText(RegisterActivity.this, key + " is not math", Toast.LENGTH_SHORT).show();
+                            case EQUAL:
+                                Toast.makeText(RegisterActivity.this, key + " không trùng khớp", Toast.LENGTH_SHORT).show();
                                 break;
                         }
                     }
                 });
-                if (!validator.checkEmpty("username", username)
-                        || !validator.checkEmpty("password", password)
-                        || !validator.checkEmpty("email", email)
-                        || !validator.checkEmpty("password confirm", passwordConf)) {
+                if (!validator.checkEmpty("Tên tài khoản", username)
+                        || !validator.checkEmpty("Email", email)
+                        || !validator.checkEmpty("Mật khẩu", password)
+                        || !validator.checkEmpty("Mật khẩu", passwordConf)) {
                     return;
                 }
                 if (!validator.checkEmail(email)) {
                     return;
                 }
-                if (!validator.checkEqual(password, passwordConf, "password")) {
+                if (!validator.checkEqual(password, passwordConf, "Mật khẩu")) {
                     return;
                 }
+
+                newUser.setUsername(username);
+                newUser.setEmail(email);
+                newUser.setPassword(password);
                 register(newUser);
                 break;
+            case R.id.btn_fb_login:
+                showEmptyScreen();
+                break;
+            case R.id.btn_google_login:
+                showEmptyScreen();
+                break;
             case R.id.link_login:
+                finish();
                 break;
         }
     }
 
-    private void register(User user) {
-        ApiService mService = ApiUtils.getApiService();
+    private void register(final User user) {
+        VnHabitApiService mService = VnHabitApiUtils.getApiService();
         mService.addUser(user).enqueue(new Callback<UserResult>() {
             @Override
             public void onResponse(Call<UserResult> call, Response<UserResult> response) {
                 if (response.body().getResult().equals("1")) {
-                    Toast.makeText(RegisterActivity.this, "Login with your account", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterActivity.this, "Đăng ký tài khoản thành công", Toast.LENGTH_LONG).show();
+                    Intent intent = getIntent();
+                    intent.putExtra(LoginActivity.USERNAME, user.getUsername());
+                    RegisterActivity.this.setResult(RESULT_OK, intent);
                     finish();
+                } else {
+                    Toast.makeText(RegisterActivity.this, "Đăng ký không thành công", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<UserResult> call, Throwable t) {
-                Toast.makeText(RegisterActivity.this, "not ok", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RegisterActivity.this, "Đăng ký không thành công", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public void showEmpty(View v) {
+        Intent i = new Intent(this, EmptyActivity.class);
+        startActivity(i);
     }
 }

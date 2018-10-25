@@ -1,11 +1,21 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textViewStyle">@style/textViewNewStyle</item>
+        <item name="android:buttonStyle">@style/buttonNewStyle</item>
+    </style>
+
+    <style name="textViewNewStyle" parent="android:Widget.TextView">
+        <item name="android:fontFamily">@font/new_roman</item>
+    </style>
+
+    <style name="buttonNewStyle" parent="android:Widget.Holo.Button">
+        <item name="android:fontFamily">@font/new_roman</item>
     </style>
 
 </resources>

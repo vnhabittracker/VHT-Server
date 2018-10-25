@@ -3,6 +3,10 @@ package habit.tracker.habittracker.api.model.habit;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
+import habit.tracker.habittracker.api.model.reminder.Reminder;
+
 public class Habit {
 
     @SerializedName("habit_id")
@@ -11,27 +15,30 @@ public class Habit {
     @SerializedName("user_id")
     @Expose
     private String userId;
-    @SerializedName("catagory_id")
+    @SerializedName("group_id")
     @Expose
-    private String catagoryId;
-    @SerializedName("schedule_id")
+    private String groupId;
+    @SerializedName("monitor_id")
     @Expose
-    private String scheduleId;
-    @SerializedName("goal_id")
-    @Expose
-    private String goalId;
+    private String monitorId;
     @SerializedName("habit_name")
     @Expose
     private String habitName;
+    @SerializedName("habit_target")
+    @Expose
+    private String habitTarget;
     @SerializedName("habit_type")
     @Expose
     private String habitType;
-    @SerializedName("unit")
+    @SerializedName("monitor_type")
     @Expose
-    private String unit;
-    @SerializedName("count_type")
+    private String monitorType;
+    @SerializedName("monitor_unit")
     @Expose
-    private String countType;
+    private String monitorUnit;
+    @SerializedName("monitor_number")
+    @Expose
+    private String monitorNumber;
     @SerializedName("start_date")
     @Expose
     private String startDate;
@@ -41,123 +48,218 @@ public class Habit {
     @SerializedName("created_date")
     @Expose
     private String createdDate;
-    @SerializedName("habit_icon")
+    @SerializedName("habit_color")
     @Expose
-    private String habitIcon;
+    private String habitColor;
     @SerializedName("habit_description")
     @Expose
     private String habitDescription;
+    @SerializedName("mon")
+    @Expose
+    private String mon;
+    @SerializedName("tue")
+    @Expose
+    private String tue;
+    @SerializedName("wed")
+    @Expose
+    private String wed;
+    @SerializedName("thu")
+    @Expose
+    private String thu;
+    @SerializedName("fri")
+    @Expose
+    private String fri;
+    @SerializedName("sat")
+    @Expose
+    private String sat;
+    @SerializedName("sun")
+    @Expose
+    private String sun;
+    @SerializedName("reminders")
+    @Expose
+    private List<Reminder> reminderList;
 
     public String getHabitId() {
         return habitId;
-    }
-
-    public void setHabitId(String habitId) {
-        this.habitId = habitId;
     }
 
     public String getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public String getGroupId() {
+        return groupId;
     }
 
-    public String getCatagoryId() {
-        return catagoryId;
-    }
-
-    public void setCatagoryId(String catagoryId) {
-        this.catagoryId = catagoryId;
-    }
-
-    public String getScheduleId() {
-        return scheduleId;
-    }
-
-    public void setScheduleId(String scheduleId) {
-        this.scheduleId = scheduleId;
-    }
-
-    public String getGoalId() {
-        return goalId;
-    }
-
-    public void setGoalId(String goalId) {
-        this.goalId = goalId;
+    public String getMonitorId() {
+        return monitorId;
     }
 
     public String getHabitName() {
         return habitName;
     }
 
-    public void setHabitName(String habitName) {
-        this.habitName = habitName;
+    public String getHabitTarget() {
+        return habitTarget;
     }
 
     public String getHabitType() {
         return habitType;
     }
 
-    public void setHabitType(String habitType) {
-        this.habitType = habitType;
+    public String getMonitorType() {
+        return monitorType;
     }
 
-    public String getUnit() {
-        return unit;
+    public String getMonitorUnit() {
+        return monitorUnit;
     }
 
-    public void setUnit(String unit) {
-        this.unit = unit;
-    }
-
-    public String getCountType() {
-        return countType;
-    }
-
-    public void setCountType(String countType) {
-        this.countType = countType;
+    public String getMonitorNumber() {
+        return monitorNumber;
     }
 
     public String getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(String startDate) {
-        this.startDate = startDate;
-    }
-
     public String getEndDate() {
         return endDate;
-    }
-
-    public void setEndDate(String endDate) {
-        this.endDate = endDate;
     }
 
     public String getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(String createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public String getHabitIcon() {
-        return habitIcon;
-    }
-
-    public void setHabitIcon(String habitIcon) {
-        this.habitIcon = habitIcon;
+    public String getHabitColor() {
+        return habitColor;
     }
 
     public String getHabitDescription() {
         return habitDescription;
     }
 
+    public String getMon() {
+        return mon;
+    }
+
+    public String getTue() {
+        return tue;
+    }
+
+    public String getWed() {
+        return wed;
+    }
+
+    public String getThu() {
+        return thu;
+    }
+
+    public String getFri() {
+        return fri;
+    }
+
+    public String getSat() {
+        return sat;
+    }
+
+    public String getSun() {
+        return sun;
+    }
+
+    public List<Reminder> getReminderList() {
+        return reminderList;
+    }
+
+    public void setHabitId(String habitId) {
+        this.habitId = habitId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+
+    public void setMonitorId(String monitorId) {
+        this.monitorId = monitorId;
+    }
+
+    public void setHabitName(String habitName) {
+        this.habitName = habitName;
+    }
+
+    public void setHabitTarget(String habitTarget) {
+        this.habitTarget = habitTarget;
+    }
+
+    public void setHabitType(String habitType) {
+        this.habitType = habitType;
+    }
+
+    public void setMonitorType(String monitorType) {
+        this.monitorType = monitorType;
+    }
+
+    public void setMonitorUnit(String monitorUnit) {
+        this.monitorUnit = monitorUnit;
+    }
+
+    public void setMonitorNumber(String monitorNumber) {
+        this.monitorNumber = monitorNumber;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
+    public void setCreatedDate(String createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public void setHabitColor(String habitColor) {
+        this.habitColor = habitColor;
+    }
+
     public void setHabitDescription(String habitDescription) {
         this.habitDescription = habitDescription;
     }
 
+    public void setMon(String mon) {
+        this.mon = mon;
+    }
+
+    public void setTue(String tue) {
+        this.tue = tue;
+    }
+
+    public void setWed(String wed) {
+        this.wed = wed;
+    }
+
+    public void setThu(String thu) {
+        this.thu = thu;
+    }
+
+    public void setFri(String fri) {
+        this.fri = fri;
+    }
+
+    public void setSat(String sat) {
+        this.sat = sat;
+    }
+
+    public void setSun(String sun) {
+        this.sun = sun;
+    }
+
+    public void setReminderList(List<Reminder> reminderList) {
+        this.reminderList = reminderList;
+    }
 }

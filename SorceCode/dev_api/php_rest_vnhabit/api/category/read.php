@@ -31,6 +31,7 @@ if ($num > 0) {
             'id' => $user_id,
             'username' => $username,
             'password' => $password,
+            'phone' => $phone,
             'email' => $email,
             'gender' => $gender,
             'date_of_birth' => $date_of_birth,

@@ -21,7 +21,6 @@ $data = json_decode(file_get_contents("php://input"));
 
 // Set ID to update
 $user->user_id = $data->user_id;
-
 $user->username = $data->username;
 $user->password = $data->password;
 $user->email = $data->email;

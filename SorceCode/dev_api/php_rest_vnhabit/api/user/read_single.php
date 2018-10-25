@@ -23,24 +23,10 @@ $result = $user->read_single();
 
 // found one user
 if (isset($result)) {
-    // Create array
-    $user_arr = array(
-        'user_id' => $user->user_id, 
-        'username' => $user->username, 
-        'password' => $user->password, 
-        'email' => $user->email, 
-        'date_of_birth' => $user->date_of_birth, 
-        'gender' => $user->gender, 
-        'user_icon' => $user->user_icon, 
-        'avatar' => $user->avatar, 
-        'user_description' => $user->user_description
-    );
-
-    // convert array object to JSON object
     echo json_encode(
         array(
             'result' => '1',
-            'data' => $user_arr
+            'data' => $result 
         )
     );
 } else {

@@ -22,11 +22,12 @@ $data = json_decode(file_get_contents("php://input"));
 $user->username = $data->username;
 $user->password = $data->password;
 $user->email = $data->email;
-$user->date_of_birth = $data->date_of_birth;
-$user->gender = $data->gender;
-$user->user_icon = $data->user_icon;
-$user->avatar = $data->avatar;
-$user->user_description = $data->user_description;
+$user->phone = $data->phone;
+// $user->date_of_birth = $data->date_of_birth;
+// $user->gender = $data->gender;
+// $user->user_icon = $data->user_icon;
+// $user->avatar = $data->avatar;
+// $user->user_description = $data->user_description;
 
 // Create user
 if ($user->create()) {

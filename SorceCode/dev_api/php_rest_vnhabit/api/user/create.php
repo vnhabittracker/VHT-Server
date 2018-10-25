@@ -22,25 +22,35 @@ $data = json_decode(file_get_contents("php://input"));
 $user->username = $data->username;
 $user->password = $data->password;
 $user->email = $data->email;
+$user->phone = $data->phone;
 $user->date_of_birth = $data->date_of_birth;
 $user->gender = $data->gender;
 $user->user_icon = $data->user_icon;
 $user->avatar = $data->avatar;
 $user->user_description = $data->user_description;
 
-// Create user
-if ($user->create()) {
+
+if ($user->find_by_username()) {
     echo json_encode(
         array(
-            'result' => '1'
+            'result' => '2'
         )
     );
 } else {
-    echo json_encode(
-        array(
-            'result' => '0'
-        )
-    );
+    // Create user
+    if ($user->create()) {
+        echo json_encode(
+            array(
+                'result' => '1'
+            )
+        );
+    } else {
+        echo json_encode(
+            array(
+                'result' => '0'
+            )
+        );
+    }
 }
 
 ?>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    tools:context=".ReminderActivity">
+
+    <TimePicker
+        android:id="@+id/reminderTime_picker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:descendantFocusability="blocksDescendants"
+        android:timePickerMode="spinner"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:gravity="center_vertical"
+        android:layout_toStartOf="@+id/spinner_repeat"
+        android:layout_alignTop="@+id/spinner_repeat"
+        android:layout_alignBottom="@+id/spinner_repeat"
+        android:layout_marginEnd="5dp"
+        android:textSize="15sp"
+        android:textColor="@android:color/background_dark"
+        android:text="Lặp lại"/>
+
+    <NumberPicker
+        android:id="@+id/spinner_repeat"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_toStartOf="@+id/time"
+        android:layout_below="@+id/reminderTime_picker"
+        android:descendantFocusability="blocksDescendants"
+        android:layout_marginEnd="5dp"
+        android:textSize="15sp"
+        android:layout_marginBottom="30dp" />
+
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:gravity="center_vertical"
+        android:layout_alignEnd="@+id/reminderTime_picker"
+        android:layout_below="@+id/reminderTime_picker"
+        android:layout_alignTop="@+id/spinner_repeat"
+        android:layout_alignBottom="@+id/spinner_repeat"
+        android:layout_marginEnd="5dp"
+        android:textSize="15sp"
+        android:textColor="@android:color/background_dark"
+        android:text="Lần"/>
+
+    <Button
+        android:id="@+id/btnCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_toStartOf="@+id/btnOk"
+        android:layout_below="@+id/spinner_repeat"
+        android:text="Cancel"/>
+
+    <Button
+        android:id="@+id/btnOk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/reminderTime_picker"
+        android:layout_below="@+id/spinner_repeat"
+        android:text="OK"/>
+
+</RelativeLayout>

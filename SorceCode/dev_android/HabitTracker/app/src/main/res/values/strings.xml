@@ -2,15 +2,17 @@
     <string name="app_name">HabitTracker</string>
 
     <!-- login -->
-    <string name="username">username</string>
+    <string name="username">Tên đăng nhập</string>
+    <string name="phone">Số Điện Thoại</string>
     <string name="email">Email</string>
-    <string name="password">Password</string>
-    <string name="password_conf">Confirm Password</string>
-    <string name="login">Login</string>
-    <string name="register">Register</string>
-    <string name="lb_register">Don\'t have a account? REGISTER</string>
+    <string name="password">Mật khẩu</string>
+    <string name="password_conf">Nhập lại mật khẩu</string>
+    <string name="login">Đăng Nhập</string>
+    <string name="register">Đăng Ký</string>
+    <string name="register_account">Tôi chưa có tài khoản? Đăng ký</string>
+    <string name="or_with">bằng</string>
 
     <!-- register -->
-    <string name="lb_remind_login">Already have a account? LOGIN</string>
+    <string name="remind_login">Tôi đã có tài khoản? Đăng nhập</string>
 
 </resources>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:gravity="center"
+    android:id="@+id/rl_habit"
+    android:background="#a1a1a1"
+    android:layout_margin="7dp">
+
+    <View
+        android:id="@+id/view_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/tv_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:paddingStart="10dp"
+        android:textSize="20sp"
+        android:textColor="#fff"
+        android:fontFamily="@font/new_roman"
+        android:text="text"/>
+
+    <TextView
+        android:id="@+id/tv_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:paddingStart="10dp"
+        android:textSize="10sp"
+        android:textColor="#fff"
+        android:text="text"/>
+
+    <TextView
+        android:id="@+id/tv_habitType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:layout_toEndOf="@+id/tv_description"
+        android:paddingStart="3sp"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:textColor="#fff"
+        android:text="text"/>
+
+    <ImageView
+        android:id="@+id/ck_check"
+        android:layout_width="65dp"
+        android:layout_height="match_parent"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ck_checked"/>
+</RelativeLayout>

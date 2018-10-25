@@ -1,5 +1,5 @@
 package habit.tracker.habittracker.common;
 
 public enum ValidatorType {
-    EMPTY, EMAIL, SAME
+    EMPTY, PHONE, EMAIL, EQUAL
 }

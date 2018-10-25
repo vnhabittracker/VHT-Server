@@ -8,24 +8,25 @@
     android:clickable="true"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:paddingStart="55dp"
-    android:paddingEnd="55dp"
+    android:paddingStart="40dp"
+    android:paddingEnd="105dp"
+    android:background="@drawable/bg_main"
     tools:context=".RegisterActivity">
 
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="20dp"
         android:contentDescription="@string/app_name"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp"
-        app:srcCompat="@mipmap/ic_launcher" />
+        app:srcCompat="@drawable/app_logo" />
 
     <EditText
         android:id="@+id/edit_username"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="40dp"
         android:background="@drawable/bg_input"
         android:gravity="center"
         android:hint="@string/username"
@@ -34,10 +35,10 @@
     <EditText
         android:id="@+id/edit_email"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="40dp"
         android:background="@drawable/bg_input"
         android:gravity="center"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:hint="@string/email"
         android:focusableInTouchMode="true"
         android:textSize="16sp" />
@@ -45,10 +46,10 @@
     <EditText
         android:id="@+id/edit_password"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="40dp"
         android:background="@drawable/bg_input"
         android:gravity="center"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="10dp"
         android:textSize="16sp"
         android:hint="@string/password"
         android:inputType="textPassword" />
@@ -56,10 +57,10 @@
     <EditText
         android:id="@+id/edit_conf_password"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="40dp"
         android:background="@drawable/bg_input"
         android:gravity="center"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="10dp"
         android:textSize="16sp"
         android:hint="@string/password_conf"
         android:focusableInTouchMode="true"
@@ -68,11 +69,11 @@
     <Button
         android:id="@+id/btn_register"
         android:layout_width="match_parent"
-        android:layout_height="45dp"
+        android:layout_height="40dp"
         android:textSize="18sp"
         android:textAllCaps="false"
         android:background="@drawable/bg_button_blue"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:textColor="#fffd"
         android:text="@string/register"/>
 
@@ -80,8 +81,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
         android:orientation="horizontal">
 
         <View
@@ -91,7 +92,7 @@
             android:background="#333" />
 
         <TextView
-            android:text="or with"
+            android:text="@string/or_with"
             android:gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -110,6 +111,8 @@
         android:gravity="center_horizontal">
 
         <Button
+            android:onClick="showEmpty"
+            android:id="@+id/btn_fb_login"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -119,6 +122,8 @@
             android:background="@drawable/bg_facebook" />
 
         <Button
+            android:onClick="showEmpty"
+            android:id="@+id/btn_google_login"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -133,8 +138,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:paddingBottom="20dp"
-        android:text="@string/lb_remind_login"/>
+        android:layout_marginTop="15dp"
+        android:paddingBottom="10dp"
+        android:textSize="14sp"
+        android:textColor="#333"
+        android:text="@string/remind_login"/>
 
 </LinearLayout>

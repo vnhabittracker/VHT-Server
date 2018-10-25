@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:paddingStart="40dp"
+    android:paddingEnd="105dp"
+    android:background="@drawable/bg_main"
+    tools:context=".LoginActivity">
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_gravity="center_horizontal"
+        android:contentDescription="@string/app_name"
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="40dp"
+        app:srcCompat="@drawable/app_logo" />
+
+    <EditText
+        android:id="@+id/edit_username"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_input"
+        android:gravity="center"
+        android:hint="@string/username"
+        android:textSize="14sp" />
+
+    <EditText
+        android:id="@+id/edit_password"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_input"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:textSize="14sp"
+        android:hint="@string/password"
+        android:inputType="textPassword" />
+
+    <Button
+        android:id="@+id/btn_login"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:textSize="15sp"
+        android:textAllCaps="false"
+        android:background="@drawable/bg_button_blue"
+        android:layout_marginTop="20dp"
+        android:textColor="#fffd"
+        android:text="@string/login"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_marginRight="10dp"
+            android:layout_width="50dp"
+            android:layout_height="1dp"
+            android:background="#333" />
+
+        <TextView
+            android:text="@string/or_with"
+            android:gravity="center"
+            android:textSize="15sp"
+            android:textColor="#333"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <View
+            android:layout_marginLeft="10dp"
+            android:layout_width="50dp"
+            android:layout_height="1dp"
+            android:background="#333" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal">
+
+        <Button
+            android:onClick="showEmpty"
+            android:id="@+id/btn_fb_login"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="20dp"
+            android:textAlignment="textStart"
+            android:textAllCaps="false"
+            android:background="@drawable/bg_facebook" />
+
+        <Button
+            android:onClick="showEmpty"
+            android:id="@+id/btn_google_login"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="20dp"
+            android:textAlignment="textStart"
+            android:textAllCaps="false"
+            android:background="@drawable/bg_google" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/link_register"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="35dp"
+        android:paddingBottom="10dp"
+        android:textSize="14sp"
+        android:textColor="#333"
+        android:text="@string/register_account"/>
+
+</LinearLayout>

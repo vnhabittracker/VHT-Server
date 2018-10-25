@@ -1,161 +1,98 @@
 <?php
 
 include_once '../../models/Model.php';
+include_once '../../models/MonitorDate.php';
 
     class Habit extends Model {
         // db
         private $conn;
-        private $table = 'habit';
+        private $table = 'habit h';
         private $cols;
         private $params;
-        private $colsArr = array(
-            'habit_id', 
-            'user_id', 
-            'category_id', 
-            'schedule_id', 
-            'goal_id', 
-            'habit_name', 
-            'habit_type', 
-            'unit', 
-            'count_type', 
-            'start_date', 
-            'end_date', 
-            'created_date', 
-            'habit_icon', 
-            'habit_description'
-        );
 
         // habit
         public $habit_id;
         public $user_id;
-        public $category_id;
-        public $schedule_id;
-        public $goal_id;
+        public $group_id;
+        public $monitor_id;
         public $habit_name;
+        public $habit_target;
         public $habit_type;
-        public $unit;
-        public $count_type;
+        public $monitor_type;
+        public $monitor_unit;
+        public $monitor_number;
         public $start_date;
         public $end_date;
         public $created_date;
-        public $habit_icon;
+        public $habit_color;
         public $habit_description;
 
         public function __construct($db) {
             $this->conn = $db;
-            $this->cols = implode(", ", $this->colsArr);
-            $this->params = $this->make_query_param($this->colsArr);
+            $this->cols = $this->get_read_param(NULL, 'h');
+            $this->params = $this->get_query_param(array('habit_id'));
         }
 
         // Get all Habit
         public function read() {
             $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . ' ORDER BY habit_id ASC';
-
             // Prepare statement
             $stmt = $this->conn->prepare($query);
-            
             // Execute query
             $stmt->execute();
-
             return $stmt;
         }
 
         public function read_by_user() {
             // Create query
-            $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . 
-                ' WHERE
-                    user_id = :user_id 
-                    LIMIT 0,1';
-
+            $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . ' WHERE user_id = :user_id';
             // Prepare statement
             $stmt = $this->conn->prepare($query);
-
             // Bind params
             $stmt->bindParam(":user_id", $this->user_id);
-
             // Execute query
             $stmt->execute();
-            // get row count
-            $num = $stmt->rowCount();
-
-            if ($num == 1) {
-                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                $this->habit_id = $row['habit_id'];
-                $this->user_id = $row['user_id'];
-                $this->category_id = $row['category_id'];
-                $this->schedule_id = $row['schedule_id'];
-                $this->goal_id = $row['goal_id'];
-                $this->habit_name = $row['habit_name'];
-                $this->habit_type = $row['habit_type'];
-                $this->unit = $row['unit'];
-                $this->count_type = $row['count_type'];
-                $this->start_date = $row['start_date'];
-                $this->end_date = $row['end_date'];
-                $this->created_date = $row['created_date'];
-                $this->habit_icon = $row['habit_icon'];
-                $this->habit_description = $row['habit_description'];
-                return $this;
-            } else {
-                return NULL;
-            }
+            return $stmt;
+        }
+    
+        public function read_join_monitor() {
+            $date = new MonitorDate($this->conn);
+            $query = 'SELECT ' . $this->cols . ', '
+             . $date->get_read_param(array('monitor_id', 'habit_id'), 'd') 
+             . ' FROM ' . $this->table 
+             . ' LEFT JOIN monitor_date d ON h.monitor_id = d.monitor_id WHERE h.user_id = :user_id';
+            
+             $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":user_id", $this->user_id);
+            $stmt->execute();
+            return $stmt;
         }
 
         // Create Habit
         public function create() {
             // create query
-            $query = 'INSERT INTO ' . $this->table . ' SET ' . $this->params;
-            
+            $query = 'INSERT INTO habit SET ' . $this->get_query_param(array('habit_id'));
             // Prepare statement
             $stmt = $this->conn->prepare($query);
-
-            // Bind data
-            $stmt->bindParam(':user_id', $this->user_id);
-            $stmt->bindParam(':category_id', $this->category_id);
-            $stmt->bindParam(':schedule_id', $this->schedule_id);
-            $stmt->bindParam(':goal_id', $this->goal_id);
-            $stmt->bindParam(':habit_name', $this->habit_name);
-            $stmt->bindParam(':habit_type', $this->habit_type);
-            $stmt->bindParam(':unit', $this->unit);
-            $stmt->bindParam(':count_type', $this->count_type);
-            $stmt->bindParam(':start_date', $this->start_date);
-            $stmt->bindParam(':end_date', $this->end_date);
-            $stmt->bindParam(':created_date', $this->created_date);
-            $stmt->bindParam(':habit_icon', $this->habit_icon);
-            $stmt->bindParam(':habit_description', $this->habit_description);
-
+            $stmt = $this->bind_param_exc($stmt, array('habit_id'));
             // Execute query
             if ($stmt->execute()) {
+                $this->habit_id = $this->conn->lastInsertId();
                 return true;
             }
-
-            // Print error if something goes wrong
-            printf("Error: %s.\n", $stmt->error);
             return false;
         }
 
         // Update Habit
         public function update() {
             // create query
-            $query = 'UPDATE ' . $this->table . ' SET ' . $this->params . ' WHERE habit_id = :habit_id';
+            $query = 'UPDATE habit SET ' . $this->get_query_param(array('habit_id')) . ' WHERE habit_id = :habit_id';
 
             // Prepare statement
             $stmt = $this->conn->prepare($query);
 
             // Bind data
-            $stmt->bindParam(':habit_id', $this->habit_id);
-            $stmt->bindParam(':user_id', $this->user_id);
-            $stmt->bindParam(':category_id', $this->category_id);
-            $stmt->bindParam(':schedule_id', $this->schedule_id);
-            $stmt->bindParam(':goal_id', $this->goal_id);
-            $stmt->bindParam(':habit_name', $this->habit_name);
-            $stmt->bindParam(':habit_type', $this->habit_type);
-            $stmt->bindParam(':unit', $this->unit);
-            $stmt->bindParam(':count_type', $this->count_type);
-            $stmt->bindParam(':start_date', $this->start_date);
-            $stmt->bindParam(':end_date', $this->end_date);
-            $stmt->bindParam(':created_date', $this->created_date);
-            $stmt->bindParam(':habit_icon', $this->habit_icon);
-            $stmt->bindParam(':habit_description', $this->habit_description);
+            $stmt = $this->bind_param_exc($stmt, NULL);
 
             // Execute query
             if ($stmt->execute()) {
@@ -170,8 +107,7 @@ include_once '../../models/Model.php';
         // Detele Habit
         public function delete() {
             // create query
-            $query = 'DELETE FROM ' . $this->table . ' WHERE habit_id = :habit_id';
-
+            $query = 'DELETE FROM habit WHERE habit_id = :habit_id';
             // Prepare statement
             $stmt = $this->conn->prepare($query);
 
@@ -180,11 +116,12 @@ include_once '../../models/Model.php';
 
             // Bind data
             $stmt->bindParam(':habit_id', $this->habit_id);
-
+            
             // Execute query
             if($stmt->execute()) {
                 return true;
             }
+
             // Print error if something goes wrong
             printf("Error: %s.\n", $stmt->error);
             return false;

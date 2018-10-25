@@ -16,10 +16,7 @@ $db = $database->connect();
 // Instantiate
 $habit = new Habit($db);
 
-// Get raw posted data
-$data = json_decode(file_get_contents("php://input"));
-
-$habit->habit_id = $data->habit_id;
+$habit->habit_id = isset($_GET['habit_id']) ? $_GET['habit_id'] : die();
 
 if ($habit->delete()) {
     echo json_encode(
