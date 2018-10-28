@@ -71,13 +71,12 @@ include_once '../../models/MonitorDate.php';
         // Create Habit
         public function create() {
             // create query
-            $query = 'INSERT INTO habit SET ' . $this->get_query_param(array('habit_id'));
+            $query = 'INSERT INTO habit SET ' . $this->get_query_param(NULL);
             // Prepare statement
             $stmt = $this->conn->prepare($query);
-            $stmt = $this->bind_param_exc($stmt, array('habit_id'));
+            $stmt = $this->bind_param_exc($stmt, NULL);
             // Execute query
             if ($stmt->execute()) {
-                $this->habit_id = $this->conn->lastInsertId();
                 return true;
             }
             return false;

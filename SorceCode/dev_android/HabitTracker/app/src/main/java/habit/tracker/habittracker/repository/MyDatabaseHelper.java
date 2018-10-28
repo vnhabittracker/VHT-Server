@@ -7,10 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 /**
  * Created by DatTVT1 on 10/15/2018
  */
-public abstract class DatabaseHelper {
+public abstract class MyDatabaseHelper {
     public SQLiteDatabase mDb;
 
-    public DatabaseHelper(SQLiteDatabase db) {
+    public MyDatabaseHelper(SQLiteDatabase db) {
         this.mDb = db;
     }
 

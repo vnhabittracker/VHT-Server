@@ -38,17 +38,16 @@ class MonitorDate extends Model {
     // Create User
     public function create() {
         // create query
-        $query = 'INSERT INTO monitor_date SET ' . $this->get_query_param(array('monitor_id'));
+        $query = 'INSERT INTO monitor_date SET ' . $this->get_query_param(NULL);
         
         // Prepare statement
         $stmt = $this->conn->prepare($query);
 
         // Bind data
-        $stmt = $this->bind_param_exc($stmt, array('monitor_id'));
+        $stmt = $this->bind_param_exc($stmt, NULL);
 
         // Execute query
         if ($stmt->execute()) {
-            $this->monitor_id = $this->conn->lastInsertId();
             return true;
         }
 

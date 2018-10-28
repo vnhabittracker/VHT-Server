@@ -15,7 +15,7 @@ public interface UserSchema {
 
     String CREATE_USER_TABLE =
             "CREATE TABLE IF NOT EXISTS " + USER_TABLE + " ("
-                    + USER_ID + " INTEGER PRIMARY KEY, "
+                    + USER_ID + " TEXT PRIMARY KEY NOT NULL, "
                     + USERNAME + " TEXT, "
                     + EMAIL + " TEXT, "
                     + PHONE + " TEXT, "

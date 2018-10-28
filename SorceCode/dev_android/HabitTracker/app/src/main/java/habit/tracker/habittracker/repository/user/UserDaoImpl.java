@@ -5,9 +5,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 
-import habit.tracker.habittracker.repository.DatabaseHelper;
+import java.util.ArrayList;
+import java.util.List;
 
-public class UserDaoImpl extends DatabaseHelper implements UserDao, UserSchema {
+import habit.tracker.habittracker.repository.MyDatabaseHelper;
+
+public class UserDaoImpl extends MyDatabaseHelper implements UserDao, UserSchema {
 
     private Cursor cursor;
     private ContentValues initialValues;
@@ -60,19 +63,19 @@ public class UserDaoImpl extends DatabaseHelper implements UserDao, UserSchema {
     }
 
     @Override
-    public UserEntity fetchUser() {
-        UserEntity userEntity = null;
+    public List<UserEntity> fetchUser() {
+        List<UserEntity> list = new ArrayList<>();
         Cursor cursor = super.query(USER_TABLE, USER_COLUMNS, null,
                 null, null);
         if (cursor != null) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
-                userEntity = cursorToEntity(cursor);
+                list.add(cursorToEntity(cursor));
                 cursor.moveToNext();
             }
             cursor.close();
         }
-        return userEntity;
+        return list;
     }
 
     @Override

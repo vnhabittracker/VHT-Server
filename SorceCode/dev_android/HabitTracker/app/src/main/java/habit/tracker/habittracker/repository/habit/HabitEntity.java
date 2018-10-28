@@ -1,9 +1,11 @@
 package habit.tracker.habittracker.repository.habit;
 
+import habit.tracker.habittracker.common.TrackingDate;
+
 /**
  * Created by DatTVT1 on 10/16/2018
  */
-public class HabitEntity {
+public class HabitEntity implements TrackingDate {
     private String habitId;
     private String userId;
     private String groupId;

@@ -31,7 +31,7 @@ public interface HabitSchema {
 
     String CREATE_HABIT_TABLE =
             "CREATE TABLE IF NOT EXISTS " + HABIT_TABLE + " ("
-                    + HABIT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + HABIT_ID + " TEXT PRIMARY KEY NOT NULL, "
                     + USER_ID + " TEXT, "
                     + GROUP_ID + " TEXT, "
                     + MONITOR_ID + " TEXT, "

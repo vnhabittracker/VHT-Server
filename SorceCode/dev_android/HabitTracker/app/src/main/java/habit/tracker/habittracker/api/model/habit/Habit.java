@@ -6,8 +6,10 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 import habit.tracker.habittracker.api.model.reminder.Reminder;
+import habit.tracker.habittracker.api.model.tracking.Tracking;
+import habit.tracker.habittracker.common.TrackingDate;
 
-public class Habit {
+public class Habit implements TrackingDate {
 
     @SerializedName("habit_id")
     @Expose
@@ -78,6 +80,9 @@ public class Habit {
     @SerializedName("reminders")
     @Expose
     private List<Reminder> reminderList;
+    @SerializedName("tracks")
+    @Expose
+    private List<Tracking> tracksList;
 
     public String getHabitId() {
         return habitId;
@@ -171,6 +176,10 @@ public class Habit {
         return reminderList;
     }
 
+    public List<Tracking> getTracksList() {
+        return tracksList;
+    }
+
     public void setHabitId(String habitId) {
         this.habitId = habitId;
     }
@@ -261,5 +270,9 @@ public class Habit {
 
     public void setReminderList(List<Reminder> reminderList) {
         this.reminderList = reminderList;
+    }
+
+    public void setTracksList(List<Tracking> tracksList) {
+        this.tracksList = tracksList;
     }
 }

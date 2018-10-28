@@ -5,9 +5,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 
-import habit.tracker.habittracker.repository.DatabaseHelper;
+import java.util.ArrayList;
+import java.util.List;
 
-public class TrackingDaoImpl extends DatabaseHelper implements TrackingDao, TrackingSchema {
+import habit.tracker.habittracker.api.model.tracking.Tracking;
+import habit.tracker.habittracker.common.Generator;
+import habit.tracker.habittracker.repository.MyDatabaseHelper;
+
+public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, TrackingSchema {
     private Cursor cursor;
     private ContentValues initialValues;
     private String lastId;
@@ -49,8 +54,8 @@ public class TrackingDaoImpl extends DatabaseHelper implements TrackingDao, Trac
     }
 
     @Override
-    public TrackingEntity getTracking(String trackID) {
-        final String selectionArgs[] = {String.valueOf(trackID)};
+    public TrackingEntity getTracking(String trackId) {
+        final String selectionArgs[] = {String.valueOf(trackId)};
         final String selection = TRACKING_ID + " = ?";
         TrackingEntity entity = new TrackingEntity();
         cursor = super.query(TRACKING_TABLE, TRACKING_COLUMNS, selection, selectionArgs, TRACKING_ID);
@@ -81,16 +86,49 @@ public class TrackingDaoImpl extends DatabaseHelper implements TrackingDao, Trac
         return entity;
     }
 
+    public List<TrackingEntity> getTrackingByHabitId(String habitId) {
+        List<TrackingEntity> list = new ArrayList<>();
+        final String selectionArgs[] = {habitId};
+        final String selection = HABIT_ID + " = ?";
+        cursor = super.query(TRACKING_TABLE, TRACKING_COLUMNS, selection, selectionArgs, TRACKING_ID);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                list.add(cursorToEntity(cursor));
+                cursor.moveToNext();
+            }
+            cursor.close();
+        }
+        return list;
+    }
+
+
+    public List<TrackingEntity> getTrackingByDate(String currentDate) {
+        List<TrackingEntity> list = new ArrayList<>();
+        final String selectionArgs[] = {currentDate};
+        final String selection = CURRENT_DATE + " = ?";
+        cursor = super.query(TRACKING_TABLE, TRACKING_COLUMNS, selection, selectionArgs, CURRENT_DATE);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                list.add(cursorToEntity(cursor));
+                cursor.moveToNext();
+            }
+            cursor.close();
+        }
+        return list;
+    }
+
     @Override
     public boolean saveTracking(TrackingEntity entity) {
         setContentValue(entity);
         try {
             boolean res = super.replace(TRACKING_TABLE, getContentValue()) > 0;
-            Cursor cursor = super.rawQuery("SELECT * FROM " + TRACKING_TABLE + " ORDER BY " + TRACKING_ID + " DESC LIMIT 1", null);
-            if (cursor != null && cursor.moveToFirst()) {
-                entity = cursorToEntity(cursor);
-                this.lastId = entity.getTrackingId();
-            }
+//            Cursor cursor = super.rawQuery("SELECT * FROM " + TRACKING_TABLE + " ORDER BY " + TRACKING_ID + " DESC LIMIT 1", null);
+//            if (cursor != null && cursor.moveToFirst()) {
+//                entity = cursorToEntity(cursor);
+//                this.lastId = entity.getTrackingId();
+//            }
             return res;
         } catch (SQLiteConstraintException ex) {
             return false;
@@ -143,5 +181,14 @@ public class TrackingDaoImpl extends DatabaseHelper implements TrackingDao, Trac
 
     private ContentValues getContentValue() {
         return initialValues;
+    }
+
+    public TrackingEntity convert(Tracking track) {
+        TrackingEntity entity = new TrackingEntity();
+        entity.setTrackingId(track.getTrackingId());
+        entity.setHabitId(track.getHabitId());
+        entity.setCount(track.getCount());
+        entity.setCurrentDate(track.getCurrentDate());
+        return entity;
     }
 }

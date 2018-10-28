@@ -1,22 +1,19 @@
 package habit.tracker.habittracker.repository.reminder;
 
 public class ReminderEntity {
-    String reminderId;
-    String reminderHour;
-    String reminderMinute;
-    String repeatTime;
-    String repeatRemain;
-    String habitId;
+    private String reminderId;
+    private String habitId;
+    private String reminderTime;
+    private String repeatTime;
+    private String repeatRemain;
+    private int serverId;
 
     public String getReminderId() {
         return reminderId;
     }
-    public String getReminderHour() {
-        return reminderHour;
-    }
 
-    public String getReminderMinute() {
-        return reminderMinute;
+    public String getReminderTime() {
+        return reminderTime;
     }
 
     public String getRepeatTime() {
@@ -31,16 +28,16 @@ public class ReminderEntity {
         return habitId;
     }
 
+    public int getServerId() {
+        return serverId;
+    }
+
     public void setReminderId(String reminderId) {
         this.reminderId = reminderId;
     }
 
-    public void setReminderHour(String reminderHour) {
-        this.reminderHour = reminderHour;
-    }
-
-    public void setReminderMinute(String reminderMinute) {
-        this.reminderMinute = reminderMinute;
+    public void setReminderTime(String reminderTime) {
+        this.reminderTime = reminderTime;
     }
 
     public void setRepeatTime(String repeatTime) {
@@ -53,5 +50,9 @@ public class ReminderEntity {
 
     public void setHabitId(String habitId) {
         this.habitId = habitId;
+    }
+
+    public void setServerId(int serverId) {
+        this.serverId = serverId;
     }
 }

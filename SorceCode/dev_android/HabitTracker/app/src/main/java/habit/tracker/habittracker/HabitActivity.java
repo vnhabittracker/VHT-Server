@@ -28,13 +28,17 @@ import butterknife.OnClick;
 import habit.tracker.habittracker.api.VnHabitApiUtils;
 import habit.tracker.habittracker.api.model.habit.Habit;
 import habit.tracker.habittracker.api.model.habit.HabitResult;
+import habit.tracker.habittracker.api.model.reminder.Reminder;
 import habit.tracker.habittracker.api.service.VnHabitApiService;
+import habit.tracker.habittracker.common.Generator;
+import habit.tracker.habittracker.common.ReminderService;
 import habit.tracker.habittracker.common.Validator;
 import habit.tracker.habittracker.common.ValidatorType;
 import habit.tracker.habittracker.repository.Database;
 import habit.tracker.habittracker.repository.group.GroupEntity;
 import habit.tracker.habittracker.repository.habit.HabitEntity;
 import habit.tracker.habittracker.repository.reminder.ReminderEntity;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -42,6 +46,7 @@ import retrofit2.Response;
 public class HabitActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     public static final int SELECT_GROUP = 1;
     public static final int ADD_REMINDER = 2;
+//    public static final int
     public static final String TYPE_0 = "0";
     public static final String TYPE_1 = "1";
     public static final String TYPE_2 = "2";
@@ -56,7 +61,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
 
     @BindView(R.id.edit_habitName)
     EditText editHabitName;
-    String habitId;
+    String savedHabitId;
 
     @BindView(R.id.btn_TargetBuild)
     Button btnHabitBuild;
@@ -95,7 +100,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
     View selGroup;
     @BindView(R.id.tv_groupName)
     TextView tvGroupName;
-    String groupId;
+    String savedGroupId;
 
     @BindView(R.id.btnMon)
     TextView btnMon;
@@ -112,7 +117,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
     @BindView(R.id.btnSun)
     TextView btnSun;
     boolean[] monitorDate = new boolean[7];
-    String monitorDateId;
+    String savedMonitorDateId;
 
     @BindView(R.id.color1)
     View color1;
@@ -185,27 +190,26 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
     @BindView(R.id.spinner_repeat)
     EditText editDescription;
 
-    List<ReminderEntity> reminders = new ArrayList<>();
+    List<Reminder> reminderList = new ArrayList<>();
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode == RESULT_OK) {
             if (requestCode == SELECT_GROUP) {
                 if (data != null && data.getExtras() != null) {
-                    groupId = data.getStringExtra(GroupActivity.GROUP_ID);
+                    savedGroupId = data.getStringExtra(GroupActivity.GROUP_ID);
                     tvGroupName.setText(data.getStringExtra(GroupActivity.GROUP_NAME));
                 }
             } else if (requestCode == ADD_REMINDER) {
                 if (data != null && data.getExtras() != null) {
                     String hour = data.getStringExtra(ReminderActivity.TIME_HOUR);
                     String minute = data.getStringExtra(ReminderActivity.TIME_MINUTE);
-                    String repeat = data.getStringExtra(ReminderActivity.REPEAT_TIME);
-                    ReminderEntity entity = new ReminderEntity();
-                    entity.setReminderHour(hour);
-                    entity.setReminderMinute(minute);
-                    entity.setRepeatRemain(repeat);
-                    entity.setRepeatRemain(repeat);
-                    reminders.add(entity);
+                    int repeat = data.getIntExtra(ReminderActivity.REPEAT_TIME, 0);
+                    Reminder reminder = new Reminder();
+                    reminder.setReminderId(Generator.getNewId());
+                    reminder.setReminderTime(hour + "-" + minute);
+                    reminder.setRepeatTime(String.valueOf(repeat));
+                    reminderList.add(reminder);
                 }
             }
         }
@@ -216,14 +220,13 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_habit);
         ButterKnife.bind(this);
-
+        // init habit type: daily
+        btnHabitType = btnDaily;
+        // init habit color
         colorsList = new ArrayList<>();
         for (int colorId : colors) {
             colorsList.add(getResources().getString(colorId));
         }
-        // init habit type: daily
-        btnHabitType = btnDaily;
-        // init habit color
         color1.setBackground(getCircleBackground(colorsList.get(0)));
         color2.setBackground(getCircleBackground(colorsList.get(1)));
         color3.setBackground(getCircleBackground(colorsList.get(2)));
@@ -235,7 +238,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         color9.setBackground(getCircleBackground(colorsList.get(8)));
         color10.setBackground(getCircleBackground(colorsList.get(9)));
         setHabitColor(color1);
-        // plan date
+        // start and end date
         Calendar calendar = Calendar.getInstance();
         startYear = calendar.get(Calendar.YEAR);
         startMonth = calendar.get(Calendar.MONTH);
@@ -244,17 +247,16 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         endMonth = calendar.get(Calendar.MONTH);
         endDay = calendar.get(Calendar.DATE);
 
+        // load habit from local trackingItemList
         Bundle extras = getIntent().getExtras();
-        // load habit from local data
         if (extras != null) {
-            this.habitId = extras.getString(MainActivity.HABIT_ID, null);
-            if (habitId != null) {
+            this.savedHabitId = extras.getString(MainActivity.HABIT_ID, null);
+            if (savedHabitId != null) {
+                // mode CREATE
                 this.createMode = 1;
-                initFromSavedHabit(habitId);
+                initFromSavedHabit(savedHabitId);
             }
         } else {
-            // habit color
-            setHabitColor(color1);
             // init monitor date
             setMonitorDate(btnMon);
             setMonitorDate(btnTue);
@@ -282,12 +284,12 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
             HabitEntity habitEntity = Database.sHabitDaoImpl.getHabit(habitId);
             if (habitEntity != null) {
                 if (habitEntity.getGroupId() != null) {
-                    this.groupId = habitEntity.getGroupId();
+                    this.savedGroupId = habitEntity.getGroupId();
                     GroupEntity groupEntity = Database.sGroupDaoImpl.getGroup(habitEntity.getGroupId());
                     tvGroupName.setText(groupEntity.getGroupName());
                 }
                 if (habitEntity.getMonitorId() != null) {
-                    this.monitorDateId = habitEntity.getMonitorId();
+                    this.savedMonitorDateId = habitEntity.getMonitorId();
                 }
                 // habit name
                 editHabitName.setText(habitEntity.getHabitName());
@@ -377,7 +379,6 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                 if (habitEntity.getHabitColor() != null) {
                     for (int i = 0; i < colorsList.size(); i++) {
                         String code = colorsList.get(i);
-                        // TODO: optimize this
                         if (habitEntity.getHabitColor().equals(code)) {
                             switch (String.valueOf(i)) {
                                 case TYPE_0:
@@ -423,6 +424,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
 
     @OnClick(R.id.btn_save)
     public void saveHabit(View v) {
+        // validate user input
         Validator validator = new Validator();
         validator.setErrorMsgListener(new Validator.ErrorMsg() {
             @Override
@@ -434,7 +436,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                 }
             }
         });
-        String userId = MySharedPreference.getUserId(this);
+        String savedUserId = MySharedPreference.getUserId(this);
         String habitName = editHabitName.getText().toString();
         String monitorNumber = this.editCheckNumber.getText().toString();
         if (!validator.checkEmpty("Tên thói quen", habitName)) {
@@ -466,8 +468,15 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         // collect user input
         Calendar ca = Calendar.getInstance();
         final Habit habit = new Habit();
-        habit.setUserId(userId);
-        habit.setGroupId(this.groupId);
+        if (createMode == MODE_CREATE) {
+            habit.setHabitId(Generator.getNewId());
+            habit.setMonitorId(Generator.getNewId());
+        } else if (createMode == MODE_UPDATE) {
+            habit.setHabitId(this.savedHabitId);
+            habit.setMonitorId(this.savedMonitorDateId);
+        }
+        habit.setUserId(savedUserId);
+        habit.setGroupId(this.savedGroupId);
         habit.setHabitName(habitName);
         habit.setHabitTarget(String.valueOf(this.habitTarget));
         habit.setHabitType(String.valueOf(this.habitType));
@@ -479,6 +488,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         habit.setCreatedDate(ca.get(1) + "-" + (ca.get(2) + 1) + "-" + ca.get(5));
         habit.setHabitColor(this.habitColorCode);
         habit.setHabitDescription(this.editDescription.getText().toString());
+
         habit.setMon(String.valueOf(this.monitorDate[0] ? 1 : 0));
         habit.setTue(String.valueOf(this.monitorDate[1] ? 1 : 0));
         habit.setWed(String.valueOf(this.monitorDate[2] ? 1 : 0));
@@ -486,37 +496,89 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         habit.setFri(String.valueOf(this.monitorDate[4] ? 1 : 0));
         habit.setSat(String.valueOf(this.monitorDate[5] ? 1 : 0));
         habit.setSun(String.valueOf(this.monitorDate[6] ? 1 : 0));
+        for (Reminder reminder : reminderList) {
+            reminder.setReminderId(Generator.getNewId());
+            reminder.setHabitId(habit.getHabitId());
+        }
+        habit.setReminderList(reminderList);
 
+        // save or update habit to local
+        List<ReminderEntity> remindEntities = null;
+        Database db = new Database(HabitActivity.this);
+        db.open();
+        if(Database.sHabitDaoImpl.saveHabit(Database.sHabitDaoImpl.convert(habit))) {
+            for (Reminder reminder : reminderList) {
+                Database.sReminderImpl.addReminder(Database.sReminderImpl.convert(reminder));
+            }
+            remindEntities = Database.sReminderImpl.getRemindersByHabit(habit.getHabitId());
+        }
+        db.close();
+//        // start remind server for each service id
+//        ReminderService reminderService = new ReminderService(this);
+//        if (remindEntities != null && remindEntities.size() > 0) {
+//            for (int i = 0; i < monitorDate.length; i++) {
+//                if (monitorDate[i]) {
+//                    int day = Calendar.MONDAY;
+//                    switch (i) {
+//                        case 1:
+//                            day = Calendar.TUESDAY;
+//                            break;
+//                        case 2:
+//                            day = Calendar.WEDNESDAY;
+//                            break;
+//                        case 3:
+//                            day = Calendar.THURSDAY;
+//                            break;
+//                        case 4:
+//                            day = Calendar.FRIDAY;
+//                            break;
+//                        case 5:
+//                            day = Calendar.SATURDAY;
+//                            break;
+//                        case 6:
+//                            day = Calendar.SUNDAY;
+//                            break;
+//                    }
+//                    int h, m;
+//                    for (ReminderEntity entity : remindEntities) {
+//                        String[] timeArr = entity.getReminderTime().split("-");
+//                        h = Integer.parseInt(timeArr[0]);
+//                        m = Integer.parseInt(timeArr[1]);
+//                        reminderService.remind(entity.getServerId(), day, h, m);
+//                    }
+//                }
+//            }
+//        }
+
+        // call api to syn data
         VnHabitApiService mService = VnHabitApiUtils.getApiService();
+        // CREATE new habit
         if (createMode == MODE_CREATE) {
-            mService.addHabit(habit).enqueue(new Callback<HabitResult>() {
+            mService.addHabit(habit).enqueue(new Callback<ResponseBody>() {
                 @Override
-                public void onResponse(Call<HabitResult> call, Response<HabitResult> response) {
-                    if (response.body().getResult().equals("1")) {
-                        Toast.makeText(HabitActivity.this, "Tạo thói quen thành công", Toast.LENGTH_LONG).show();
-                        HabitActivity.this.setResult(HabitActivity.RESULT_OK);
-                        finish();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<HabitResult> call, Throwable t) {
-                    Toast.makeText(HabitActivity.this, "Đã xãy ra lỗi", Toast.LENGTH_LONG).show();
-                }
-            });
-        } else if (createMode == MODE_UPDATE) {
-            habit.setHabitId(habitId);
-            habit.setGroupId(groupId);
-            habit.setMonitorId(monitorDateId);
-            mService.updateHabit(habit).enqueue(new Callback<HabitResult>() {
-                @Override
-                public void onResponse(Call<HabitResult> call, Response<HabitResult> response) {
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    Toast.makeText(HabitActivity.this, "Tạo thói quen thành công", Toast.LENGTH_LONG).show();
                     HabitActivity.this.setResult(HabitActivity.RESULT_OK);
                     finish();
                 }
 
                 @Override
-                public void onFailure(Call<HabitResult> call, Throwable t) {
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Toast.makeText(HabitActivity.this, "Đã xãy ra lỗi", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+        // UPDATE habit
+        else if (createMode == MODE_UPDATE) {
+            mService.updateHabit(habit).enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    HabitActivity.this.setResult(HabitActivity.RESULT_OK);
+                    finish();
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
                     Toast.makeText(HabitActivity.this, "Đã xãy ra lỗi", Toast.LENGTH_LONG).show();
                 }
             });
@@ -535,7 +597,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         } else if (createMode == MODE_UPDATE) {
             // delete habit
             VnHabitApiService service = VnHabitApiUtils.getApiService();
-            service.deleteHabit(this.habitId).enqueue(new Callback<HabitResult>() {
+            service.deleteHabit(this.savedHabitId).enqueue(new Callback<HabitResult>() {
                 @Override
                 public void onResponse(Call<HabitResult> call, Response<HabitResult> response) {
                     Toast.makeText(HabitActivity.this, "Đã xóa thói quen", Toast.LENGTH_LONG).show();

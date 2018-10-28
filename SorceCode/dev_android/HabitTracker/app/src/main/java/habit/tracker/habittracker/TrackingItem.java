@@ -15,7 +15,8 @@ public class TrackingItem {
 
     public TrackingItem() {}
 
-    public TrackingItem(String habitId, String name, String description, String habitType, int type, String number, int count, String unit, String color) {
+    public TrackingItem(String trackId, String habitId, String name, String description, String habitType, int type, String number, int count, String unit, String color) {
+        this.trackId = trackId;
         this.habitId = habitId;
         this.name = name;
         this.description = description;

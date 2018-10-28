@@ -41,7 +41,7 @@ public class ReminderActivity extends AppCompatActivity implements NumberPicker.
     boolean[] dayOfWeek;
     int hour;
     int minute;
-    int repeatTime;
+    int repeatTime = 1;
     final int INTERVAL = 1000 * 60;
 
     @Override
@@ -54,12 +54,14 @@ public class ReminderActivity extends AppCompatActivity implements NumberPicker.
         if (extras != null) {
             dayOfWeek = extras.getBooleanArray(HabitActivity.DAY_OF_WEEK);
         }
-
+        timePicker.setIs24HourView(false);
+        Calendar c = Calendar.getInstance();
+        timePicker.setCurrentHour(c.get(Calendar.HOUR));
+        timePicker.setCurrentMinute(c.get(Calendar.MINUTE));
         timePicker.setOnTimeChangedListener(this);
         numberPicker.setMinValue(1);
         numberPicker.setMaxValue(10);
         numberPicker.setOnValueChangedListener(this);
-
         alarmMgr = (AlarmManager) getSystemService(ALARM_SERVICE);
         receiverIntent = new Intent(this, ReminderReceiver.class);
     }
@@ -81,7 +83,7 @@ public class ReminderActivity extends AppCompatActivity implements NumberPicker.
 //        Database db = new Database(this);
 //        db.open();
 //        ReminderEntity entity = new ReminderEntity();
-//        entity.setReminderHour(String.valueOf(hour));
+//        entity.setReminderTime(String.valueOf(hour));
 //        entity.setReminderMinute(String.valueOf(minute));
 //        entity.setRepeatTime(String.valueOf(repeatTime));
 //        entity.setRepeatRemain(String.valueOf(repeatTime));

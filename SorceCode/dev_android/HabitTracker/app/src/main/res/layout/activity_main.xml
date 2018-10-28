@@ -21,24 +21,56 @@
             app:srcCompat="@drawable/ic_setting"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:padding="8dp"
+            android:padding="9dp"
+            android:layout_height="match_parent" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"/>
+
+        <ImageView
+            android:id="@+id/imgBack"
+            app:srcCompat="@drawable/arrow_back"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:paddingStart="13dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="15dp"
             android:layout_height="match_parent" />
 
         <TextView
             android:layout_width="0dp"
-            android:layout_weight="8"
+            android:layout_weight="4"
             android:layout_height="match_parent"
-            android:text="Thói quen hôm nay"
+            android:text="Hôm nay"
             android:gravity="center"
             android:textColor="#333"
             android:textSize="20sp" />
+
+        <ImageView
+            android:id="@+id/imgNext"
+            app:srcCompat="@drawable/arrow_next"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:paddingStart="13dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="15dp"
+            android:layout_height="match_parent" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"/>
 
         <ImageView
             android:onClick="showEmpty"
             app:srcCompat="@drawable/ic_fillter"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:padding="8dp"
+            android:padding="9dp"
             android:layout_height="match_parent" />
     </LinearLayout>
 
@@ -79,7 +111,7 @@
             android:layout_height="wrap_content" />
 
         <ImageView
-            android:onClick="showEmpty"
+            android:id="@+id/report"
             android:padding="10dp"
             app:srcCompat="@drawable/chart"
             android:layout_weight="1"

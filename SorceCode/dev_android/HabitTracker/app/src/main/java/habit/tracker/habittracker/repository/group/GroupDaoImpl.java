@@ -6,9 +6,9 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 
 import habit.tracker.habittracker.api.model.group.Group;
-import habit.tracker.habittracker.repository.DatabaseHelper;
+import habit.tracker.habittracker.repository.MyDatabaseHelper;
 
-public class GroupDaoImpl extends DatabaseHelper implements GroupDao, GroupSchema {
+public class GroupDaoImpl extends MyDatabaseHelper implements GroupDao, GroupSchema {
     private Cursor cursor;
     private ContentValues initialValues;
 

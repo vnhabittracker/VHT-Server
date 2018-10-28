@@ -6,6 +6,7 @@ header('Content-Type: application/json');
 
 include_once '../../config/Database.php';
 include_once '../../models/Habit.php';
+include_once '../../models/Tracking.php';
 
 // Instantiate DB & connect
 $database = new Database();
@@ -13,6 +14,7 @@ $db = $database->connect();
 
 // Instantiate Habit object
 $habit = new Habit($db);
+$tracker = new Tracking($db);
 
 // Get username and password
 $habit->user_id = isset($_GET['user_id']) ? $_GET['user_id'] : die();
@@ -28,6 +30,16 @@ if ($num > 0) {
     $habits_arr = array();
     while($row = $result->fetch(PDO::FETCH_ASSOC)) {
         extract($row);
+
+        $trackArr = array();
+        $tracker->habit_id = $habit_id;
+        $trackRes = $tracker->getTrackByHabit();
+        if ($trackRes) {
+            while($row2 = $trackRes->fetch(PDO::FETCH_ASSOC)) {
+                array_push($trackArr, $row2);
+            }
+        }
+
         $habit_item = array(
             'habit_id' => $habit_id, 
             'user_id' => $user_id, 
@@ -50,7 +62,8 @@ if ($num > 0) {
             'thu' => $thu,
             'fri' => $fri,
             'sat' => $sat,
-            'sun' => $sun
+            'sun' => $sun,
+            'tracks' => $trackArr
         );
 
         // push to "data"

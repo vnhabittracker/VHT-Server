@@ -1,5 +1,6 @@
 package habit.tracker.habittracker;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import java.util.List;
 
 public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private boolean isEditable = true;
     public static final int TYPE_CHECK = 0;
     public static final int TYPE_COUNT = 1;
     public static final int TYPE_ADD = 2;
@@ -33,6 +35,10 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
         this.context = context;
+    }
+
+    public void setEditable(boolean editable) {
+        isEditable = editable;
     }
 
     @Override
@@ -91,6 +97,7 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
         return mDrawable;
     }
 
+    @SuppressLint("ResourceType")
     private void initLayoutCount(ViewHolderCount holder, TrackingItem item) {
         holder.tvCategory.setText(item.getName());
         holder.tvDescription.setText(item.getDescription());
@@ -98,8 +105,8 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
         holder.tvNumber.setText("/" + item.getNumber() + " " + item.getUnit());
         holder.tvCount.setText(String.valueOf(item.getCount()));
         String color = item.getColor();
-        if (color != null && color.equals("#ffffffff")) {
-            color = "#64838383";
+        if (color != null && color.equals(context.getString(R.color.color0))) {
+            color = context.getString(R.color.gray1);
         }
         holder.layout.setBackground(getBackground(color));
         holder.background.setBackground(getBackground(color));
@@ -108,13 +115,14 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
         item.setComp(comp);
     }
 
+    @SuppressLint("ResourceType")
     private void initLayoutCheck(ViewHolderCheck holder, TrackingItem item) {
         holder.tvCategory.setText(item.getName());
         holder.tvDescription.setText(item.getDescription());
         holder.tvPeriod.setText(item.getHabitType());
         String color = item.getColor();
-        if (color != null && color.equals("#ffffffff")) {
-            color = "#64838383";
+        if (color != null && color.equals(context.getString(R.color.color0))) {
+            color = context.getString(R.color.gray1);
         }
         holder.layout.setBackground(getBackground(color));
         holder.background.setBackground(getBackground(color));
@@ -125,7 +133,7 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
         } else if (item.getCount() == 0) {
             holder.isCheck = false;
             holder.imgCheck.setImageResource(R.drawable.ck_unchecked);
-            scaleView(holder.background, 0f, 0f);
+            scaleView(holder.background, 1f, 0f);
         }
     }
 
@@ -158,6 +166,9 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
 
         @Override
         public void onClick(View view) {
+            if (!isEditable) {
+                return;
+            }
             if (view.getId() == R.id.btn_plus) {
 //                Toast.makeText(context, "btn_plus", Toast.LENGTH_SHORT).show();
                 int num = Integer.parseInt(tvCount.getText().toString());
@@ -199,6 +210,9 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
 
         @Override
         public void onClick(View view) {
+            if (!isEditable) {
+                return;
+            }
             if (view.getId() == R.id.ck_check) {
                 if (isCheck) {
                     isCheck = false;

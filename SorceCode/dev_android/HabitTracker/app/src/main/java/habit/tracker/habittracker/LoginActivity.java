@@ -25,6 +25,7 @@ import retrofit2.Response;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
     public static final int SIGN_UP = 1;
+    public static final int GUIDE = 0;
     public static final String USERNAME = "username";
     EditText edUsername;
     EditText edPassword;
@@ -38,6 +39,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 if (data != null) {
                     edUsername.setText(data.getStringExtra(USERNAME));
                 }
+            } else if (requestCode == GUIDE) {
+
             }
         }
     }
@@ -48,6 +51,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         if (MySharedPreference.getUserId(this) != null) {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+            finish();
         }
     }
 
@@ -55,7 +59,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
         edUsername = findViewById(R.id.edit_username);
         edPassword = findViewById(R.id.edit_password);
         btnLogin = findViewById(R.id.btn_login);
@@ -64,7 +67,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         SpannableString content = new SpannableString(registerText);
         content.setSpan(new UnderlineSpan(), 0, registerText.length(), 0);
         linkRegister.setText(content);
-
         btnLogin.setOnClickListener(this);
         linkRegister.setOnClickListener(this);
     }
@@ -125,10 +127,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         Database.sUserDaoImpl.saveUser(userEntity);
                         db.close();
                         showMainScreen(user.getUserId(), user.getUsername());
-                        Toast.makeText(LoginActivity.this, "Welcome!", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(LoginActivity.this, "Welcome!", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(LoginActivity.this, "Login Failed! username or password is not correct.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Đăng nhập không thành công!", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -149,10 +151,15 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void showMainScreen(String userId, String username) {
-        MySharedPreference.saveUser(LoginActivity.this, userId, username);
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
+        if (MySharedPreference.getUserId(this) == null) {
+            MySharedPreference.saveUser(LoginActivity.this, userId, username);
+            startActivityForResult(new Intent(this, GuideActivity.class), GUIDE);
+        } else {
+            MySharedPreference.saveUser(LoginActivity.this, userId, username);
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 
     public void showEmpty(View v) {

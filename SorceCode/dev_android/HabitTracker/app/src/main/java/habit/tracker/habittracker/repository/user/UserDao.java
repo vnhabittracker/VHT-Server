@@ -1,7 +1,9 @@
 package habit.tracker.habittracker.repository.user;
 
+import java.util.List;
+
 public interface UserDao {
-    UserEntity fetchUser();
+    List<UserEntity> fetchUser();
     UserEntity getUser(int userId);
     UserEntity getUser(String username, String password);
     boolean saveUser(UserEntity userEntity);

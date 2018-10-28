@@ -9,7 +9,7 @@ public interface GroupSchema {
     String GROUP_DESCRIPTION = "group_description";
     String CREATE_GROUP_TABLE =
             "CREATE TABLE IF NOT EXISTS " + GROUP_TABLE + " ("
-                    + GROUP_ID + " INTEGER PRIMARY KEY, "
+                    + GROUP_ID + " TEXT PRIMARY KEY NOT NULL, "
                     + GROUP_NAME + " TEXT, "
                     + PARENT_ID + " TEXT, "
                     + GROUP_ICON + " TEXT, "
