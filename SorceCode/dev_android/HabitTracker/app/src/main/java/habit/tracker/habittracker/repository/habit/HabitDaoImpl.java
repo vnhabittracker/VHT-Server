@@ -27,6 +27,41 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
     }
 
     @Override
+    public List<DateTracking> getHabitsBetween(String startDate, String endDate) {
+        List<DateTracking> list = new ArrayList<>();
+        try {
+            Cursor cursor = super.rawQuery(
+                    "SELECT * FROM " + HABIT_TABLE + " INNER JOIN " + TRACKING_TABLE
+                            + " ON " +
+                            HABIT_TABLE + "." + HabitSchema.HABIT_ID + " = " + HABIT_TABLE + "." + TrackingSchema.HABIT_ID
+                            + " WHERE "
+//                            + HABIT_TABLE + "." + HabitSchema.MONITOR_NUMBER + " = " + TRACKING_TABLE + "." + TrackingSchema.COUNT
+//                            + " AND "
+                            + TrackingSchema.TRACKING_TABLE + "." + TrackingSchema.CURRENT_DATE
+                            + " BETWEEN "
+                            + "'" + startDate + "' AND '" + endDate + "'"
+                    , null);
+
+            if (cursor != null) {
+                DateTracking dateTracking;
+                cursor.moveToFirst();
+                while (!cursor.isAfterLast()) {
+                    dateTracking = new DateTracking();
+                    dateTracking.setHabitEntity(cursorToEntity(cursor));
+                    dateTracking.setTrackingEntity(cursorToTrackingEntity(cursor));
+                    list.add(dateTracking);
+                    cursor.moveToNext();
+                }
+                cursor.close();
+                return list;
+            }
+        } catch (SQLiteConstraintException ex) {
+            Log.e("error", "error in HabitDaoImpl.getHabitOnTrackingDay");
+        }
+        return list;
+    }
+
+    @Override
     public List<HabitEntity> fetchHabit() {
         List<HabitEntity> list = new ArrayList<>();
         Cursor cursor = super.query(HABIT_TABLE, HABIT_COLUMNS, null, null, null);

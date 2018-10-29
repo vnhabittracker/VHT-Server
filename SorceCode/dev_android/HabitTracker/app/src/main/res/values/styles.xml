@@ -6,8 +6,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <!--<item name="android:textViewStyle">@style/textViewNewStyle</item>-->
-        <!--<item name="android:buttonStyle">@style/buttonNewStyle</item>-->
+        <item name="android:textViewStyle">@style/textViewNewStyle</item>
+        <item name="android:buttonStyle">@style/buttonNewStyle</item>
     </style>
 
     <style name="textViewNewStyle" parent="android:Widget.TextView">

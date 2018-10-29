@@ -7,21 +7,33 @@
     android:padding="10dp"
     tools:context=".ReportActivity">
 
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:textColor="#2837ba"
+        android:text="Theo dõi thói quen"/>
+
     <LinearLayout
         android:id="@+id/tab"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/header"
         android:orientation="horizontal">
         <TextView
-            android:id="@+id/btnWeek"
+            android:id="@+id/tabWeek"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
             android:textSize="18sp"
             android:gravity="center"
+            android:background="@drawable/bg_tab_red"
             android:text="Tuần"/>
         <TextView
-            android:id="@+id/btnMonth"
+            android:id="@+id/tabMonth"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
@@ -29,7 +41,7 @@
             android:gravity="center"
             android:text="Tháng"/>
         <TextView
-            android:id="@+id/btnYear"
+            android:id="@+id/tabYear"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
@@ -42,16 +54,18 @@
         android:layout_below="@+id/tab"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:orientation="horizontal">
 
         <ImageView
+            android:id="@+id/pre"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="30dp"
             android:padding="5dp"
             android:src="@drawable/arrow_left"/>
         <TextView
+            android:id="@+id/displayTime"
             android:layout_width="0dp"
             android:layout_weight="8"
             android:layout_height="match_parent"
@@ -59,6 +73,7 @@
             android:gravity="center"
             android:text="..."/>
         <ImageView
+            android:id="@+id/next"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="30dp"
@@ -66,29 +81,60 @@
             android:src="@drawable/arrow_right"/>
     </LinearLayout>
 
-    <!--<com.anychart.AnyChartView-->
-        <!--android:id="@+id/any_chart_view"-->
-        <!--android:layout_below="@id/control"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_marginTop="10dp"-->
-        <!--android:layout_marginBottom="150dp"-->
-        <!--/>-->
-
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/chart"
         android:layout_below="@id/control"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_above="@+id/total"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="150dp"/>
+        android:layout_marginBottom="20dp"/>
 
-    <!--<ProgressBar-->
-        <!--android:id="@+id/progress_bar"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:layout_centerVertical="true"-->
-        <!--/>-->
+    <TextView
+        android:id="@+id/total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_above="@+id/totalDone"
+        android:padding="5dp"
+        android:textSize="20sp"
+        android:textColor="#2837ba"
+        android:text="5"/>
+
+    <TextView
+        android:id="@+id/lbTotal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_alignTop="@+id/total"
+        android:layout_alignBottom="@+id/total"
+        android:layout_toStartOf="@+id/total"
+        android:gravity="center_vertical"
+        android:textSize="14sp"
+        android:textColor="#2d2d2d"
+        android:text="Tổng số thói quen"/>
+
+    <TextView
+        android:id="@+id/totalDone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="60dp"
+        android:padding="5dp"
+        android:text="1"
+        android:textColor="#2837ba"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/lbTotalDone"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_alignTop="@+id/totalDone"
+        android:layout_alignBottom="@+id/totalDone"
+        android:layout_toStartOf="@+id/totalDone"
+        android:gravity="center_vertical"
+        android:textSize="14sp"
+        android:textColor="#2d2d2d"
+        android:text="Tổng số thói quen hoàn thành"/>
 
 </RelativeLayout>

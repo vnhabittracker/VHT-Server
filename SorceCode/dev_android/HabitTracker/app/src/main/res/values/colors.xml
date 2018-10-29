@@ -23,5 +23,11 @@
     <!-- color picker -->
 
     <color name="red1">#ffcccc</color>
-    <color name="red2">#f46666</color>
+    <color name="red2">#ff4242</color>
+
+    <color name="purple1">#e5d5ff</color>
+    <color name="purple2">#854edf</color>
+
+    <color name="blue1">#bbcdff</color>
+    <color name="blue2">#2456df</color>
 </resources>

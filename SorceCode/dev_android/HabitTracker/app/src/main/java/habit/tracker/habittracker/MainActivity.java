@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
                         int month = ca.get(Calendar.MONTH) + 1;
                         int date = ca.get(Calendar.DATE);
                         String currentDate = year + "-" + month + "-" + date;
-                        if (isTodayHabit(year, month, date, habit)) {
+                        if (isTodayHabit(year, month - 1, date, habit)) {
                             // update tracking data from server
                             for (Tracking track : habit.getTracksList()) {
                                 Database.sTrackingImpl.saveTracking(Database.sTrackingImpl.convert(track));
