@@ -21,8 +21,8 @@ public class DayAxisValueFormatter implements IAxisValueFormatter {
     public String getFormattedValue(float value, AxisBase axis) {
         if (mode == 0) {
             return getDayInWeek(value);
-        } else
-            return "" + (int) value;
+        }
+        return (int) value + "";
     }
 
     private String getDayInWeek(float value) {

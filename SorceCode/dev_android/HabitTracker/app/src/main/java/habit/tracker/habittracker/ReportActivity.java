@@ -160,11 +160,11 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter();
 
         XAxis xAxis = chart.getXAxis();
+        xAxis.setLabelCount(10);
+        xAxis.setValueFormatter(xAxisFormatter);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
         xAxis.setGranularity(1f); // only intervals of 1 day
-        xAxis.setLabelCount(10);
-        xAxis.setValueFormatter(xAxisFormatter);
 
         IAxisValueFormatter custom = new MyAxisValueFormatter();
 
@@ -199,7 +199,6 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
 
     private void setData(ArrayList<BarEntry> values) {
         BarDataSet set1;
-
         int startColor1 = ContextCompat.getColor(this, R.color.red1);
         int endColor1 = ContextCompat.getColor(this, R.color.red2);
         switch (mode) {
@@ -232,6 +231,7 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
             set1.setGradientColors(gradientColors);
 
             set1.setValues(values);
+            chart.getData().setDrawValues(false);
             chart.getData().notifyDataChanged();
             chart.notifyDataSetChanged();
             chart.animateY(500);
@@ -249,6 +249,7 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
             dataSets.add(set1);
 
             BarData data = new BarData(dataSets);
+            data.setDrawValues(false);
             data.setValueTextSize(7f);
             data.setBarWidth(0.5f);
 
@@ -301,7 +302,7 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         }
         int[] count = countInWeek(daysInWeek, completedList);
         for (int i = 1; i <= 7; i++) {
-            values.add(new BarEntry(i, count[i-1]));
+            values.add(new BarEntry(i, count[i - 1]));
         }
         db.close();
 
