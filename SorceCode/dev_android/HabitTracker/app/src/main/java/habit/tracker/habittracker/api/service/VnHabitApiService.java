@@ -35,7 +35,7 @@ public interface VnHabitApiService {
     Call<ResponseBody> updateHabit(@Body Habit habit);
 
     @DELETE("habit/delete.php")
-    Call<HabitResult> deleteHabit(@Query("habit_id") String habitId);
+    Call<ResponseBody> deleteHabit(@Query("habit_id") String habitId);
 
     @GET("habit/read_by_user.php")
     Call<HabitResponse> getHabit(@Query("user_id") String userId);

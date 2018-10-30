@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -44,6 +45,9 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
     List<TrackingItem> trackingItemList = new ArrayList<>();
     HabitRecyclerViewAdapter trackingAdapter;
     String currentDate;
+
+    @BindView(R.id.tvDate)
+    TextView tvDate;
     @BindView(R.id.imgNext)
     ImageView imgNext;
     @BindView(R.id.imgBack)
@@ -242,7 +246,8 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
         Database db = new Database(this);
         db.open();
         if (nextDate != null) {
-            Toast.makeText(this, nextDate, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, nextDate, Toast.LENGTH_SHORT).show();
+            tvDate.setText(Generator.convert(nextDate,"-","/"));
             currentDate = nextDate;
             trackingItemList.clear();
             updateData(trackingItemList, trackingAdapter, currentDate);
@@ -256,7 +261,8 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
         Database db = new Database(this);
         db.open();
         if (preDate != null) {
-            Toast.makeText(this, preDate, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, preDate, Toast.LENGTH_SHORT).show();
+            tvDate.setText(Generator.convert(preDate,"-","/"));
             currentDate = preDate;
             trackingItemList.clear();
             updateData(trackingItemList, trackingAdapter, currentDate);

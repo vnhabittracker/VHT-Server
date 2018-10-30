@@ -167,6 +167,14 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
 
     @Override
     public boolean deleteHabit(String habitId) {
+        try {
+            final String selectionArgs[] = {habitId};
+            final String selection = HabitSchema.HABIT_ID + " = ?";
+            int count = super.mDb.delete(HABIT_TABLE, selection, selectionArgs)
+                    + super.mDb.delete(TRACKING_TABLE, selection, selectionArgs);
+            return count > 0;
+        } catch (SQLiteConstraintException ex) {
+        }
         return false;
     }
 

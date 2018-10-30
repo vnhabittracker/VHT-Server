@@ -167,7 +167,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="25dp"
-                    android:text="Hằng ngày"
+                    android:text="Hàng ngày"
                     android:textSize="11sp"
                     android:textColor="@color/light_brown"
                     android:background="@drawable/button_green"/>
@@ -178,7 +178,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="25dp"
-                    android:text="Hằng tuần"
+                    android:text="Hàng tuần"
                     android:textSize="11sp"
                     android:textColor="@color/light_brown"
                     android:background="@android:color/transparent"/>
@@ -188,7 +188,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="25dp"
-                    android:text="Hằng tháng"
+                    android:text="Hàng tháng"
                     android:textSize="11sp"
                     android:textColor="@color/light_brown"
                     android:background="@android:color/transparent"/>
@@ -198,7 +198,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="25dp"
-                    android:text="Hằng năm"
+                    android:text="Hàng năm"
                     android:textSize="11sp"
                     android:textColor="@color/light_brown"
                     android:background="@android:color/transparent"/>

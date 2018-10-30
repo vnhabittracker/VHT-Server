@@ -283,8 +283,8 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         int date = Integer.parseInt(strs[2]);
         String[] daysInWeek = Generator.getDatesInWeek(year, month, date);
 
-        String startDate = convert(daysInWeek[0], "-", "/");
-        String endDate = convert(daysInWeek[6], "-", "/");
+        String startDate = Generator.convert(daysInWeek[0], "-", "/");
+        String endDate = Generator.convert(daysInWeek[6], "-", "/");
         time.setText(startDate + " - " + endDate);
 
         Database db = new Database(this);
@@ -319,8 +319,8 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         int date = Integer.parseInt(strs[2]);
         String[] daysInMonth = Generator.getDatesInMonth(year, month, date);
 
-        String startDate = convert(daysInMonth[0], "-", "/");
-        String endDate = convert(daysInMonth[daysInMonth.length - 1], "-", "/");
+        String startDate = Generator.convert(daysInMonth[0], "-", "/");
+        String endDate = Generator.convert(daysInMonth[daysInMonth.length - 1], "-", "/");
         time.setText(startDate + " - " + endDate);
 
         Database db = new Database(this);
@@ -443,11 +443,6 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
 
     public void unselect(View v) {
         v.setBackground(ContextCompat.getDrawable(this, android.R.color.transparent));
-    }
-
-    private String convert(String date, String p1, String p2) {
-        String[] strs = date.split(p1);
-        return strs[2] + p2 + strs[1] + p2 + strs[0];
     }
 
     @Override

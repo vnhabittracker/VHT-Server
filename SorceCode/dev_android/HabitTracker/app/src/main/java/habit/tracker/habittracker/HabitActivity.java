@@ -599,17 +599,22 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
             finish();
         } else if (createMode == MODE_UPDATE) {
             // delete habit
+            Database db = new Database(this);
+            db.open();
+            Database.sHabitDaoImpl.deleteHabit(this.savedHabitId);
+            db.close();
+
             VnHabitApiService service = VnHabitApiUtils.getApiService();
-            service.deleteHabit(this.savedHabitId).enqueue(new Callback<HabitResult>() {
+            service.deleteHabit(this.savedHabitId).enqueue(new Callback<ResponseBody>() {
                 @Override
-                public void onResponse(Call<HabitResult> call, Response<HabitResult> response) {
-                    Toast.makeText(HabitActivity.this, "Đã xóa thói quen", Toast.LENGTH_LONG).show();
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    Toast.makeText(HabitActivity.this, "Đã xóa thói quen", Toast.LENGTH_SHORT).show();
                     HabitActivity.this.setResult(HabitActivity.RESULT_OK);
                     finish();
                 }
 
                 @Override
-                public void onFailure(Call<HabitResult> call, Throwable t) {
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
                     Toast.makeText(HabitActivity.this, "Đã xãy ra lỗi", Toast.LENGTH_LONG).show();
                 }
             });

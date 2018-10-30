@@ -178,4 +178,9 @@ public class Generator {
             return null;
         }
     }
+
+    public static String convert(String date, String p1, String p2) {
+        String[] strs = date.split(p1);
+        return strs[2] + p2 + strs[1] + p2 + strs[0];
+    }
 }
