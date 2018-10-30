@@ -33,7 +33,7 @@
         android:paddingStart="10dp"
         android:textSize="10sp"
         android:textColor="#fff"
-        android:text="text"/>
+        android:text="Thói quen đọc 4 cuốn sach trong"/>
 
     <TextView
         android:id="@+id/tv_habitType"
@@ -46,7 +46,7 @@
         android:textSize="10sp"
         android:textStyle="bold"
         android:textColor="#fff"
-        android:text="text"/>
+        android:text="tháng này"/>
 
     <ImageView
         android:id="@+id/ck_check"
