@@ -101,7 +101,7 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
     private void initLayoutCount(ViewHolderCount holder, TrackingItem item) {
         holder.tvCategory.setText(item.getName());
         holder.tvDescription.setText(item.getDescription());
-        holder.tvHabitType.setText(item.getHabitType());
+        holder.tvHabitType.setText(oncvertHabitType(item.getHabitType()));
         holder.tvNumber.setText("/" + item.getNumber() + " " + item.getUnit());
         holder.tvCount.setText(String.valueOf(item.getCount()));
         String color = item.getColor();
@@ -111,7 +111,7 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
         holder.layout.setBackground(getBackground(color));
         holder.background.setBackground(getBackground(color));
         float comp = (float) item.getCount() / Integer.parseInt(item.getNumber());
-        scaleView(holder.background, item.getComp(), comp > 1? 1f: comp);
+        scaleView(holder.background, item.getComp(), comp > 1 ? 1f : comp);
         item.setComp(comp);
     }
 
@@ -119,7 +119,7 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
     private void initLayoutCheck(ViewHolderCheck holder, TrackingItem item) {
         holder.tvCategory.setText(item.getName());
         holder.tvDescription.setText(item.getDescription());
-        holder.tvPeriod.setText(item.getHabitType());
+        holder.tvHabitType.setText(oncvertHabitType(item.getHabitType()));
         String color = item.getColor();
         if (color != null && color.equals(context.getString(R.color.color0))) {
             color = context.getString(R.color.gray1);
@@ -192,7 +192,7 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
         View background;
         TextView tvCategory;
         TextView tvDescription;
-        TextView tvPeriod;
+        TextView tvHabitType;
         ImageView imgCheck;
         boolean isCheck = false;
 
@@ -203,7 +203,7 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
             background = itemView.findViewById(R.id.view_bg);
             tvCategory = itemView.findViewById(R.id.tv_category);
             tvDescription = itemView.findViewById(R.id.tv_description);
-            tvPeriod = itemView.findViewById(R.id.tv_habitType);
+            tvHabitType = itemView.findViewById(R.id.tv_habitType);
             imgCheck = itemView.findViewById(R.id.ck_check);
             imgCheck.setOnClickListener(this);
         }
@@ -238,6 +238,21 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
         anim.setFillAfter(true); // Needed to keep the result of the animation
         anim.setDuration(500);
         v.startAnimation(anim);
+    }
+
+    private String oncvertHabitType(String type) {
+        switch (type) {
+            case "0":
+                return "hôm nay";
+            case "1":
+                return "tuần này";
+            case "2":
+                return "tháng này";
+            case "3":
+                return "năm nay";
+            default:
+                return "";
+        }
     }
 
     public class ViewHolderAdd extends RecyclerView.ViewHolder implements View.OnClickListener {

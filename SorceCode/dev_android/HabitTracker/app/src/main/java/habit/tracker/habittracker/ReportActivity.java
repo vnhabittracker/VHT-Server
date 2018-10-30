@@ -1,5 +1,6 @@
 package habit.tracker.habittracker;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +9,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -105,7 +107,16 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
 
     @OnClick(R.id.pre)
     public void pre(View v) {
-        currentTime = Generator.getDayPreWeek(currentTime);
+        switch (mode) {
+            case MODE_WEEK:
+                currentTime = Generator.getDayPreWeek(currentTime);
+                break;
+            case MODE_MONTH:
+                currentTime = Generator.getPreMonth(currentTime);
+                break;
+            case MODE_YEAR:
+                break;
+        }
         ArrayList<BarEntry> values = loadData(currentTime);
         setData(values);
         chart.invalidate();
@@ -113,7 +124,16 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
 
     @OnClick(R.id.next)
     public void next(View v) {
-        currentTime = Generator.getDayNextWeek(currentTime);
+        switch (mode) {
+            case MODE_WEEK:
+                currentTime = Generator.getDayNextWeek(currentTime);
+                break;
+            case MODE_MONTH:
+                currentTime = Generator.getNextMonth(currentTime);
+                break;
+            case MODE_YEAR:
+                break;
+        }
         ArrayList<BarEntry> values = loadData(currentTime);
         setData(values);
         chart.invalidate();
@@ -121,52 +141,57 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
 
     private void initChart() {
         chart.setOnChartValueSelectedListener(this);
-        chart.getDescription().setEnabled(false);
+
         chart.setDrawBarShadow(false);
-        chart.setDrawValueAboveBar(false);
+        chart.setDrawValueAboveBar(true);
+
         chart.getDescription().setEnabled(false);
+
+        // if more than 60 entries are displayed in the chart, no values will be
+        // drawn
+        chart.setMaxVisibleValueCount(60);
+
         // scaling can now only be done on x- and y-axis separately
         chart.setPinchZoom(false);
+
         chart.setDrawGridBackground(false);
         // chart.setDrawYLabels(false);
 
-        // if more than 7 entries are displayed in the chart, no values will be
-        // drawn
-        chart.setMaxVisibleValueCount(7);
-
         IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter();
+
         XAxis xAxis = chart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
         xAxis.setGranularity(1f); // only intervals of 1 day
-        xAxis.setLabelCount(7);
+        xAxis.setLabelCount(10);
         xAxis.setValueFormatter(xAxisFormatter);
 
         IAxisValueFormatter custom = new MyAxisValueFormatter();
 
         YAxis leftAxis = chart.getAxisLeft();
-        leftAxis.setLabelCount(7, false);
+        leftAxis.setLabelCount(5, false);
         leftAxis.setValueFormatter(custom);
         leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
         leftAxis.setSpaceTop(15f);
         leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
 
-        chart.getAxisRight().setEnabled(false);
-        chart.getLegend().setEnabled(false);
+        YAxis rightAxis = chart.getAxisRight();
+        rightAxis.setEnabled(false);
+
+        Legend l = chart.getLegend();
+        l.setEnabled(false);
 
         XYMarkerView mv = new XYMarkerView(this, xAxisFormatter);
         mv.setChartView(chart); // For bounds control
         chart.setMarker(mv); // Set the marker to the chart
+
+        // chart.setDrawLegend(false);
 
         Calendar ca = Calendar.getInstance();
         int year = ca.get(Calendar.YEAR);
         int month = ca.get(Calendar.MONTH) + 1;
         int date = ca.get(Calendar.DATE);
         currentTime = year + "-" + month + "-" + date;
-//        String[] week = Generator.getDatesInWeek(year, month, date);
-//        String startDate = convert(week[0], "-", "/");
-//        String endDate = convert(week[6], "-", "/");
-//        time.setText(startDate + " - " + endDate);
 
         ArrayList<BarEntry> values = loadWeekData(currentTime);
         setData(values);
@@ -194,6 +219,10 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
                 break;
         }
 
+        IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(mode);
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setValueFormatter(xAxisFormatter);
+
         if (chart.getData() != null && chart.getData().getDataSetCount() > 0) {
             set1 = (BarDataSet) chart.getData().getDataSetByIndex(0);
 
@@ -220,8 +249,8 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
             dataSets.add(set1);
 
             BarData data = new BarData(dataSets);
-            data.setValueTextSize(10f);
-            data.setBarWidth(0.9f);
+            data.setValueTextSize(7f);
+            data.setBarWidth(0.5f);
 
             chart.setData(data);
             chart.animateY(500);
@@ -271,8 +300,8 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
             }
         }
         int[] count = countInWeek(daysInWeek, completedList);
-        for (int i = 0; i < 7; i++) {
-            values.add(new BarEntry(i, count[i]));
+        for (int i = 1; i <= 7; i++) {
+            values.add(new BarEntry(i, count[i-1]));
         }
         db.close();
 
@@ -288,11 +317,12 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         int year = Integer.parseInt(strs[0]);
         int month = Integer.parseInt(strs[1]);
         int date = Integer.parseInt(strs[2]);
-        String[] daysInMonth = Generator.getDatesInWeek(year, month, date);
+        String[] daysInMonth = Generator.getDatesInMonth(year, month, date);
 
         String startDate = convert(daysInMonth[0], "-", "/");
-        String endDate = convert(daysInMonth[6], "-", "/");
+        String endDate = convert(daysInMonth[daysInMonth.length - 1], "-", "/");
         time.setText(startDate + " - " + endDate);
+
         Database db = new Database(this);
         db.open();
         List<DateTracking> total = Database.sHabitDaoImpl.getHabitsBetween(daysInMonth[0], daysInMonth[daysInMonth.length - 1]);
@@ -308,16 +338,14 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         int[] count = new int[daysInMonth.length];
         for (DateTracking item : completedList) {
             for (int i = 0; i < daysInMonth.length; i++) {
-                if (item.getHabitEntity().getMonitorNumber() != null
-                        && item.getTrackingEntity().getCount() != null
-                        && item.getHabitEntity().getMonitorNumber().equals(daysInMonth[i])) {
+                if (item.getTrackingEntity().getCurrentDate().equals(daysInMonth[i])) {
                     ++count[i];
                 }
             }
         }
 
-        for (int i = 0; i < count.length; i++) {
-            values.add(new BarEntry(i, count[i]));
+        for (int i = 1; i <= count.length; i++) {
+            values.add(new BarEntry(i, count[i-1]));
         }
         db.close();
 
@@ -335,6 +363,8 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         int date = Integer.parseInt(strs[2]);
         time.setText("Tháng 01" + "/" + year + " - " + "tháng 12" + "/" + year);
 
+        Database db = new Database(this);
+        db.open();
         List<List<DateTracking>> yearData = new ArrayList<>();
         for (int i = 0; i < 12; i++) {
             yearData.add(
@@ -361,9 +391,10 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
             sum += yearData.get(m).size();
             done += monthly.size();
         }
-        for (int i = 0; i < count.length; i++) {
-            values.add(new BarEntry(i, count[i]));
+        for (int i = 1; i <= count.length; i++) {
+            values.add(new BarEntry(i, count[i-1]));
         }
+        db.close();
 
         tvTotal.setText(String.valueOf(sum));
         tvTotalDone.setText(String.valueOf(done));
@@ -416,7 +447,7 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
 
     private String convert(String date, String p1, String p2) {
         String[] strs = date.split(p1);
-        return strs[2] + p2 + strs[1] + strs[0];
+        return strs[2] + p2 + strs[1] + p2 + strs[0];
     }
 
     @Override
@@ -432,5 +463,10 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
 
+    }
+
+    public void showEmpty(View view) {
+        Intent intent = new Intent(this, EmptyActivity.class);
+        startActivity(intent);
     }
 }

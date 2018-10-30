@@ -628,7 +628,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
                 android:layout_marginBottom="10dp"
-                android:text="Màu thói quen" />
+                android:text="Nhắc nhở" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -653,7 +653,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="13sp"
-                            android:textAllCaps="true"
                             android:textColor="#799c4b"
                             android:paddingStart="5dp"
                             android:text="7:00 am: nội dung nhắc nhở 1"/>
@@ -674,7 +673,6 @@
                             android:layout_height="wrap_content"
                             android:textSize="13sp"
                             android:paddingStart="5dp"
-                            android:textAllCaps="true"
                             android:textColor="#799c4b"
                             android:text="7:00 am: nội dung nhắc nhở 2"/>
                     </LinearLayout>
@@ -693,7 +691,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="13sp"
-                            android:textAllCaps="true"
                             android:textColor="#799c4b"
                             android:paddingStart="5dp"
                             android:text="7:00 am: nội dung nhắc nhở 3"/>

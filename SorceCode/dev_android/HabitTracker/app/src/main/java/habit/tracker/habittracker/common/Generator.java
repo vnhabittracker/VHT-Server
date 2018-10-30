@@ -68,6 +68,24 @@ public class Generator {
         return null;
     }
 
+    public static String getPreMonth(String currentDate) {
+        String[] strs = currentDate.split("-");
+        int month = Integer.parseInt(strs[1]) - 1;
+        if (month < 1 || month > 12) {
+            return currentDate;
+        }
+        return strs[0] + "-" + month + "-" + strs[2];
+    }
+
+    public static String getNextMonth(String currentDate) {
+        String[] strs = currentDate.split("-");
+        int month = Integer.parseInt(strs[1]) + 1;
+        if (month < 1 || month > 12) {
+            return currentDate;
+        }
+        return strs[0] + "-" + month + "-" + strs[2];
+    }
+
     /**
      * @param month start from 0
      */
