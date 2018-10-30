@@ -167,7 +167,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
         <ImageView
-            android:onClick="showEmpty"
+            android:onClick="finishThis"
             android:padding="10dp"
             app:srcCompat="@drawable/check"
             android:layout_weight="1"

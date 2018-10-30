@@ -125,7 +125,7 @@ public class TrackingItem {
         this.color = color;
     }
 
-    public void setComp(float comp) {
+    public void setRatio(float comp) {
         this.comp = comp;
     }
 }

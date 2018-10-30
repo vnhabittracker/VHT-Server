@@ -21,12 +21,13 @@ import android.widget.TextView;
 import java.util.List;
 
 public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private boolean isEditable = true;
     public static final int TYPE_CHECK = 0;
     public static final int TYPE_COUNT = 1;
     public static final int TYPE_ADD = 2;
-    private Context context;
 
+    private boolean isEditable = true;
+
+    private Context context;
     private List<TrackingItem> mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
@@ -101,39 +102,43 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
     private void initLayoutCount(ViewHolderCount holder, TrackingItem item) {
         holder.tvCategory.setText(item.getName());
         holder.tvDescription.setText(item.getDescription());
-        holder.tvHabitType.setText(oncvertHabitType(item.getHabitType()));
+        holder.tvHabitType.setText(item.getHabitType());
         holder.tvNumber.setText("/" + item.getNumber() + " " + item.getUnit());
         holder.tvCount.setText(String.valueOf(item.getCount()));
+
         String color = item.getColor();
         if (color != null && color.equals(context.getString(R.color.color0))) {
             color = context.getString(R.color.gray1);
         }
         holder.layout.setBackground(getBackground(color));
         holder.background.setBackground(getBackground(color));
-        float comp = (float) item.getCount() / Integer.parseInt(item.getNumber());
-        scaleView(holder.background, item.getComp(), comp > 1 ? 1f : comp);
-        item.setComp(comp);
+
+        float ratio = (float) item.getCount() / Integer.parseInt(item.getNumber());
+        scaleView(holder.background, item.getComp(), ratio > 1 ? 1f : ratio, 0);
+        item.setRatio(ratio);
     }
 
     @SuppressLint("ResourceType")
     private void initLayoutCheck(ViewHolderCheck holder, TrackingItem item) {
         holder.tvCategory.setText(item.getName());
         holder.tvDescription.setText(item.getDescription());
-        holder.tvHabitType.setText(oncvertHabitType(item.getHabitType()));
+        holder.tvHabitType.setText(item.getHabitType());
+
         String color = item.getColor();
         if (color != null && color.equals(context.getString(R.color.color0))) {
             color = context.getString(R.color.gray1);
         }
         holder.layout.setBackground(getBackground(color));
         holder.background.setBackground(getBackground(color));
+
         if (item.getCount() == 1) {
             holder.isCheck = true;
             holder.imgCheck.setImageResource(R.drawable.ck_checked);
-            scaleView(holder.background, 0f, 1f);
+            scaleView(holder.background, 1f, 1f, 0);
         } else if (item.getCount() == 0) {
             holder.isCheck = false;
             holder.imgCheck.setImageResource(R.drawable.ck_unchecked);
-            scaleView(holder.background, 1f, 0f);
+            scaleView(holder.background, 0f, 0f, 0);
         }
     }
 
@@ -169,21 +174,25 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
             if (!isEditable) {
                 return;
             }
+            int num = Integer.parseInt(tvCount.getText().toString());
             if (view.getId() == R.id.btn_plus) {
 //                Toast.makeText(context, "btn_plus", Toast.LENGTH_SHORT).show();
-                int num = Integer.parseInt(tvCount.getText().toString());
                 num = num + 1;
                 tvCount.setText(num + "");
                 mClickListener.onSetCount(view, TYPE_COUNT, getAdapterPosition(), num);
             } else if (view.getId() == R.id.btn_minus) {
 //                Toast.makeText(context, "btn_minus", Toast.LENGTH_SHORT).show();
-                int num = Integer.parseInt(tvCount.getText().toString());
-                num = num > 0? num - 1: 0;
+                num = num > 0 ? num - 1 : 0;
                 tvCount.setText(num + "");
                 mClickListener.onSetCount(view, TYPE_COUNT, getAdapterPosition(), num);
             } else if (mClickListener != null) {
                 mClickListener.onItemClick(view, TYPE_COUNT, getAdapterPosition());
             }
+
+            float goal = mData.get(getAdapterPosition()).getComp();
+            float ratio = (float) num / Integer.parseInt(mData.get(getAdapterPosition()).getNumber());
+            scaleView(background, goal, ratio > 1 ? 1f : ratio, 400);
+            mData.get(getAdapterPosition()).setRatio(ratio);
         }
     }
 
@@ -218,10 +227,12 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
                     isCheck = false;
                     imgCheck.setImageResource(R.drawable.ck_unchecked);
                     mClickListener.onSetCount(view, TYPE_CHECK, getAdapterPosition(), 0);
+                    scaleView(background, 1f, 0f, 500);
                 } else {
                     isCheck = true;
                     imgCheck.setImageResource(R.drawable.ck_checked);
                     mClickListener.onSetCount(view, TYPE_CHECK, getAdapterPosition(), 1);
+                    scaleView(background, 0f, 1f, 599);
                 }
             } else if (mClickListener != null) {
                 mClickListener.onItemClick(view, TYPE_CHECK, getAdapterPosition());
@@ -229,18 +240,18 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
         }
     }
 
-    public void scaleView(View v, float startScale, float endScale) {
+    public void scaleView(View v, float startScale, float endScale, int time) {
         Animation anim = new ScaleAnimation(
                 startScale, endScale, // Start and end values for the X axis scaling
                 1f, 1f, // Start and end values for the Y axis scaling
                 Animation.RELATIVE_TO_SELF, 0f, // Pivot point of X scaling
                 Animation.RELATIVE_TO_SELF, v.getMeasuredHeight()); // Pivot point of Y scaling
         anim.setFillAfter(true); // Needed to keep the result of the animation
-        anim.setDuration(500);
+        anim.setDuration(time);
         v.startAnimation(anim);
     }
 
-    private String oncvertHabitType(String type) {
+    private String convertHabitType(String type) {
         switch (type) {
             case "0":
                 return "hôm nay";

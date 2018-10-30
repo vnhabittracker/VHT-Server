@@ -76,16 +76,12 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
         return list;
     }
 
-    public List<HabitEntity> fetchTodayHabit(TrackingDate date) {
+    public List<HabitEntity> fetchTodayHabit(TrackingDate date, String currentDate) {
         List<HabitEntity> list = new ArrayList<>();
-        final String[] selectionArgs = new String[]{date.getMon(), date.getTue(), date.getWed(), date.getThu(), date.getFri(), date.getSat(), date.getSun()};
-        final String selection = HabitSchema.MON + " = ? OR "
-                + HabitSchema.TUE + " = ? OR "
-                + HabitSchema.WED + " = ? OR "
-                + HabitSchema.THU + " = ? OR "
-                + HabitSchema.FRI + " = ? OR "
-                + HabitSchema.SAT + " = ? OR "
-                + HabitSchema.SUN + " = ? ";
+        final String[] selectionArgs = new String[]{currentDate};
+        final String selection =
+                "? BETWEEN " + HabitSchema.START_DATE + " AND " + HabitSchema.END_DATE + " AND "
+                        + getTodayCond(date);
 
         Cursor cursor = super.query(HABIT_TABLE, HABIT_COLUMNS, selection, selectionArgs, null);
         if (cursor != null) {
@@ -97,6 +93,26 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
             cursor.close();
         }
         return list;
+    }
+
+    private String getTodayCond(TrackingDate date) {
+        String str = "";
+        if (date.getMon().equals("1")) {
+            str = HabitSchema.MON;
+        } else if (date.getTue().equals("1")) {
+            str = HabitSchema.TUE;
+        } else if (date.getWed().equals("1")) {
+            str = HabitSchema.WED;
+        } else if (date.getThu().equals("1")) {
+            str = HabitSchema.THU;
+        } else if (date.getFri().equals("1")) {
+            str = HabitSchema.FRI;
+        } else if (date.getSat().equals("1")) {
+            str = HabitSchema.SAT;
+        } else if (date.getSun().equals("1")) {
+            str = HabitSchema.SUN;
+        }
+        return str + " = 1";
     }
 
     public List<DateTracking> getHabitOnTrackingDay(String day) {

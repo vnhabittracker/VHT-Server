@@ -13,7 +13,7 @@ public class Schedule implements TrackingDate {
 
     public Schedule(int year, int month, int date) {
         Calendar ca = Calendar.getInstance();
-        ca.set(year, month, date);
+        ca.set(year, month - 1, date);
         int dayOfWeek = ca.get(Calendar.DAY_OF_WEEK);
         setMon(dayOfWeek == Calendar.MONDAY ? "1" : "0");
         setTue(dayOfWeek == Calendar.TUESDAY ? "1" : "0");
