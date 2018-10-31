@@ -14,6 +14,7 @@ import habit.tracker.habittracker.api.VnHabitApiUtils;
 import habit.tracker.habittracker.api.model.user.User;
 import habit.tracker.habittracker.api.model.user.UserResult;
 import habit.tracker.habittracker.api.service.VnHabitApiService;
+import habit.tracker.habittracker.common.Generator;
 import habit.tracker.habittracker.common.Validator;
 import habit.tracker.habittracker.common.ValidatorType;
 import retrofit2.Call;
@@ -93,6 +94,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
                 newUser.setUsername(username);
                 newUser.setEmail(email);
                 newUser.setPassword(password);
+                newUser.setUserId(Generator.getNewId());
                 register(newUser);
                 break;
             case R.id.btn_fb_login:
@@ -114,6 +116,9 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
             public void onResponse(Call<UserResult> call, Response<UserResult> response) {
                 if (response.body().getResult().equals("1")) {
                     Toast.makeText(RegisterActivity.this, "Đăng ký tài khoản thành công", Toast.LENGTH_LONG).show();
+
+                    MySharedPreference.saveUser(RegisterActivity.this, user.getUserId(), user.getUsername());
+
                     Intent intent = getIntent();
                     intent.putExtra(LoginActivity.USERNAME, user.getUsername());
                     RegisterActivity.this.setResult(RESULT_OK, intent);

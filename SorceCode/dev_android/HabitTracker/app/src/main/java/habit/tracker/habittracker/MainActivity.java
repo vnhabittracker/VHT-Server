@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -45,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
     List<TrackingItem> trackingItemList = new ArrayList<>();
     HabitRecyclerViewAdapter trackingAdapter;
     String currentDate;
+    String firstCurrentDate;
+    int dayStack = 0;
 
     @BindView(R.id.tvDate)
     TextView tvDate;
@@ -55,11 +56,6 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
     @BindView(R.id.report)
     View btnReport;
 
-    public void showEmpty(View v) {
-        Intent intent = new Intent(this, EmptyActivity.class);
-        startActivity(intent);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
         ButterKnife.bind(this);
         Calendar ca = Calendar.getInstance();
         currentDate = ca.get(Calendar.YEAR) + "-" + (ca.get(Calendar.MONTH) + 1) + "-" + ca.get(Calendar.DATE);
+        firstCurrentDate = currentDate;
         initScreen();
     }
 
@@ -76,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
     public void onSetCount(View view, int type, int position, int count) {
         TrackingItem item = trackingItemList.get(position);
         item.setCount(count);
-        trackingAdapter.notifyItemChanged(position);
+//        trackingAdapter.notifyItemChanged(position);
 
         Database db = new Database(MainActivity.this);
         db.open();
@@ -198,9 +195,10 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
         int month = Integer.parseInt(arr[1]);
         int date = Integer.parseInt(arr[2]);
         Schedule schedule = new Schedule(year, month, date);
-        List<HabitEntity> habitEntities = Database.sHabitDaoImpl.fetchTodayHabit(schedule);
+        List<HabitEntity> habitEntities = Database.sHabitDaoImpl.fetchTodayHabit(schedule, currentDate);
         boolean isDataSetChanged = false;
         for (HabitEntity habit : habitEntities) {
+            // get tracking records on current date
             TrackingEntity record = Database.sTrackingImpl.getTracking(habit.getHabitId(), currentDate);
             if (record.getTrackingId() == null) {
                 record = getTrackRecord(habit.getHabitId(), currentDate, 0);
@@ -222,9 +220,11 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
                 isDataSetChanged = true;
             }
         }
-        if (isDataSetChanged) {
-            trackingAdapter.notifyDataSetChanged();
-        }
+
+        trackingAdapter.setEditable(currentDate.compareTo(firstCurrentDate) < 1);
+//        if (isDataSetChanged) {
+        trackingAdapter.notifyDataSetChanged();
+//        }
     }
 
     public TrackingEntity getTrackRecord(String habitId, String currentDate, int defaultVal) {
@@ -246,8 +246,8 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
         Database db = new Database(this);
         db.open();
         if (nextDate != null) {
-//            Toast.makeText(this, nextDate, Toast.LENGTH_SHORT).show();
-            tvDate.setText(Generator.convert(nextDate,"-","/"));
+            dayStack++;
+            updateTitle(nextDate);
             currentDate = nextDate;
             trackingItemList.clear();
             updateData(trackingItemList, trackingAdapter, currentDate);
@@ -261,8 +261,8 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
         Database db = new Database(this);
         db.open();
         if (preDate != null) {
-//            Toast.makeText(this, preDate, Toast.LENGTH_SHORT).show();
-            tvDate.setText(Generator.convert(preDate,"-","/"));
+            dayStack--;
+            updateTitle(preDate);
             currentDate = preDate;
             trackingItemList.clear();
             updateData(trackingItemList, trackingAdapter, currentDate);
@@ -270,9 +270,25 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
         db.close();
     }
 
+    public void backToCurrent(View v) {
+        Database db = new Database(this);
+        db.open();
+        dayStack = 0;
+        updateTitle(firstCurrentDate);
+        currentDate = firstCurrentDate;
+        trackingItemList.clear();
+        updateData(trackingItemList, trackingAdapter, currentDate);
+        db.close();
+    }
+
     @OnClick(R.id.report)
     public void report(View v) {
         Intent intent = new Intent(this, ReportActivity.class);
+        startActivity(intent);
+    }
+
+    public void showEmpty(View v) {
+        Intent intent = new Intent(this, EmptyActivity.class);
         startActivity(intent);
     }
 
@@ -287,5 +303,18 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
                 || toDay == Calendar.FRIDAY && habit.getFri() != null && habit.getFri().equals("1")
                 || toDay == Calendar.SATURDAY && habit.getSat() != null && habit.getSat().equals("1")
                 || toDay == Calendar.SUNDAY && habit.getSun() != null && habit.getSun().equals("1");
+    }
+
+    private void updateTitle(String date) {
+        if (dayStack == 0) {
+            tvDate.setText("Hôm nay");
+        } else if (dayStack == 1) {
+            tvDate.setText("Ngày mai");
+        } else if (dayStack == -1) {
+            tvDate.setText("Hôm qua");
+        }
+        else {
+            tvDate.setText(Generator.convert(date, "-", "/"));
+        }
     }
 }

@@ -465,4 +465,8 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         Intent intent = new Intent(this, EmptyActivity.class);
         startActivity(intent);
     }
+
+    public void finishThis(View view) {
+        finish();
+    }
 }
