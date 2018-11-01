@@ -1,4 +1,4 @@
-package habit.tracker.habittracker.common;
+package habit.tracker.habittracker.common.util;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -69,21 +69,49 @@ public class Generator {
     }
 
     public static String getPreMonth(String currentDate) {
-        String[] strs = currentDate.split("-");
-        int month = Integer.parseInt(strs[1]) - 1;
+        String[] arrDate = currentDate.split("-");
+        int month = Integer.parseInt(arrDate[1]) - 1;
         if (month < 1 || month > 12) {
             return currentDate;
         }
-        return strs[0] + "-" + month + "-" + strs[2];
+        return formatDate(arrDate[0] + "-" + month + "-" + arrDate[2]);
     }
 
     public static String getNextMonth(String currentDate) {
-        String[] strs = currentDate.split("-");
-        int month = Integer.parseInt(strs[1]) + 1;
+        String[] arrDate = currentDate.split("-");
+        int month = Integer.parseInt(arrDate[1]) + 1;
         if (month < 1 || month > 12) {
             return currentDate;
         }
-        return strs[0] + "-" + month + "-" + strs[2];
+        return formatDate(arrDate[0] + "-" + month + "-" + arrDate[2]);
+    }
+
+    public static String getPreYear(String currentDate) {
+        String[] arrDate = currentDate.split("-");
+        int year = Integer.parseInt(arrDate[0]) - 1;
+        if (year < 1970) {
+            return currentDate;
+        }
+        return formatDate(year + "-" + arrDate[1] + "-" + arrDate[2]);
+    }
+
+    public static String getNextYear(String currentDate) {
+        String[] arrDate = currentDate.split("-");
+        int year = Integer.parseInt(arrDate[0]) + 1;
+        if (year > 2020) {
+            return currentDate;
+        }
+        return formatDate(year + "-" + arrDate[1] + "-" + arrDate[2]);
+    }
+
+    private static String formatDate(String currentDate) {
+        try {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            return dateFormat.format(dateFormat.parse(currentDate));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
@@ -95,13 +123,19 @@ public class Generator {
         return ca.getActualMaximum(Calendar.DAY_OF_MONTH);
     }
 
-    public static String[] getDatesInWeek(int year, int month, int date) {
-        String currentDate = year + "-" + month + "-" + date;
-        String[] week = new String[7];
+    public static String[] getDatesInWeek(String currentDate) {
+
+        String[] arrDate = currentDate.split("-");
+        int year = Integer.parseInt(arrDate[0]);
+        int month = Integer.parseInt(arrDate[1]);
+        int date = Integer.parseInt(arrDate[2]);
+
         Calendar ca = Calendar.getInstance();
         ca.set(year, month - 1, date);
         date = ca.get(Calendar.DAY_OF_WEEK);
+
         int index = 0;
+        String[] week = new String[7];
         switch (date) {
             case Calendar.MONDAY:
                 index = 0;

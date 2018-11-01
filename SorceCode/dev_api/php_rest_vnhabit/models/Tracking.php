@@ -78,7 +78,6 @@ include_once '../../models/Model.php';
             }
         }
 
-        // Create User
         public function create() {
             // create query
             $query = 'INSERT INTO ' . $this->table . ' SET ' . $this->get_query_param(NULL);
@@ -94,7 +93,6 @@ include_once '../../models/Model.php';
             return false;
         }
 
-        // Create User
         public function createWithParam($track) {
             // create query
             $query = 'INSERT INTO ' . $this->table . ' SET ' . $this->get_query_param(NULL);
@@ -115,7 +113,6 @@ include_once '../../models/Model.php';
             return false;
         }
 
-        // Update user
         public function update() {
             // create query
             $query = 'UPDATE ' . $this->table . ' t ' . ' SET t.count = :count, t.tracking_description = :tracking_description '
@@ -133,7 +130,6 @@ include_once '../../models/Model.php';
             return false;
         }
 
-        // Update user
         public function updateWithParam($track) {
             $habit_id = $track['habit_id'];
             $count = $track['count'];

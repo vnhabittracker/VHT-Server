@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <ImageView
+        android:id="@+id/imgBell"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="15dp"
+        android:src="@drawable/bell"/>
+
+    <TextView
+        android:id="@+id/tvRemindTime"
+        android:layout_width="0dp"
+        android:layout_weight="9"
+        android:layout_height="match_parent"
+        android:textSize="13sp"
+        android:textColor="#799c4b"
+        android:text="7:00 am: nội dung nhắc nhở 1"/>
+</LinearLayout>

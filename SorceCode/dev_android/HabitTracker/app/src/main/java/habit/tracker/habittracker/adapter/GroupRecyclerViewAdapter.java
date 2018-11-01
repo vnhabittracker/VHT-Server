@@ -1,4 +1,4 @@
-package habit.tracker.habittracker;
+package habit.tracker.habittracker.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -6,10 +6,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
 
+import habit.tracker.habittracker.R;
 import habit.tracker.habittracker.api.model.group.Group;
 
 public class GroupRecyclerViewAdapter extends RecyclerView.Adapter<GroupRecyclerViewAdapter.GroupViewHolder> {
@@ -27,13 +29,18 @@ public class GroupRecyclerViewAdapter extends RecyclerView.Adapter<GroupRecycler
     @NonNull
     @Override
     public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = mInflater.inflate(R.layout.group_item, viewGroup, false);
+        View view = mInflater.inflate(R.layout.item_group, viewGroup, false);
         return new GroupViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull GroupViewHolder holder, int position) {
         holder.tvName.setText(data.get(position).getGroupName());
+        if (data.get(position).isSelected()) {
+            holder.imgSelect.setVisibility(View.VISIBLE);
+        } else {
+            holder.imgSelect.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -43,9 +50,11 @@ public class GroupRecyclerViewAdapter extends RecyclerView.Adapter<GroupRecycler
 
     public class GroupViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView tvName;
+        ImageView imgSelect;
         public GroupViewHolder(@NonNull View itemView) {
             super(itemView);
             tvName = itemView.findViewById(R.id.tv_itemName);
+            imgSelect = itemView.findViewById(R.id.imgSelect);
             itemView.setOnClickListener(this);
         }
 

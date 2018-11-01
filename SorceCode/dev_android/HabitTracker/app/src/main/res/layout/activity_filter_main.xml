@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FilterMainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="25dp"
+            >
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="9"
+                android:layout_height="wrap_content"
+                android:textSize="25sp"
+                android:textColor="#434343"
+                android:text="Lọc thói quen"
+                />
+            <ImageView
+                android:id="@+id/imgCancel"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:src="@drawable/cancel"
+                android:alpha="0.3"
+                />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:textSize="18sp"
+            android:textColor="#c8247aaf"
+            android:text="Loại mục tiêu:"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btn_TypeAll"
+                android:tag="-1"
+                android:layout_width="85dp"
+                android:layout_height="25dp"
+                android:paddingBottom="2dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/button_green"
+                android:textColor="@color/light_brown"
+                android:textSize="11sp"
+                android:text="Tất cả"/>
+
+            <Button
+                android:id="@+id/btn_TypeDaily"
+                android:tag="0"
+                android:layout_width="85dp"
+                android:layout_height="25dp"
+                android:paddingBottom="2dp"
+                android:layout_toEndOf="@+id/btn_TypeAll"
+                android:layout_marginBottom="5dp"
+                android:layout_marginEnd="20dp"
+                android:background="@android:color/transparent"
+                android:textColor="@color/light_brown"
+                android:textSize="11sp"
+                android:text="Hàng ngày"/>
+
+            <Button
+                android:id="@+id/btn_TypeWeekly"
+                android:tag="1"
+                android:layout_width="85dp"
+                android:layout_height="25dp"
+                android:paddingBottom="2dp"
+                android:layout_toEndOf="@+id/btn_TypeDaily"
+                android:background="@android:color/transparent"
+                android:textColor="@color/light_brown"
+                android:textSize="11sp"
+                android:text="Hàng tuần"/>
+
+            <Button
+                android:id="@+id/btn_TypeMonthly"
+                android:tag="2"
+                android:layout_width="85dp"
+                android:layout_height="25dp"
+                android:paddingBottom="2dp"
+                android:layout_below="@+id/btn_TypeDaily"
+                android:layout_alignStart="@+id/btn_TypeDaily"
+                android:layout_marginEnd="20dp"
+                android:background="@android:color/transparent"
+                android:textColor="@color/light_brown"
+                android:textSize="11sp"
+                android:text="Hàng tháng"/>
+
+            <Button
+                android:id="@+id/btn_TypeYearly"
+                android:tag="3"
+                android:layout_width="85dp"
+                android:layout_height="25dp"
+                android:paddingBottom="2dp"
+                android:layout_alignStart="@+id/btn_TypeWeekly"
+                android:layout_alignTop="@+id/btn_TypeMonthly"
+
+                android:layout_marginEnd="20dp"
+                android:background="@android:color/transparent"
+                android:textColor="@color/light_brown"
+                android:textSize="11sp"
+                android:text="Hàng năm"/>
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="18sp"
+            android:textColor="#c8247aaf"
+            android:text="Loại thói quen:"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btn_targetAll"
+                android:tag="-1"
+                android:layout_width="85dp"
+                android:layout_height="25dp"
+                android:paddingBottom="2dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/button_green"
+                android:textColor="@color/light_brown"
+                android:textSize="11sp"
+                android:text="Tất cả"/>
+
+            <Button
+                android:id="@+id/btn_targetBuild"
+                android:tag="0"
+                android:layout_width="85dp"
+                android:layout_height="25dp"
+                android:paddingBottom="2dp"
+                android:layout_toEndOf="@+id/btn_targetAll"
+                android:layout_marginBottom="5dp"
+                android:layout_marginEnd="20dp"
+                android:background="@android:color/transparent"
+                android:textColor="@color/light_brown"
+                android:textSize="11sp"
+                android:text="Xây dựng"/>
+
+            <Button
+                android:id="@+id/btn_targetQuit"
+                android:tag="1"
+                android:layout_width="85dp"
+                android:layout_height="25dp"
+                android:paddingBottom="2dp"
+                android:layout_toEndOf="@+id/btn_targetBuild"
+                android:background="@android:color/transparent"
+                android:textColor="@color/light_brown"
+                android:textSize="11sp"
+                android:text="Từ bỏ"/>
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="18sp"
+            android:textColor="#c8247aaf"
+            android:text="Nhóm:"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            />
+
+        <Button
+            android:id="@+id/btnApply"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:paddingBottom="2dp"
+            android:layout_marginStart="35dp"
+            android:layout_marginEnd="35dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/button_green2"
+            android:textSize="16sp"
+            android:text="Áp dụng"/>
+
+    </LinearLayout>
+</ScrollView>

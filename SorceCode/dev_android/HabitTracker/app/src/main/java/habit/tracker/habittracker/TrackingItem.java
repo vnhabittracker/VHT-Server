@@ -5,8 +5,11 @@ public class TrackingItem {
     private String habitId;
     private String name;
     private String description;
-    private String habitType;
-    private int type;
+    private String target;
+    private int habitType;
+    private String habitTypeName;
+    private int monitorType;
+    private String group;
     private String number;
     private int count;
     private String unit;
@@ -15,26 +18,27 @@ public class TrackingItem {
 
     public TrackingItem() {}
 
-    public TrackingItem(String trackId, String habitId, String name, String description, String habitType, int type, String number, int count, String unit, String color) {
+    public TrackingItem(String trackId, String habitId, String name, String description, String habitType, int monitorType, String number, int count, String unit, String color) {
         this.trackId = trackId;
         this.habitId = habitId;
         this.name = name;
         this.description = description;
-        switch (Integer.parseInt(habitType)) {
+        this.habitType = Integer.parseInt(habitType);
+        switch (this.habitType) {
             case 0:
-                this.habitType = "hôm nay";
+                this.habitTypeName = "hôm nay";
                 break;
             case 1:
-                this.habitType = "tuần này";
+                this.habitTypeName = "tuần này";
                 break;
             case 2:
-                this.habitType = "tháng này";
+                this.habitTypeName = "tháng này";
                 break;
             case 3:
-                this.habitType = "năm nay";
+                this.habitTypeName = "năm nay";
                 break;
         }
-        this.type = type;
+        this.monitorType = monitorType;
         this.number = number;
         this.count = count;
         this.unit = unit;
@@ -57,12 +61,12 @@ public class TrackingItem {
         return description;
     }
 
-    public String getHabitType() {
-        return habitType;
+    public String getHabitTypeName() {
+        return habitTypeName;
     }
 
-    public int getType() {
-        return type;
+    public int getMonitorType() {
+        return monitorType;
     }
 
     public String getNumber() {
@@ -85,6 +89,18 @@ public class TrackingItem {
         return comp;
     }
 
+    public String getTarget() {
+        return target;
+    }
+
+    public int getHabitType() {
+        return habitType;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
     public void setTrackId(String trackId) {
         this.trackId = trackId;
     }
@@ -101,12 +117,12 @@ public class TrackingItem {
         this.description = description;
     }
 
-    public void setHabitType(String habitType) {
-        this.habitType = habitType;
+    public void setHabitTypeName(String habitTypeName) {
+        this.habitTypeName = habitTypeName;
     }
 
-    public void setType(int type) {
-        this.type = type;
+    public void setMonitorType(int monitorType) {
+        this.monitorType = monitorType;
     }
 
     public void setNumber(String number) {
@@ -127,5 +143,17 @@ public class TrackingItem {
 
     public void setRatio(float comp) {
         this.comp = comp;
+    }
+
+    public void setTarget(String target) {
+        this.target = target;
+    }
+
+    public void setHabitType(int habitType) {
+        this.habitType = habitType;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
     }
 }

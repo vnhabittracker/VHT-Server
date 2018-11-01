@@ -85,11 +85,11 @@ include_once '../../models/Model.php';
         // Create User
         public function create() {
             // create query
-            $query = 'INSERT INTO ' . $this->table . ' SET ' . $this->get_query_param(array('user_id'));
+            $query = 'INSERT INTO ' . $this->table . ' SET ' . $this->get_query_param(NULL);
             // Prepare statement
             $stmt = $this->conn->prepare($query);
             // Bind data
-            $stmt = $this->bind_param_exc($stmt, array('user_id'));
+            $stmt = $this->bind_param_exc($stmt, NULL);
             // Execute query
             if ($stmt->execute()) {
                 return true;

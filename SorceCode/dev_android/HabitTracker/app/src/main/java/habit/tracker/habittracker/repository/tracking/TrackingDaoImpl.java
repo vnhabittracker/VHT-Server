@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import habit.tracker.habittracker.api.model.tracking.Tracking;
-import habit.tracker.habittracker.common.Generator;
 import habit.tracker.habittracker.repository.MyDatabaseHelper;
 
 public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, TrackingSchema {

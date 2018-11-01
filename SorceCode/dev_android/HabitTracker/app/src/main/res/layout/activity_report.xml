@@ -7,27 +7,27 @@
     android:orientation="vertical"
     tools:context=".ReportActivity">
 
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:textColor="#2837ba"
+        android:background="@drawable/border_bottom"
+        android:text="Thống kê"/>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="11"
+        android:layout_weight="10"
         android:padding="10dp">
-
-        <TextView
-            android:id="@+id/header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:textSize="18sp"
-            android:gravity="center"
-            android:textColor="#2837ba"
-            android:text="Theo dõi thói quen"/>
 
         <LinearLayout
             android:id="@+id/tab"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/header"
             android:orientation="horizontal">
             <TextView
                 android:id="@+id/tabWeek"
@@ -141,7 +141,7 @@
             android:gravity="center_vertical"
             android:textSize="14sp"
             android:textColor="#2d2d2d"
-            android:text="Tổng số thói quen hoàn thành"/>
+            android:text="Số lượt hoàn thành"/>
 
     </RelativeLayout>
 
@@ -155,7 +155,7 @@
         <ImageView
             android:id="@+id/report"
             android:padding="10dp"
-            app:srcCompat="@drawable/chart"
+            app:srcCompat="@drawable/chart_active"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
@@ -169,7 +169,7 @@
         <ImageView
             android:onClick="finishThis"
             android:padding="10dp"
-            app:srcCompat="@drawable/check"
+            app:srcCompat="@drawable/check_fade"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />

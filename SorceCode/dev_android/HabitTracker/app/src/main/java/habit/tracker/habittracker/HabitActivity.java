@@ -28,13 +28,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import habit.tracker.habittracker.api.VnHabitApiUtils;
 import habit.tracker.habittracker.api.model.habit.Habit;
-import habit.tracker.habittracker.api.model.habit.HabitResult;
 import habit.tracker.habittracker.api.model.reminder.Reminder;
 import habit.tracker.habittracker.api.service.VnHabitApiService;
-import habit.tracker.habittracker.common.Generator;
-import habit.tracker.habittracker.common.ReminderService;
+import habit.tracker.habittracker.common.util.Generator;
 import habit.tracker.habittracker.common.Validator;
 import habit.tracker.habittracker.common.ValidatorType;
+import habit.tracker.habittracker.common.util.MySharedPreference;
 import habit.tracker.habittracker.repository.Database;
 import habit.tracker.habittracker.repository.group.GroupEntity;
 import habit.tracker.habittracker.repository.habit.HabitEntity;
@@ -47,7 +46,7 @@ import retrofit2.Response;
 public class HabitActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     public static final int SELECT_GROUP = 1;
     public static final int ADD_REMINDER = 2;
-//    public static final int
+
     public static final String TYPE_0 = "0";
     public static final String TYPE_1 = "1";
     public static final String TYPE_2 = "2";
@@ -203,13 +202,12 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                 }
             } else if (requestCode == ADD_REMINDER) {
                 if (data != null && data.getExtras() != null) {
-                    String hour = data.getStringExtra(ReminderActivity.TIME_HOUR);
-                    String minute = data.getStringExtra(ReminderActivity.TIME_MINUTE);
-                    int repeat = data.getIntExtra(ReminderActivity.REPEAT_TIME, 0);
+
+                    // TODO: save and display added reminder
                     Reminder reminder = new Reminder();
                     reminder.setReminderId(Generator.getNewId());
-                    reminder.setReminderTime(hour + "-" + minute);
-                    reminder.setRepeatTime(String.valueOf(repeat));
+                    reminder.setReminderTime("");
+                    reminder.setRepeatTime("");
                     reminderList.add(reminder);
                 }
             }
@@ -685,18 +683,27 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
     @OnClick({R.id.edit_startDate, R.id.edit_endDate})
     public void setPlanDate(View v) {
         Calendar calendar = Calendar.getInstance();
+        DatePickerDialog dialog;
         if (v.getId() == R.id.edit_startDate) {
-            DatePickerDialog dialog = new DatePickerDialog(this, this, startYear, startMonth, startDay);
+            dialog = new DatePickerDialog(this, this, startYear, startMonth, startDay);
             isSetStartDate = true;
             dialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
             dialog.show();
         } else {
-            DatePickerDialog dialog = new DatePickerDialog(this, this, endYear, endMonth, endDay);
+            dialog = new DatePickerDialog(this, this, endYear, endMonth, endDay);
             isSetStartDate = false;
             calendar.set(startYear, startMonth, startDay);
             dialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
             dialog.show();
         }
+        Button pos = dialog.getButton(DatePickerDialog.BUTTON_POSITIVE);
+        pos.setAllCaps(false);
+        pos.setText("Chọn");
+        pos.setTextColor(getResources().getColor(R.color.colorAccent));
+        Button nav = dialog.getButton(DatePickerDialog.BUTTON_NEGATIVE);
+        nav.setAllCaps(false);
+        nav.setText("Hủy");
+        nav.setTextColor(getResources().getColor(R.color.colorAccent));
     }
 
     @Override

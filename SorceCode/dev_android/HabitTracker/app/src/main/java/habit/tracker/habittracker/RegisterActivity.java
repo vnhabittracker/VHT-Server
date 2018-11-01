@@ -5,51 +5,55 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import habit.tracker.habittracker.api.VnHabitApiUtils;
 import habit.tracker.habittracker.api.model.user.User;
 import habit.tracker.habittracker.api.model.user.UserResult;
 import habit.tracker.habittracker.api.service.VnHabitApiService;
-import habit.tracker.habittracker.common.Generator;
+import habit.tracker.habittracker.common.util.Generator;
 import habit.tracker.habittracker.common.Validator;
 import habit.tracker.habittracker.common.ValidatorType;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RegisterActivity extends BaseActivity implements View.OnClickListener {
+public class RegisterActivity extends BaseActivity {
+    @BindView(R.id.btn_register)
     Button btnRegister;
+    @BindView(R.id.link_login)
     TextView linkLogin;
+    @BindView(R.id.edit_username)
     EditText edUsername;
+    @BindView(R.id.edit_email)
     EditText edEmail;
+    @BindView(R.id.edit_password)
     EditText edPassword;
+    @BindView(R.id.edit_conf_password)
     EditText edPasswordConfirm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_register);
+        ButterKnife.bind(this);
 
-        btnRegister = findViewById(R.id.btn_register);
-        btnRegister.setOnClickListener(this);
-        linkLogin = findViewById(R.id.link_login);
-        linkLogin.setOnClickListener(this);
         String registerText = getResources().getString(R.string.remind_login);
         SpannableString content = new SpannableString(registerText);
         content.setSpan(new UnderlineSpan(), 0, registerText.length(), 0);
         linkLogin.setText(content);
-
-        edUsername = findViewById(R.id.edit_username);
-        edEmail = findViewById(R.id.edit_email);
-        edPassword = findViewById(R.id.edit_password);
-        edPasswordConfirm = findViewById(R.id.edit_conf_password);
     }
 
-    @Override
+    @OnClick({R.id.btn_register, R.id.link_login})
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_register:
@@ -70,7 +74,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
                                 Toast.makeText(RegisterActivity.this, key + " không đúng", Toast.LENGTH_SHORT).show();
                                 break;
                             case EMAIL:
-                                Toast.makeText(RegisterActivity.this, key + " không đúng", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(RegisterActivity.this, key + " không hợp lệ", Toast.LENGTH_SHORT).show();
                                 break;
                             case EQUAL:
                                 Toast.makeText(RegisterActivity.this, key + " không trùng khớp", Toast.LENGTH_SHORT).show();
@@ -115,14 +119,13 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
             @Override
             public void onResponse(Call<UserResult> call, Response<UserResult> response) {
                 if (response.body().getResult().equals("1")) {
-                    Toast.makeText(RegisterActivity.this, "Đăng ký tài khoản thành công", Toast.LENGTH_LONG).show();
-
-                    MySharedPreference.saveUser(RegisterActivity.this, user.getUserId(), user.getUsername());
+                    Toast.makeText(RegisterActivity.this, "Đăng ký tài khoản thành công", Toast.LENGTH_SHORT).show();
 
                     Intent intent = getIntent();
                     intent.putExtra(LoginActivity.USERNAME, user.getUsername());
                     RegisterActivity.this.setResult(RESULT_OK, intent);
                     finish();
+
                 } else {
                     Toast.makeText(RegisterActivity.this, "Đăng ký không thành công", Toast.LENGTH_SHORT).show();
                 }

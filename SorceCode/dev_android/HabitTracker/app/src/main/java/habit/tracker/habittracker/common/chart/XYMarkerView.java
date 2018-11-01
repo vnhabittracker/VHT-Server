@@ -1,4 +1,4 @@
-package habit.tracker.habittracker;
+package habit.tracker.habittracker.common.chart;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -11,6 +11,8 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.utils.MPPointF;
 
 import java.text.DecimalFormat;
+
+import habit.tracker.habittracker.R;
 
 /**
  * Custom implementation of the MarkerView.

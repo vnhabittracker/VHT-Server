@@ -2,6 +2,7 @@ package habit.tracker.habittracker.api.service;
 
 import java.util.List;
 
+import habit.tracker.habittracker.api.model.group.Group;
 import habit.tracker.habittracker.api.model.group.GroupResponse;
 import habit.tracker.habittracker.api.model.habit.Habit;
 import habit.tracker.habittracker.api.model.habit.HabitResponse;
@@ -12,6 +13,7 @@ import habit.tracker.habittracker.api.model.tracking.TrackingResult;
 import habit.tracker.habittracker.api.model.user.User;
 import habit.tracker.habittracker.api.model.user.UserResponse;
 import habit.tracker.habittracker.api.model.user.UserResult;
+import habit.tracker.habittracker.repository.group.GroupEntity;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -42,6 +44,9 @@ public interface VnHabitApiService {
 
     @GET("group/read.php")
     Call<GroupResponse> getGroupItems();
+
+    @POST("group/create.php")
+    Call<GroupResponse> addNewGroup(@Body Group group);
 
     @POST("tracking/create_update.php")
     Call<ResponseBody> replace(@Body TrackingList trackingList);

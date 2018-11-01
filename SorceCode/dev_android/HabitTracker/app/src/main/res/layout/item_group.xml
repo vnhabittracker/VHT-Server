@@ -1,21 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
-    android:orientation="vertical">
+    android:layout_marginBottom="10dp">
 
     <TextView
         android:id="@+id/tv_itemName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="item"
+        android:text="Item"
         android:textColor="#767575"
         android:padding="7dp"
         android:textSize="16sp" />
+
+    <ImageView
+        android:id="@+id/imgSelect"
+        android:layout_width="20dp"
+        android:layout_height="0dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/tv_itemName"
+        android:layout_alignBottom="@+id/tv_itemName"
+        android:padding="5dp"
+        android:visibility="invisible"
+        android:src="@drawable/check_black"/>
+
     <View
+        android:layout_below="@+id/tv_itemName"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/gray" />
-</LinearLayout>
+</RelativeLayout>

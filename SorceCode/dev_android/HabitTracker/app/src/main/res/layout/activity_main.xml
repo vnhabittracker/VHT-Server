@@ -67,7 +67,7 @@
             android:layout_height="match_parent"/>
 
         <ImageView
-            android:onClick="showEmpty"
+            android:id="@+id/imgFilter"
             app:srcCompat="@drawable/ic_fillter"
             android:layout_weight="1"
             android:layout_width="0dp"

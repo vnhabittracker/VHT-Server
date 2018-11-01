@@ -1,83 +1,180 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
+    android:padding="15dp"
     android:background="#fcfcfc"
+    android:orientation="vertical"
     tools:context=".ReminderActivity">
 
-    <TimePicker
-        android:id="@+id/reminderTime_picker"
-        android:layout_width="wrap_content"
-        android:layout_height="150dp"
-        android:layout_centerHorizontal="true"
-        android:descendantFocusability="blocksDescendants"
-        android:timePickerMode="spinner"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:textSize="18sp"
+        android:textColor="#2f6aea"
+        android:gravity="center"
+        android:text="Nội dung nhắc nhỏ"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:textSize="13sp"
+        android:paddingStart="10dp"
+        android:background="@drawable/bg_input"
+        android:hint="nhắc nhở..."/>
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:gravity="center_vertical"
-        android:layout_toStartOf="@+id/spinner_repeat"
-        android:layout_alignTop="@+id/spinner_repeat"
-        android:layout_alignBottom="@+id/spinner_repeat"
-        android:layout_marginEnd="5dp"
-        android:textSize="15sp"
-        android:textColor="@android:color/background_dark"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="20dp"
+        android:textSize="18sp"
+        android:textColor="#2f6aea"
+        android:gravity="center"
+        android:text="Chọn ngày và giờ"/>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp">
+
+        <NumberPicker
+            android:id="@+id/picker_hour"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:descendantFocusability="blocksDescendants"
+            />
+
+        <NumberPicker
+            android:id="@+id/picker_minute"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:descendantFocusability="blocksDescendants"
+            />
+
+        <NumberPicker
+            android:id="@+id/picker_date"
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:descendantFocusability="blocksDescendants"
+            />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="15dp"
+        android:textSize="18sp"
+        android:textColor="#2f6aea"
+        android:gravity="center"
         android:text="Lặp lại"/>
 
-    <NumberPicker
-        android:id="@+id/spinner_repeat"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="35dp"
-        android:layout_below="@+id/reminderTime_picker"
-        android:layout_centerHorizontal="true"
-        android:descendantFocusability="blocksDescendants"
-        android:layout_marginEnd="5dp"
-        android:textSize="15sp"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        >
 
-    <TextView
-        android:id="@+id/time"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:gravity="center_vertical"
-        android:layout_below="@+id/reminderTime_picker"
-        android:layout_alignTop="@+id/spinner_repeat"
-        android:layout_alignBottom="@+id/spinner_repeat"
-        android:layout_toEndOf="@+id/spinner_repeat"
-        android:layout_marginEnd="5dp"
-        android:textSize="15sp"
-        android:textColor="@android:color/background_dark"
-        android:text="lần"/>
+        <Button
+            android:id="@+id/btn_TypeAll"
+            android:tag="-1"
+            android:layout_width="85dp"
+            android:layout_height="25dp"
+            android:paddingBottom="2dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/button_green"
+            android:textColor="@color/light_brown"
+            android:textSize="13sp"
+            android:text="Tất cả"/>
+
+        <Button
+            android:id="@+id/btn_TypeDaily"
+            android:tag="0"
+            android:layout_width="85dp"
+            android:layout_height="25dp"
+            android:paddingBottom="2dp"
+            android:layout_toEndOf="@+id/btn_TypeAll"
+            android:layout_marginBottom="5dp"
+            android:layout_marginEnd="20dp"
+            android:background="@android:color/transparent"
+            android:textColor="@color/light_brown"
+            android:textSize="13sp"
+            android:text="Hàng ngày"/>
+
+        <Button
+            android:id="@+id/btn_TypeWeekly"
+            android:tag="1"
+            android:layout_width="85dp"
+            android:layout_height="25dp"
+            android:paddingBottom="2dp"
+            android:layout_toEndOf="@+id/btn_TypeDaily"
+            android:background="@android:color/transparent"
+            android:textColor="@color/light_brown"
+            android:textSize="13sp"
+            android:text="Hàng tuần"/>
+
+        <Button
+            android:id="@+id/btn_TypeMonthly"
+            android:tag="2"
+            android:layout_width="85dp"
+            android:layout_height="25dp"
+            android:paddingBottom="2dp"
+            android:layout_below="@+id/btn_TypeDaily"
+            android:layout_alignStart="@+id/btn_TypeDaily"
+            android:layout_marginEnd="20dp"
+            android:background="@android:color/transparent"
+            android:textColor="@color/light_brown"
+            android:textSize="13sp"
+            android:text="Hàng tháng"/>
+
+        <Button
+            android:id="@+id/btn_TypeYearly"
+            android:tag="3"
+            android:layout_width="85dp"
+            android:layout_height="25dp"
+            android:paddingBottom="2dp"
+            android:layout_alignStart="@+id/btn_TypeWeekly"
+            android:layout_alignTop="@+id/btn_TypeMonthly"
+            android:layout_marginEnd="20dp"
+            android:background="@android:color/transparent"
+            android:textColor="@color/light_brown"
+            android:textSize="13sp"
+            android:text="Hàng năm"/>
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
         android:gravity="center_horizontal"
-        android:layout_below="@+id/spinner_repeat"
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btnCancel"
+            android:id="@+id/btn_cancel"
             android:layout_width="100dp"
             android:layout_height="25dp"
-            android:textSize="12sp"
-            android:layout_alignParentBottom="true"
+            android:paddingBottom="2dp"
+            android:textSize="13sp"
             android:background="@drawable/bg_button_white"
             android:textColor="#363636"
             android:text="Hủy bỏ"/>
         <Button
-            android:id="@+id/btnOk"
+            android:id="@+id/btn_save"
             android:layout_width="100dp"
             android:layout_height="25dp"
+            android:paddingBottom="2dp"
             android:layout_marginStart="20dp"
-            android:textSize="12sp"
-            android:layout_alignParentBottom="true"
+            android:textSize="13sp"
             android:background="@drawable/button_green2"
-            android:text="Thêm"/>
+            android:text="Lưu lại"/>
     </LinearLayout>
-</RelativeLayout>
+</LinearLayout>

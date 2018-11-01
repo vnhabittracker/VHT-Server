@@ -14,7 +14,6 @@
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
         android:background="@drawable/border_bottom">
-
         <ImageView
             android:id="@+id/btn_back"
             app:srcCompat="@drawable/arrow_back"
@@ -25,15 +24,15 @@
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
             android:layout_height="match_parent" />
-
         <TextView
             android:layout_width="0dp"
             android:layout_weight="8"
             android:layout_height="match_parent"
-            android:text="Tạo thói quen"
             android:gravity="center"
             android:textColor="#333"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:text="Tạo thói quen"
+            />
         <View
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -632,70 +631,14 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="70dp">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="10dp"
-                        android:layout_marginBottom="3dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-                        <ImageView
-                            android:layout_width="13dp"
-                            android:layout_height="13dp"
-                            android:src="@drawable/bell"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="13sp"
-                            android:textColor="#799c4b"
-                            android:paddingStart="5dp"
-                            android:text="7:00 am: nội dung nhắc nhở 1"/>
-                    </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="10dp"
-                        android:layout_marginBottom="3dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-                        <ImageView
-                            android:layout_width="13dp"
-                            android:layout_height="13dp"
-                            android:src="@drawable/bell"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="13sp"
-                            android:paddingStart="5dp"
-                            android:textColor="#799c4b"
-                            android:text="7:00 am: nội dung nhắc nhở 2"/>
-                    </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="10dp"
-                        android:layout_marginBottom="3dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-                        <ImageView
-                            android:layout_width="13dp"
-                            android:layout_height="13dp"
-                            android:src="@drawable/bell"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="13sp"
-                            android:textColor="#799c4b"
-                            android:paddingStart="5dp"
-                            android:text="7:00 am: nội dung nhắc nhở 3"/>
-                    </LinearLayout>
-                </LinearLayout>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rvRemind"
+                    android:layout_width="0dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_toStartOf="@+id/btn_addReminder"
+                    android:layout_height="match_parent" />
 
                 <TextView
                     android:id="@+id/btn_addReminder"
@@ -746,7 +689,6 @@
                     android:layout_width="100dp"
                     android:layout_height="25dp"
                     android:textSize="12sp"
-                    android:layout_alignParentBottom="true"
                     android:background="@drawable/bg_button_white"
                     android:textColor="#363636"
                     android:text="Hủy bỏ"/>
@@ -756,7 +698,6 @@
                     android:layout_height="25dp"
                     android:layout_marginStart="20dp"
                     android:textSize="12sp"
-                    android:layout_alignParentBottom="true"
                     android:background="@drawable/button_green2"
                     android:text="Lưu lại"/>
             </LinearLayout>

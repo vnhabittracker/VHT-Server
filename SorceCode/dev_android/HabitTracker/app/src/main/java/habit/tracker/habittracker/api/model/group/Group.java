@@ -10,7 +10,7 @@ public class Group {
     @SerializedName("group_name")
     @Expose
     private String groupName;
-    @SerializedName("parrent_id")
+    @SerializedName("parent_id")
     @Expose
     private String parentId;
     @SerializedName("group_icon")
@@ -19,6 +19,8 @@ public class Group {
     @SerializedName("group_description")
     @Expose
     private String groupDescription;
+
+    boolean isSelected = false;
 
     public String getGroupId() {
         return groupId;
@@ -40,6 +42,10 @@ public class Group {
         return groupDescription;
     }
 
+    public boolean isSelected() {
+        return isSelected;
+    }
+
     public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
@@ -58,5 +64,9 @@ public class Group {
 
     public void setGroupDescription(String groupDescription) {
         this.groupDescription = groupDescription;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 }

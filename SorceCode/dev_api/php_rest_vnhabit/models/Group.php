@@ -20,7 +20,6 @@ include_once '../../models/Model.php';
             $this->params = $this->get_query_param(array('habit_id'));
         }
 
-        // Get all User
         public function read() {
             $query = 'SELECT ' . $this->cols . ' FROM `' . $this->table . '` ORDER BY group_id ASC';
             // Prepare statement
@@ -28,6 +27,19 @@ include_once '../../models/Model.php';
             // Execute query
             $stmt->execute();
             return $stmt;
+        }
+
+        public function create() {
+            // create query
+            $query = 'INSERT INTO `group` SET ' . $this->get_query_param(NULL);
+            // Prepare statement
+            $stmt = $this->conn->prepare($query);
+            $stmt = $this->bind_param_exc($stmt, NULL);
+            // Execute query
+            if ($stmt->execute()) {
+                return true;
+            }
+            return false;
         }
 
         // Get Single category by category_id

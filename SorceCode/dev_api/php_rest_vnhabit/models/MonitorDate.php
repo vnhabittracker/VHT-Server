@@ -35,7 +35,6 @@ class MonitorDate extends Model {
         return $stmt;
     }
 
-    // Create User
     public function create() {
         // create query
         $query = 'INSERT INTO monitor_date SET ' . $this->get_query_param(NULL);

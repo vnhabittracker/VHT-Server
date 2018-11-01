@@ -1,4 +1,4 @@
-package habit.tracker.habittracker;
+package habit.tracker.habittracker.common.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
