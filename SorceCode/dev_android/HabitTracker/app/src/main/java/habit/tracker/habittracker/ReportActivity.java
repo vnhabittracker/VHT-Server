@@ -35,7 +35,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import habit.tracker.habittracker.common.util.Generator;
+import habit.tracker.habittracker.common.util.DateGenerator;
 import habit.tracker.habittracker.common.chart.DayAxisValueFormatter;
 import habit.tracker.habittracker.common.chart.MyAxisValueFormatter;
 import habit.tracker.habittracker.common.chart.XYMarkerView;
@@ -119,13 +119,13 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
     public void pre(View v) {
         switch (mode) {
             case MODE_WEEK:
-                currentDate = Generator.getDayPreWeek(currentDate);
+                currentDate = DateGenerator.getDayPreWeek(currentDate);
                 break;
             case MODE_MONTH:
-                currentDate = Generator.getPreMonth(currentDate);
+                currentDate = DateGenerator.getPreMonth(currentDate);
                 break;
             case MODE_YEAR:
-                currentDate = Generator.getPreYear(currentDate);
+                currentDate = DateGenerator.getPreYear(currentDate);
                 break;
         }
         ArrayList<BarEntry> values = loadData(currentDate);
@@ -137,13 +137,13 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
     public void next(View v) {
         switch (mode) {
             case MODE_WEEK:
-                currentDate = Generator.getDayNextWeek(currentDate);
+                currentDate = DateGenerator.getDayNextWeek(currentDate);
                 break;
             case MODE_MONTH:
-                currentDate = Generator.getNextMonth(currentDate);
+                currentDate = DateGenerator.getNextMonth(currentDate);
                 break;
             case MODE_YEAR:
-                currentDate = Generator.getNextYear(currentDate);
+                currentDate = DateGenerator.getNextYear(currentDate);
                 break;
         }
         if (currentDate != null && currentDate.compareTo(firstCurrentDate) < 1) {
@@ -299,9 +299,9 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
 
     private ArrayList<BarEntry> loadWeekData(String currentDate) {
         ArrayList<BarEntry> values = new ArrayList<>();
-        String[] daysInWeek = Generator.getDatesInWeek(currentDate);
-        String startDate = Generator.convert(daysInWeek[0], "-", "/");
-        String endDate = Generator.convert(daysInWeek[6], "-", "/");
+        String[] daysInWeek = DateGenerator.getDatesInWeek(currentDate);
+        String startDate = DateGenerator.convertFormat(daysInWeek[0], DateGenerator.formatYMD, DateGenerator.formatDMY2);
+        String endDate = DateGenerator.convertFormat(daysInWeek[6], DateGenerator.formatYMD, DateGenerator.formatDMY2);
         time.setText(startDate + " - " + endDate);
 
         Database db = new Database(this);
@@ -365,10 +365,10 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         int year = Integer.parseInt(strs[0]);
         int month = Integer.parseInt(strs[1]);
         int date = Integer.parseInt(strs[2]);
-        String[] daysInMonth = Generator.getDatesInMonth(year, month, date);
+        String[] daysInMonth = DateGenerator.getDatesInMonth(year, month, date, false);
 
-        String startDate = Generator.convert(daysInMonth[0], "-", "/");
-        String endDate = Generator.convert(daysInMonth[daysInMonth.length - 1], "-", "/");
+        String startDate = DateGenerator.convertFormat(daysInMonth[0], DateGenerator.formatYMD, DateGenerator.formatDMY2);
+        String endDate = DateGenerator.convertFormat(daysInMonth[daysInMonth.length - 1], DateGenerator.formatYMD, DateGenerator.formatDMY2);
         time.setText(startDate + " - " + endDate);
 
         Database db = new Database(this);
@@ -442,7 +442,7 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
 
         for (int m = 0; m < 12; m++) {
             monthData = Database.sHabitDaoImpl.getHabitsBetween(
-                    year + "-" + (m + 1) + "-" + 1, year + "-" + (m + 1) + "-" + Generator.getMaxDayInMonth(year, m));
+                    year + "-" + (m + 1) + "-" + 1, year + "-" + (m + 1) + "-" + DateGenerator.getMaxDayInMonth(year, m));
             yearData.add(monthData);
 
             for (DateTracking item : monthData) {

@@ -10,6 +10,8 @@ import java.util.List;
 
 import habit.tracker.habittracker.api.model.tracking.Tracking;
 import habit.tracker.habittracker.repository.MyDatabaseHelper;
+import habit.tracker.habittracker.repository.habit.HabitDaoImpl;
+import habit.tracker.habittracker.repository.habit.HabitSchema;
 
 public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, TrackingSchema {
     private Cursor cursor;
@@ -50,6 +52,37 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
             }
         }
         return entity;
+    }
+
+    public HabitTracking getHabitTrackingBetween(String habitId, String startDate, String endDate) {
+        HabitTracking res = new HabitTracking();
+        try {
+            Cursor cursor = super.rawQuery(
+                    "SELECT * FROM " + HabitSchema.HABIT_TABLE + " INNER JOIN " + TRACKING_TABLE
+                            + " ON "
+                            + HabitSchema.HABIT_TABLE + "." + HabitSchema.HABIT_ID + " = " + HabitSchema.HABIT_TABLE + "." + TrackingSchema.HABIT_ID
+                            + " WHERE "
+                            + TrackingSchema.TRACKING_TABLE + "." + TrackingSchema.CURRENT_DATE
+                            + " BETWEEN "
+                            + "'" + startDate + "' AND '" + endDate + "'"
+                            + " AND "
+                            + HabitSchema.HABIT_TABLE + "." + HabitSchema.HABIT_ID + " = '" + habitId + "'"
+                    , null);
+
+            if (cursor != null) {
+                cursor.moveToFirst();
+                HabitDaoImpl habitDao = new HabitDaoImpl(null);
+                res.setHabitEntity(habitDao.cursorToEntity(cursor));
+                while (!cursor.isAfterLast()) {
+                    res.getTrackingEntityList().add(cursorToEntity(cursor));
+                    cursor.moveToNext();
+                }
+                cursor.close();
+                return res;
+            }
+        } catch (SQLiteConstraintException ex) {
+        }
+        return null;
     }
 
     @Override

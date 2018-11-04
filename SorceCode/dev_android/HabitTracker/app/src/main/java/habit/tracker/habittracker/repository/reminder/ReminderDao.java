@@ -3,6 +3,9 @@ package habit.tracker.habittracker.repository.reminder;
 import java.util.List;
 
 public interface ReminderDao {
-    boolean addReminder(ReminderEntity entity);
+    int addReminder(ReminderEntity entity);
+
+    ReminderEntity getRemindersById(String id);
+
     List<ReminderEntity> getRemindersByHabit(String habitId);
 }

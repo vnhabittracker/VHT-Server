@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ReportDetailsActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:layout_marginBottom="20dp"
+        >
+        <TextView
+            android:id="@+id/tvHabitName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="15dp"
+            android:textSize="25sp"
+            android:text="Chạy bộ"/>
+
+        <TextView
+            android:id="@+id/tvTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvHabitName"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="15dp"
+            android:textSize="18sp"
+            android:text="Hôm nay"/>
+
+        <ImageView
+            android:id="@+id/pre"
+            android:layout_width="20dp"
+            android:layout_height="0dp"
+            android:layout_toStartOf="@+id/tvTime"
+            android:layout_alignTop="@+id/tvTime"
+            android:layout_alignBottom="@+id/tvTime"
+            android:src="@drawable/arrow_left"/>
+
+        <ImageView
+            android:id="@+id/next"
+            android:layout_width="20dp"
+            android:layout_height="0dp"
+            android:layout_toEndOf="@+id/tvTime"
+            android:layout_alignTop="@+id/tvTime"
+            android:layout_alignBottom="@+id/tvTime"
+            android:src="@drawable/arrow_right"/>
+        <TextView
+            android:id="@+id/tvCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/tvTime"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:textSize="30sp"
+            android:text="04"/>
+        <ImageView
+            android:id="@+id/minus"
+            android:layout_width="25dp"
+            android:layout_height="0dp"
+            android:layout_toStartOf="@+id/tvCount"
+            android:layout_alignTop="@+id/tvCount"
+            android:layout_alignBottom="@+id/tvCount"
+            android:src="@drawable/minus_purple"/>
+
+        <ImageView
+            android:id="@+id/add"
+            android:layout_width="25dp"
+            android:layout_height="0dp"
+            android:layout_toEndOf="@+id/tvCount"
+            android:layout_alignTop="@+id/tvCount"
+            android:layout_alignBottom="@+id/tvCount"
+            android:src="@drawable/plus_purple"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:paddingStart="20dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tvGoal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:text="18 Km"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tvGoal"
+                android:textSize="15sp"
+                android:text="Mục tiêu đề ra"/>
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:paddingStart="20dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tvResult"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:text="10 Km"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tvResult"
+                android:textSize="15sp"
+                android:text="Đã hoàn thành"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="7"
+        android:padding="10dp">
+
+        <LinearLayout
+            android:id="@+id/tabTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/tabWeek"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:textSize="18sp"
+                android:gravity="center"
+                android:background="@drawable/bg_tab_red"
+                android:text="Tuần"/>
+            <TextView
+                android:id="@+id/tabMonth"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:textSize="18sp"
+                android:gravity="center"
+                android:text="Tháng"/>
+            <TextView
+                android:id="@+id/tabYear"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:textSize="18sp"
+                android:gravity="center"
+                android:text="Năm"/>
+        </LinearLayout>
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/chart"
+            android:layout_below="@id/tabTime"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="30dp"
+            android:layout_above="@+id/description"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="30dp"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:text="Tuần này, 29.10.2018 - 04.11.2018"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/tabs"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:padding="5dp"
+        android:layout_weight="1">
+
+        <ImageView
+            android:id="@+id/report"
+            android:padding="10dp"
+            app:srcCompat="@drawable/tab_edit"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+        <ImageView
+            android:padding="10dp"
+            app:srcCompat="@drawable/tab_description"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+        <ImageView
+            android:padding="10dp"
+            app:srcCompat="@drawable/tab_chart"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+        <ImageView
+            android:padding="10dp"
+            app:srcCompat="@drawable/tab_calendar"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+</LinearLayout>

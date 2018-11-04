@@ -11,7 +11,7 @@ public interface HabitDao {
     List<DateTracking> getHabitsBetween(String startDate, String endDate);
     List<HabitEntity> fetchHabit();
     HabitEntity getHabit(String habitId);
-    boolean saveHabit(HabitEntity habitEntity);
+    boolean saveUpdateHabit(HabitEntity habitEntity);
     boolean updateHabit(HabitEntity habitEntity);
     boolean deleteHabit(String habitId);
     void setContentValue(HabitEntity habitEntity);

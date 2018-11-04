@@ -1,5 +1,6 @@
 package habit.tracker.habittracker.repository.reminder;
 
+import android.app.Notification;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
@@ -10,15 +11,16 @@ import java.util.List;
 
 import habit.tracker.habittracker.api.model.reminder.Reminder;
 import habit.tracker.habittracker.repository.MyDatabaseHelper;
+import habit.tracker.habittracker.repository.habit.HabitDaoImpl;
+import habit.tracker.habittracker.repository.habit.HabitEntity;
+import habit.tracker.habittracker.repository.habit.HabitNotification;
+import habit.tracker.habittracker.repository.habit.HabitSchema;
 
 public class ReminderDaoImpl extends MyDatabaseHelper implements ReminderDao, ReminderSchema {
-    Cursor cursor;
-    private ContentValues initialValues;
-    private String lastId;
 
-    public String getLastId() {
-        return lastId;
-    }
+    Cursor cursor;
+
+    private ContentValues initialValues;
 
     public ReminderDaoImpl(SQLiteDatabase db) {
         super(db);
@@ -35,40 +37,47 @@ public class ReminderDaoImpl extends MyDatabaseHelper implements ReminderDao, Re
         if (cursor.getColumnIndex(REMINDER_ID) != -1) {
             entity.setReminderId(cursor.getString(cursor.getColumnIndexOrThrow(REMINDER_ID)));
         }
-        if (cursor.getColumnIndex(HABIT_ID) != -1) {
-            entity.setHabitId(cursor.getString(cursor.getColumnIndexOrThrow(HABIT_ID)));
+        if (cursor.getColumnIndex(ReminderSchema.HABIT_ID) != -1) {
+            entity.setHabitId(cursor.getString(cursor.getColumnIndexOrThrow(ReminderSchema.HABIT_ID)));
+        }
+        if (cursor.getColumnIndex(REMIND_TEXT) != -1) {
+            entity.setRemindText(cursor.getString(cursor.getColumnIndexOrThrow(REMIND_TEXT)));
         }
         if (cursor.getColumnIndex(REMINDER_TIME) != -1) {
             entity.setReminderTime(cursor.getString(cursor.getColumnIndexOrThrow(REMINDER_TIME)));
         }
-        if (cursor.getColumnIndex(REPEAT_TIME) != -1) {
-            entity.setRepeatTime(cursor.getString(cursor.getColumnIndexOrThrow(REPEAT_TIME)));
+        if (cursor.getColumnIndex(REPEAT_TYPE) != -1) {
+            entity.setRepeatType(cursor.getString(cursor.getColumnIndexOrThrow(REPEAT_TYPE)));
         }
-        if (cursor.getColumnIndex(REPEAT_REMAIN) != -1) {
-            entity.setRepeatRemain(cursor.getString(cursor.getColumnIndexOrThrow(REPEAT_REMAIN)));
+        if (cursor.getColumnIndex(SERVICE_ID) != -1) {
+            entity.setServerId(cursor.getString(cursor.getColumnIndexOrThrow(SERVICE_ID)));
         }
-//        if (cursor.getColumnIndex(SERVICE_ID) != -1) {
-//            entity.setServerId(cursor.getInt(cursor.getColumnIndexOrThrow(SERVICE_ID)));
-//        }
         return entity;
     }
 
     @Override
-    public boolean addReminder(ReminderEntity entity) {
-        setContentValue(entity);
+    public int addReminder(ReminderEntity newEntity) {
+        setContentValue(newEntity);
         try {
-            boolean res = super.replace(REMINDER_TABLE, getContentValue()) > 0;
-            return res;
+            boolean isInserted = super.replace(REMINDER_TABLE, getContentValue()) > 0;
+            if (isInserted) {
+                cursor = super.rawQuery("SELECT * FROM " + ReminderSchema.REMINDER_TABLE
+                        + " WHERE "
+                        + SERVICE_ID + " = '" + newEntity.getServerId() + "'", null);
+                cursor.moveToFirst();
+                ReminderEntity entity = cursorToEntity(cursor);
+                return Integer.parseInt(entity.getReminderId());
+            }
         } catch (SQLiteConstraintException ex) {
-            return false;
         }
+        return -1;
     }
 
     @Override
     public List<ReminderEntity> getRemindersByHabit(String habitId) {
         List<ReminderEntity> res = new ArrayList<>();
         final String selectionArgs[] = {habitId};
-        final String selection = HABIT_ID + " = ?";
+        final String selection = ReminderSchema.HABIT_ID + " = ?";
         cursor = super.query(REMINDER_TABLE, REMINDER_COLUMNS, selection, selectionArgs, REMINDER_TIME);
         if (cursor != null) {
             cursor.moveToFirst();
@@ -81,13 +90,50 @@ public class ReminderDaoImpl extends MyDatabaseHelper implements ReminderDao, Re
         return res;
     }
 
+    @Override
+    public ReminderEntity getRemindersById(String id) {
+        ReminderEntity res = null;
+        final String selectionArgs[] = {id};
+        final String selection = REMINDER_ID + " = ?";
+        cursor = super.query(REMINDER_TABLE, REMINDER_COLUMNS, selection, selectionArgs, REMINDER_TIME);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            res = cursorToEntity(cursor);
+            cursor.close();
+        }
+        return res;
+    }
+
+    public HabitNotification getHabitNotifi(String remindId) {
+        try {
+            HabitDaoImpl habitDao = new HabitDaoImpl(null);
+            cursor = super.rawQuery("SELECT * FROM " + REMINDER_TABLE
+                            + " INNER JOIN " + HabitSchema.HABIT_TABLE
+                            + " ON " + REMINDER_TABLE + "." + HABIT_ID + " = " + HabitSchema.HABIT_TABLE + "." + HABIT_ID
+                            + " WHERE " + REMINDER_ID + " = " + remindId
+                    , null);
+            if (cursor != null) {
+                cursor.moveToFirst();
+                HabitNotification n = new HabitNotification();
+                ReminderEntity rRntity = cursorToEntity(cursor);
+                HabitEntity hEntity = habitDao.cursorToEntity(cursor);
+                n.setHabitEntity(hEntity);
+                n.setReminderEntity(rRntity);
+                return n;
+            }
+        } catch (SQLiteConstraintException ex) {
+        }
+        return null;
+    }
+
     private void setContentValue(ReminderEntity entity) {
         initialValues = new ContentValues();
         initialValues.put(REMINDER_ID, entity.getReminderId());
         initialValues.put(HABIT_ID, entity.getHabitId());
+        initialValues.put(REMIND_TEXT, entity.getRemindText());
         initialValues.put(REMINDER_TIME, entity.getReminderTime());
-        initialValues.put(REPEAT_TIME, entity.getRepeatTime());
-        initialValues.put(REPEAT_REMAIN, entity.getRepeatRemain());
+        initialValues.put(REPEAT_TYPE, entity.getRepeatType());
+        initialValues.put(SERVICE_ID, entity.getServerId());
     }
 
     private ContentValues getContentValue() {
@@ -98,9 +144,10 @@ public class ReminderDaoImpl extends MyDatabaseHelper implements ReminderDao, Re
         ReminderEntity entity = new ReminderEntity();
         entity.setReminderId(reminder.getReminderId());
         entity.setHabitId(reminder.getHabitId());
+        entity.setRemindText(reminder.getRemindText());
         entity.setReminderTime(reminder.getReminderTime());
-        entity.setRepeatTime(reminder.getRepeatTime());
-        entity.setRepeatRemain(reminder.getRepeatTime());
+        entity.setRepeatType(reminder.getRepeatType());
+        entity.setServerId(reminder.getServerId());
         return entity;
     }
 }

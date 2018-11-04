@@ -7,7 +7,7 @@
     android:padding="15dp"
     android:background="#fcfcfc"
     android:orientation="vertical"
-    tools:context=".ReminderActivity">
+    tools:context=".ReminderCreateActivity">
 
     <TextView
         android:layout_width="match_parent"
@@ -19,6 +19,7 @@
         android:text="Nội dung nhắc nhỏ"/>
 
     <EditText
+        android:id="@+id/edRemindText"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:textSize="13sp"
@@ -94,7 +95,7 @@
             android:background="@drawable/button_green"
             android:textColor="@color/light_brown"
             android:textSize="13sp"
-            android:text="Tất cả"/>
+            android:text="Không lặp"/>
 
         <Button
             android:id="@+id/btn_TypeDaily"

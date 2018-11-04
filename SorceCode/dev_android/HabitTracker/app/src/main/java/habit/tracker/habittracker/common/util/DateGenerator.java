@@ -1,5 +1,6 @@
 package habit.tracker.habittracker.common.util;
 
+import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -8,9 +9,14 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
-public class Generator {
+public class DateGenerator {
     public static final long MILLISECOND_IN_DAY = 86400000;
     public static final long MILLISECOND_IN_WEEK = 86400000 * 7;
+
+    // formats
+    public static final String formatYMD = "yyyy-MM-dd HH:mm:ss";
+    public static final String formatDMY = "dd-MM-yyyy HH:mm:ss";
+    public static final String formatDMY2 = "dd/MM/yyyy";
 
     public static String getNewId() {
         String id = UUID.randomUUID().toString();
@@ -24,7 +30,7 @@ public class Generator {
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             Date date = dateFormat.parse(currentDate);
-            Date oneDayBefore = new Date(date.getTime() - Generator.MILLISECOND_IN_WEEK);
+            Date oneDayBefore = new Date(date.getTime() - DateGenerator.MILLISECOND_IN_WEEK);
             return dateFormat.format(oneDayBefore);
         } catch (ParseException e) {
             e.printStackTrace();
@@ -36,7 +42,7 @@ public class Generator {
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             Date date = dateFormat.parse(currentDate);
-            Date oneDayBefore = new Date(date.getTime() + Generator.MILLISECOND_IN_WEEK);
+            Date oneDayBefore = new Date(date.getTime() + DateGenerator.MILLISECOND_IN_WEEK);
             return dateFormat.format(oneDayBefore);
         } catch (ParseException e) {
             e.printStackTrace();
@@ -48,7 +54,7 @@ public class Generator {
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             Date date = dateFormat.parse(currentDate);
-            Date oneDayBefore = new Date(date.getTime() - Generator.MILLISECOND_IN_DAY);
+            Date oneDayBefore = new Date(date.getTime() - DateGenerator.MILLISECOND_IN_DAY);
             return dateFormat.format(oneDayBefore);
         } catch (ParseException e) {
             e.printStackTrace();
@@ -60,7 +66,7 @@ public class Generator {
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             Date date = dateFormat.parse(currentDate);
-            Date oneDayBefore = new Date(date.getTime() + Generator.MILLISECOND_IN_DAY);
+            Date oneDayBefore = new Date(date.getTime() + DateGenerator.MILLISECOND_IN_DAY);
             return dateFormat.format(oneDayBefore);
         } catch (ParseException e) {
             e.printStackTrace();
@@ -124,7 +130,6 @@ public class Generator {
     }
 
     public static String[] getDatesInWeek(String currentDate) {
-
         String[] arrDate = currentDate.split("-");
         int year = Integer.parseInt(arrDate[0]);
         int month = Integer.parseInt(arrDate[1]);
@@ -179,20 +184,33 @@ public class Generator {
      * @param year
      * @param month start from 0
      * @param date
+     * @param limit : only return date from start date if true
      * @return
      */
-    public static String[] getDatesInMonth(int year, int month, int date) {
+    public static String[] getDatesInMonth(int year, int month, int date, boolean limit) {
         String currentDate = year + "-" + month + "-" + date;
         Calendar ca = Calendar.getInstance();
         ca.set(year, month - 1, date);
-        int numberOfDays = ca.getActualMaximum(Calendar.DAY_OF_MONTH);
-        String[] daysInMonth = new String[numberOfDays];
-        daysInMonth[date - 1] = currentDate;
-        for (int i = date - 2; i >= 0; i--) {
-            daysInMonth[i] = getPreDate(currentDate);
-            currentDate = daysInMonth[i];
+
+        int numberOfDays;
+        String[] daysInMonth;
+
+        if (!limit) {
+            numberOfDays = ca.getActualMaximum(Calendar.DAY_OF_MONTH);
+            daysInMonth = new String[numberOfDays];
+            daysInMonth[date - 1] = currentDate;
+            for (int i = date - 2; i >= 0; i--) {
+                daysInMonth[i] = getPreDate(currentDate);
+                currentDate = daysInMonth[i];
+            }
+            currentDate = daysInMonth[date - 1];
+        } else {
+            numberOfDays = ca.getActualMaximum(Calendar.DAY_OF_MONTH) - date;
+            daysInMonth = new String[numberOfDays];
+            daysInMonth[0] = currentDate;
+            date = 1;
         }
-        currentDate = daysInMonth[date - 1];
+
         for (int i = date; i < numberOfDays; i++) {
             daysInMonth[i] = getNextDate(currentDate);
             currentDate = daysInMonth[i];
@@ -200,21 +218,15 @@ public class Generator {
         return daysInMonth;
     }
 
-
-    /**
-     * The first month of the year in the Gregorian and Julian calendars is 0
-     */
-    public static String increase(String date) {
-        String[] strs = date.split("-");
+    public static String convertFormat(String dateTime, String fm1, String fm2) {
         try {
-            return strs[0] + (Integer.parseInt(strs[1]) + 1) + strs[2];
-        } catch (NumberFormatException e) {
+            SimpleDateFormat fm = new SimpleDateFormat(fm1, Locale.getDefault());
+            Date d = fm.parse(dateTime);
+            fm = new SimpleDateFormat(fm2, Locale.getDefault());
+            return fm.format(d);
+        } catch (ParseException e) {
+            e.printStackTrace();
             return null;
         }
-    }
-
-    public static String convert(String date, String p1, String p2) {
-        String[] strs = date.split(p1);
-        return strs[2] + p2 + strs[1] + p2 + strs[0];
     }
 }

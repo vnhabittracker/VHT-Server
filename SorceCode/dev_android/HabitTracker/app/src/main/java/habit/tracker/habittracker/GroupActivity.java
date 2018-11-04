@@ -22,7 +22,7 @@ package habit.tracker.habittracker;
         import habit.tracker.habittracker.api.model.group.Group;
         import habit.tracker.habittracker.api.model.group.GroupResponse;
         import habit.tracker.habittracker.api.service.VnHabitApiService;
-        import habit.tracker.habittracker.common.util.Generator;
+        import habit.tracker.habittracker.common.util.DateGenerator;
         import habit.tracker.habittracker.repository.Database;
         import retrofit2.Call;
         import retrofit2.Callback;
@@ -106,7 +106,7 @@ public class GroupActivity extends AppCompatActivity implements GroupRecyclerVie
         }
 
         final Group newGroup = new Group();
-        newGroup.setGroupId(Generator.getNewId());
+        newGroup.setGroupId(DateGenerator.getNewId());
         newGroup.setGroupName(groupName);
 
         VnHabitApiService mService = VnHabitApiUtils.getApiService();
