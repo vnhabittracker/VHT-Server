@@ -35,7 +35,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import habit.tracker.habittracker.common.util.Generator;
+import habit.tracker.habittracker.common.util.AppGenerator;
 import habit.tracker.habittracker.common.chart.DayAxisValueFormatter;
 import habit.tracker.habittracker.common.chart.MyAxisValueFormatter;
 import habit.tracker.habittracker.common.chart.XYMarkerView;
@@ -119,13 +119,13 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
     public void pre(View v) {
         switch (mode) {
             case MODE_WEEK:
-                currentDate = Generator.getDayPreWeek(currentDate);
+                currentDate = AppGenerator.getDayPreWeek(currentDate);
                 break;
             case MODE_MONTH:
-                currentDate = Generator.getPreMonth(currentDate);
+                currentDate = AppGenerator.getPreMonth(currentDate);
                 break;
             case MODE_YEAR:
-                currentDate = Generator.getPreYear(currentDate);
+                currentDate = AppGenerator.getPreYear(currentDate);
                 break;
         }
         ArrayList<BarEntry> values = loadData(currentDate);
@@ -137,13 +137,13 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
     public void next(View v) {
         switch (mode) {
             case MODE_WEEK:
-                currentDate = Generator.getDayNextWeek(currentDate);
+                currentDate = AppGenerator.getDayNextWeek(currentDate);
                 break;
             case MODE_MONTH:
-                currentDate = Generator.getNextMonth(currentDate);
+                currentDate = AppGenerator.getNextMonth(currentDate);
                 break;
             case MODE_YEAR:
-                currentDate = Generator.getNextYear(currentDate);
+                currentDate = AppGenerator.getNextYear(currentDate);
                 break;
         }
         if (currentDate != null && currentDate.compareTo(firstCurrentDate) < 1) {
@@ -299,16 +299,18 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
 
     private ArrayList<BarEntry> loadWeekData(String currentDate) {
         ArrayList<BarEntry> values = new ArrayList<>();
-        String[] daysInWeek = Generator.getDatesInWeek(currentDate);
-        String startDate = Generator.convert(daysInWeek[0], "-", "/");
-        String endDate = Generator.convert(daysInWeek[6], "-", "/");
+        String[] daysInWeek = AppGenerator.getDatesInWeek(currentDate);
+        String startDate = AppGenerator.format(daysInWeek[0], AppGenerator.formatYMD2, AppGenerator.formatDMY2);
+        String endDate = AppGenerator.format(daysInWeek[6], AppGenerator.formatYMD2, AppGenerator.formatDMY2);
         time.setText(startDate + " - " + endDate);
 
         Database db = new Database(this);
         db.open();
 
         // get all completed habits in one week
-        List<DateTracking> weekData = Database.sHabitDaoImpl.getHabitsBetween(daysInWeek[0], daysInWeek[6]);
+        List<DateTracking> weekData = Database
+                .sHabitDaoImpl.getHabitsBetween(daysInWeek[0], daysInWeek[6]);
+        db.close();
 
         Map<String, Integer> countHabit = new HashMap<>();
         List<DateTracking> completedList = new ArrayList<>();
@@ -317,9 +319,13 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         for (DateTracking item : weekData) {
             hb = item.getHabitEntity();
             tr = item.getTrackingEntity();
+
             if (hb.getMonitorNumber() != null
+
                     && tr.getCount() != null
-                    && hb.getMonitorNumber().equals(tr.getCount())) {
+
+                    && tr.getCount().compareTo(hb.getMonitorNumber()) >= 0 )
+            {
                 completedList.add(item);
             }
 
@@ -351,7 +357,6 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         for (int i = 1; i <= 7; i++) {
             values.add(new BarEntry(i, count[i - 1]));
         }
-        db.close();
 
         tvTotal.setText(String.valueOf(countHabit.size()));
         tvTotalDone.setText(String.valueOf(completedList.size()));
@@ -361,14 +366,10 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
 
     private ArrayList<BarEntry> loadMonthData(String currentDate) {
         ArrayList<BarEntry> values = new ArrayList<>();
-        String[] strs = currentDate.split("-");
-        int year = Integer.parseInt(strs[0]);
-        int month = Integer.parseInt(strs[1]);
-        int date = Integer.parseInt(strs[2]);
-        String[] daysInMonth = Generator.getDatesInMonth(year, month, date);
+        String[] daysInMonth = AppGenerator.getDatesInMonth(currentDate, false);
 
-        String startDate = Generator.convert(daysInMonth[0], "-", "/");
-        String endDate = Generator.convert(daysInMonth[daysInMonth.length - 1], "-", "/");
+        String startDate = AppGenerator.format(daysInMonth[0], AppGenerator.formatYMD2, AppGenerator.formatDMY2);
+        String endDate = AppGenerator.format(daysInMonth[daysInMonth.length - 1], AppGenerator.formatYMD2, AppGenerator.formatDMY2);
         time.setText(startDate + " - " + endDate);
 
         Database db = new Database(this);
@@ -385,9 +386,13 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         for (DateTracking item : total) {
             hb = item.getHabitEntity();
             tr = item.getTrackingEntity();
+
             if (hb.getMonitorNumber() != null
+
                     && tr.getCount() != null
-                    && hb.getMonitorNumber().equals(tr.getCount())) {
+
+                    && tr.getCount().compareTo(hb.getMonitorNumber()) >= 0 )
+            {
                 completedList.add(item);
             }
             countHabit.put(hb.getHabitId(), 0);
@@ -428,8 +433,6 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         Database db = new Database(this);
         db.open();
 
-
-        List<List<DateTracking>> yearData = new ArrayList<>();
         List<DateTracking> monthData;
 
         int[] completePerMonth = new int[12];
@@ -442,15 +445,18 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
 
         for (int m = 0; m < 12; m++) {
             monthData = Database.sHabitDaoImpl.getHabitsBetween(
-                    year + "-" + (m + 1) + "-" + 1, year + "-" + (m + 1) + "-" + Generator.getMaxDayInMonth(year, m));
-            yearData.add(monthData);
+                    year + "-" + (m + 1) + "-" + 1, year + "-" + (m + 1) + "-" + AppGenerator.getMaxDayInMonth(year, m));
 
             for (DateTracking item : monthData) {
                 hb = item.getHabitEntity();
                 tr = item.getTrackingEntity();
+
                 if (hb.getMonitorNumber() != null
+
                         && tr.getCount() != null
-                        && hb.getMonitorNumber().equals(tr.getCount())) {
+
+                        && tr.getCount().compareTo(hb.getMonitorNumber()) >= 0 )
+                {
                     completeRecord += 1;
                     ++completePerMonth[m];
                     habitNumber.put(hb.getHabitId(), 0);

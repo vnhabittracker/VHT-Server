@@ -326,7 +326,7 @@
                     android:layout_height="wrap_content"
                     android:paddingEnd="10dp"
                     android:textColor="#5fa467"
-                    android:textSize="12sp"
+                    android:textSize="13sp"
                     android:layout_alignParentEnd="true"
                     android:text="Thêm >"/>
             </RelativeLayout>
@@ -636,9 +636,11 @@
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rvRemind"
                     android:layout_width="0dp"
+                    android:layout_height="match_parent"
                     android:layout_alignParentStart="true"
-                    android:layout_toStartOf="@+id/btn_addReminder"
-                    android:layout_height="match_parent" />
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="0dp"
+                    android:layout_toStartOf="@+id/btn_addReminder" />
 
                 <TextView
                     android:id="@+id/btn_addReminder"
@@ -647,7 +649,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:textColor="#799c4b"
-                    android:textSize="12sp"
+                    android:textSize="13sp"
                     android:text="Thêm >"/>
             </RelativeLayout>
 

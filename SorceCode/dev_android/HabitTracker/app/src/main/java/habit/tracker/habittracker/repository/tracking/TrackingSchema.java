@@ -7,6 +7,9 @@ public interface TrackingSchema {
     String CURRENT_DATE = "tracking_current_date";
     String COUNT = "count";
     String TRACKING_DESCRIPTION = "tracking_description";
+
+    String SUM_COUNT = "sum_count";
+
     String CREATE_TRACKING_TABLE =
             "CREATE TABLE IF NOT EXISTS " + TRACKING_TABLE + " ("
                     + TRACKING_ID + " TEXT PRIMARY KEY NOT NULL, "

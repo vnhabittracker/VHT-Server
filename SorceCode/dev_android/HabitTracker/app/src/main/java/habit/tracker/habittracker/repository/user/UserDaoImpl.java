@@ -38,25 +38,25 @@ public class UserDaoImpl extends MyDatabaseHelper implements UserDao, UserSchema
                 userEntity.setPassword(cursor.getString(cursor.getColumnIndexOrThrow(PASSWORD)));
             }
             if (cursor.getColumnIndex(EMAIL) != -1) {
-
+                userEntity.setEmail(cursor.getString(cursor.getColumnIndexOrThrow(EMAIL)));
             }
             if (cursor.getColumnIndex(PHONE) != -1) {
-
+                userEntity.setPhone(cursor.getString(cursor.getColumnIndexOrThrow(PHONE)));
             }
             if (cursor.getColumnIndex(GENDER) != -1) {
-
+                userEntity.setGender(cursor.getString(cursor.getColumnIndexOrThrow(GENDER)));
             }
             if (cursor.getColumnIndex(DATE_OF_BIRTH) != -1) {
-
+                userEntity.setDateOfBirth(cursor.getString(cursor.getColumnIndexOrThrow(DATE_OF_BIRTH)));
             }
             if (cursor.getColumnIndex(USER_ICON) != -1) {
-
+                userEntity.setUserIcon(cursor.getString(cursor.getColumnIndexOrThrow(USER_ICON)));
             }
             if (cursor.getColumnIndex(AVATAR) != -1) {
-
+                userEntity.setAvatar(cursor.getString(cursor.getColumnIndexOrThrow(AVATAR)));
             }
             if (cursor.getColumnIndex(USER_DESCRIPTION) != -1) {
-
+                userEntity.setUserDescription(cursor.getString(cursor.getColumnIndexOrThrow(USER_DESCRIPTION)));
             }
         }
         return userEntity;
@@ -141,15 +141,16 @@ public class UserDaoImpl extends MyDatabaseHelper implements UserDao, UserSchema
 
     private void setContentValue(UserEntity userEntity) {
         initialValues = new ContentValues();
+        initialValues.put(USER_ID, userEntity.getUserId());
         initialValues.put(USERNAME, userEntity.getUsername());
         initialValues.put(PASSWORD, userEntity.getPassword());
-//        initialValues.put(EMAIL, userEntity.getEmail());
-//        initialValues.put(PHONE, userEntity.getPhone());
-//        initialValues.put(GENDER, userEntity.getGender());
-//        initialValues.put(DATE_OF_BIRTH, userEntity.getDateOfBirth());
-//        initialValues.put(USER_ICON, userEntity.getUserIcon());
-//        initialValues.put(AVATAR, userEntity.getAvatar());
-//        initialValues.put(USER_DESCRIPTION, userEntity.getUserDescription());
+        initialValues.put(EMAIL, userEntity.getEmail());
+        initialValues.put(PHONE, userEntity.getPhone());
+        initialValues.put(GENDER, userEntity.getGender());
+        initialValues.put(DATE_OF_BIRTH, userEntity.getDateOfBirth());
+        initialValues.put(USER_ICON, userEntity.getUserIcon());
+        initialValues.put(AVATAR, userEntity.getAvatar());
+        initialValues.put(USER_DESCRIPTION, userEntity.getUserDescription());
     }
 
     private ContentValues getContentValue() {

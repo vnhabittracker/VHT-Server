@@ -28,7 +28,6 @@ public interface HabitSchema {
     String SAT = "sat";
     String SUN = "sun";
 
-
     String CREATE_HABIT_TABLE =
             "CREATE TABLE IF NOT EXISTS " + HABIT_TABLE + " ("
                     + HABIT_ID + " TEXT PRIMARY KEY NOT NULL, "

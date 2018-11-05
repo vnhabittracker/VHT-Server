@@ -17,6 +17,8 @@
         android:layout_weight="9"
         android:layout_height="match_parent"
         android:textSize="13sp"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textColor="#799c4b"
         android:text="7:00 am: nội dung nhắc nhở 1"/>
 </LinearLayout>

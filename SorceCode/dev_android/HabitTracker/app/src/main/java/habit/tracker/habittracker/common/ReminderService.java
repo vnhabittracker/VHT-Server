@@ -7,7 +7,7 @@ import android.content.Intent;
 
 import java.util.Calendar;
 
-import habit.tracker.habittracker.ReminderReceiver;
+import habit.tracker.habittracker.common.receiver.ReminderReceiver;
 
 public class ReminderService {
     Context context;

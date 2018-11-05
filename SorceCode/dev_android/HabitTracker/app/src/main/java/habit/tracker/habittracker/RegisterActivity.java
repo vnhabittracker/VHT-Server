@@ -18,7 +18,7 @@ import habit.tracker.habittracker.api.VnHabitApiUtils;
 import habit.tracker.habittracker.api.model.user.User;
 import habit.tracker.habittracker.api.model.user.UserResult;
 import habit.tracker.habittracker.api.service.VnHabitApiService;
-import habit.tracker.habittracker.common.util.Generator;
+import habit.tracker.habittracker.common.util.AppGenerator;
 import habit.tracker.habittracker.common.Validator;
 import habit.tracker.habittracker.common.ValidatorType;
 import retrofit2.Call;
@@ -98,7 +98,7 @@ public class RegisterActivity extends BaseActivity {
                 newUser.setUsername(username);
                 newUser.setEmail(email);
                 newUser.setPassword(password);
-                newUser.setUserId(Generator.getNewId());
+                newUser.setUserId(AppGenerator.getNewId());
                 register(newUser);
                 break;
             case R.id.btn_fb_login:

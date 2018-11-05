@@ -17,7 +17,11 @@
         <activity
             android:name=".LoginActivity"
             android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".MainActivity"
@@ -33,19 +37,14 @@
             android:theme="@style/AppTheme" />
         <activity android:name=".SplashActivity" />
         <activity android:name=".GroupActivity" />
-        <activity android:name=".ReminderActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+        <activity android:name=".ReminderCreateActivity"></activity>
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <receiver android:name=".ReminderReceiver" />
+        <receiver android:name=".common.receiver.ReminderReceiver" />
 
         <activity android:name=".GuideActivity" />
-        <activity android:name=".ReportActivity"></activity>
-        <activity android:name=".FilterMainActivity"></activity>
+        <activity android:name=".ReportActivity" />
+        <activity android:name=".FilterMainActivity" />
+        <activity android:name=".ReportDetailsActivity"></activity>
     </application>
 
 </manifest>
