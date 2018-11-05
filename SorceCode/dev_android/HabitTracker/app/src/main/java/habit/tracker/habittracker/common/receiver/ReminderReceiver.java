@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import habit.tracker.habittracker.R;
-import habit.tracker.habittracker.common.util.DateGenerator;
+import habit.tracker.habittracker.common.util.AppGenerator;
 import habit.tracker.habittracker.common.util.ReminderManager;
 
 public class ReminderReceiver extends BroadcastReceiver {
@@ -36,7 +36,7 @@ public class ReminderReceiver extends BroadcastReceiver {
 
             if (endTime != null) {
                 try {
-                    SimpleDateFormat fm = new SimpleDateFormat(DateGenerator.formatYMD, Locale.getDefault());
+                    SimpleDateFormat fm = new SimpleDateFormat(AppGenerator.formatYMD, Locale.getDefault());
                     Date endDate = fm.parse(endTime);
                     if (endDate.getTime() < System.currentTimeMillis()) {
 

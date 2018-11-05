@@ -10,8 +10,9 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3"
-        android:layout_marginBottom="20dp"
+        android:layout_weight="4"
+        android:layout_marginBottom="5dp"
+        android:background="@color/gray"
         >
         <TextView
             android:id="@+id/tvHabitName"
@@ -19,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
-            android:layout_marginBottom="15dp"
+            android:layout_marginBottom="20dp"
             android:textSize="25sp"
             android:text="Chạy bộ"/>
 
@@ -31,7 +32,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
-            android:layout_marginBottom="15dp"
+            android:layout_marginBottom="20dp"
             android:textSize="18sp"
             android:text="Hôm nay"/>
 
@@ -85,7 +86,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="5dp"
         android:orientation="horizontal">
 
         <RelativeLayout
@@ -97,13 +98,13 @@
                 android:id="@+id/tvGoal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 android:text="18 Km"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tvGoal"
-                android:textSize="15sp"
+                android:textSize="14sp"
                 android:text="Mục tiêu đề ra"/>
         </RelativeLayout>
         <RelativeLayout
@@ -115,13 +116,13 @@
                 android:id="@+id/tvResult"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 android:text="10 Km"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tvResult"
-                android:textSize="15sp"
+                android:textSize="14sp"
                 android:text="Đã hoàn thành"/>
         </RelativeLayout>
     </LinearLayout>
@@ -129,7 +130,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="7"
+        android:layout_weight="6"
         android:padding="10dp">
 
         <LinearLayout

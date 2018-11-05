@@ -34,7 +34,7 @@ import habit.tracker.habittracker.api.VnHabitApiUtils;
 import habit.tracker.habittracker.api.model.habit.Habit;
 import habit.tracker.habittracker.api.model.reminder.Reminder;
 import habit.tracker.habittracker.api.service.VnHabitApiService;
-import habit.tracker.habittracker.common.util.DateGenerator;
+import habit.tracker.habittracker.common.util.AppGenerator;
 import habit.tracker.habittracker.common.Validator;
 import habit.tracker.habittracker.common.ValidatorType;
 import habit.tracker.habittracker.common.util.MySharedPreference;
@@ -220,7 +220,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                     String minute = String.format(format, data.getIntExtra(ReminderCreateActivity.REMIND_MINUTE, 0));
 
                     Reminder reminder = new Reminder();
-                    reminder.setServerId(DateGenerator.getNewId());
+                    reminder.setServerId(AppGenerator.getNewId());
                     reminder.setRemindText(remindText);
                     reminder.setReminderTime(date + " " + hour + ":" + minute + ":00");
                     reminder.setRepeatType(remindType);
@@ -511,8 +511,8 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         Calendar ca = Calendar.getInstance();
         final Habit habit = new Habit();
         if (createMode == MODE_CREATE) {
-            habit.setHabitId(DateGenerator.getNewId());
-            habit.setMonitorId(DateGenerator.getNewId());
+            habit.setHabitId(AppGenerator.getNewId());
+            habit.setMonitorId(AppGenerator.getNewId());
         } else if (createMode == MODE_UPDATE) {
             habit.setHabitId(this.savedHabitId);
             habit.setMonitorId(this.savedMonitorDateId);

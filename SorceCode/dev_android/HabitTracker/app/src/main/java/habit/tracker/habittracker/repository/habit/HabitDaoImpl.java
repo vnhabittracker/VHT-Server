@@ -176,11 +176,6 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
     }
 
     @Override
-    public boolean updateHabit(HabitEntity habitEntity) {
-        return false;
-    }
-
-    @Override
     public boolean deleteHabit(String habitId) {
         try {
             final String selectionArgs[] = {habitId};

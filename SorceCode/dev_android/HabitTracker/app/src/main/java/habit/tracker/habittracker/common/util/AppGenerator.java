@@ -1,6 +1,5 @@
 package habit.tracker.habittracker.common.util;
 
-import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -9,14 +8,23 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
-public class DateGenerator {
+public class AppGenerator {
     public static final long MILLISECOND_IN_DAY = 86400000;
     public static final long MILLISECOND_IN_WEEK = 86400000 * 7;
 
     // formats
     public static final String formatYMD = "yyyy-MM-dd HH:mm:ss";
+    public static final String formatYMD2 = "yyyy-MM-dd";
     public static final String formatDMY = "dd-MM-yyyy HH:mm:ss";
     public static final String formatDMY2 = "dd/MM/yyyy";
+
+    public static String getCurrentDate() {
+        Calendar ca = Calendar.getInstance();
+        int year = ca.get(Calendar.YEAR);
+        int month = ca.get(Calendar.MONTH) + 1;
+        int day = ca.get(Calendar.DAY_OF_MONTH);
+        return year + "-" + month + "-" + day;
+    }
 
     public static String getNewId() {
         String id = UUID.randomUUID().toString();
@@ -30,7 +38,7 @@ public class DateGenerator {
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             Date date = dateFormat.parse(currentDate);
-            Date oneDayBefore = new Date(date.getTime() - DateGenerator.MILLISECOND_IN_WEEK);
+            Date oneDayBefore = new Date(date.getTime() - AppGenerator.MILLISECOND_IN_WEEK);
             return dateFormat.format(oneDayBefore);
         } catch (ParseException e) {
             e.printStackTrace();
@@ -42,7 +50,7 @@ public class DateGenerator {
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             Date date = dateFormat.parse(currentDate);
-            Date oneDayBefore = new Date(date.getTime() + DateGenerator.MILLISECOND_IN_WEEK);
+            Date oneDayBefore = new Date(date.getTime() + AppGenerator.MILLISECOND_IN_WEEK);
             return dateFormat.format(oneDayBefore);
         } catch (ParseException e) {
             e.printStackTrace();
@@ -54,7 +62,7 @@ public class DateGenerator {
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             Date date = dateFormat.parse(currentDate);
-            Date oneDayBefore = new Date(date.getTime() - DateGenerator.MILLISECOND_IN_DAY);
+            Date oneDayBefore = new Date(date.getTime() - AppGenerator.MILLISECOND_IN_DAY);
             return dateFormat.format(oneDayBefore);
         } catch (ParseException e) {
             e.printStackTrace();
@@ -66,7 +74,7 @@ public class DateGenerator {
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             Date date = dateFormat.parse(currentDate);
-            Date oneDayBefore = new Date(date.getTime() + DateGenerator.MILLISECOND_IN_DAY);
+            Date oneDayBefore = new Date(date.getTime() + AppGenerator.MILLISECOND_IN_DAY);
             return dateFormat.format(oneDayBefore);
         } catch (ParseException e) {
             e.printStackTrace();

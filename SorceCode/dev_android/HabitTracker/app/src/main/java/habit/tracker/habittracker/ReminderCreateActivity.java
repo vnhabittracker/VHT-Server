@@ -16,7 +16,7 @@ import java.util.Calendar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import habit.tracker.habittracker.common.util.DateGenerator;
+import habit.tracker.habittracker.common.util.AppGenerator;
 
 public class ReminderCreateActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
     public static final String REMIND_TEXT = "remind_text";
@@ -76,7 +76,7 @@ public class ReminderCreateActivity extends AppCompatActivity implements NumberP
         int year = ca.get(Calendar.YEAR);
         int month = ca.get(Calendar.MONTH) + 1;
         int date = ca.get(Calendar.DATE);
-        dates = DateGenerator.getDatesInMonth(year, month, date, true);
+        dates = AppGenerator.getDatesInMonth(year, month, date, true);
         String[] displayDates = convertDisplayDate(dates);
         pickerDate.setMinValue(0);
         pickerDate.setMaxValue(displayDates.length - 1);

@@ -41,7 +41,7 @@ public class ReminderManager {
         int minute;
         RepeatType repeatType = RepeatType.DAILY;
 
-        SimpleDateFormat fm = new SimpleDateFormat(DateGenerator.formatYMD, Locale.getDefault());
+        SimpleDateFormat fm = new SimpleDateFormat(AppGenerator.formatYMD, Locale.getDefault());
         Date date;
         Calendar ca = Calendar.getInstance();
         Reminder reminder;
@@ -104,10 +104,10 @@ public class ReminderManager {
 
         switch (repeatType) {
             case DAILY:
-                interval = DateGenerator.MILLISECOND_IN_DAY;
+                interval = AppGenerator.MILLISECOND_IN_DAY;
                 break;
             case WEEKLY:
-                interval = DateGenerator.MILLISECOND_IN_DAY * 7;
+                interval = AppGenerator.MILLISECOND_IN_DAY * 7;
                 break;
             case MONTHLY:
                 if (month < 11) {

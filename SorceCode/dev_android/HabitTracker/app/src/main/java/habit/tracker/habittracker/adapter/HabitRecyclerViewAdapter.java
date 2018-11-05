@@ -186,12 +186,12 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
 //                Toast.makeText(context, "btn_plus", Toast.LENGTH_SHORT).show();
                 num = num + 1;
                 tvCount.setText(num + "");
-                mClickListener.onSetCount(view, TYPE_COUNT, getAdapterPosition(), num);
+                mClickListener.onTrackingValueChanged(view, TYPE_COUNT, getAdapterPosition(), num);
             } else if (view.getId() == R.id.btn_minus) {
 //                Toast.makeText(context, "btn_minus", Toast.LENGTH_SHORT).show();
                 num = num > 0 ? num - 1 : 0;
                 tvCount.setText(num + "");
-                mClickListener.onSetCount(view, TYPE_COUNT, getAdapterPosition(), num);
+                mClickListener.onTrackingValueChanged(view, TYPE_COUNT, getAdapterPosition(), num);
             } else if (mClickListener != null) {
                 mClickListener.onItemClick(view, TYPE_COUNT, getAdapterPosition());
             }
@@ -233,12 +233,12 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
                 if (isCheck) {
                     isCheck = false;
                     imgCheck.setImageResource(R.drawable.ck_unchecked);
-                    mClickListener.onSetCount(view, TYPE_CHECK, getAdapterPosition(), 0);
+                    mClickListener.onTrackingValueChanged(view, TYPE_CHECK, getAdapterPosition(), 0);
                     scaleView(background, 1f, 0f, 500);
                 } else {
                     isCheck = true;
                     imgCheck.setImageResource(R.drawable.ck_checked);
-                    mClickListener.onSetCount(view, TYPE_CHECK, getAdapterPosition(), 1);
+                    mClickListener.onTrackingValueChanged(view, TYPE_CHECK, getAdapterPosition(), 1);
                     scaleView(background, 0f, 1f, 599);
                 }
             } else if (mClickListener != null) {
@@ -293,7 +293,7 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
     }
 
     public interface ItemClickListener {
-        void onSetCount(View view, int type, int position, int count);
+        void onTrackingValueChanged(View view, int type, int position, int count);
         void onItemClick(View view, int type, int position);
     }
 }
