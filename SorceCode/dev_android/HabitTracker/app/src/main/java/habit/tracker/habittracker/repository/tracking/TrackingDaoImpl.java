@@ -55,7 +55,6 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
     }
 
     public HabitTracking getHabitTrackingBetween(String habitId, String startDate, String endDate) {
-        HabitTracking habitTracking = new HabitTracking();
         try {
             Cursor cursor = super.rawQuery(
                     "SELECT * FROM " + HabitSchema.HABIT_TABLE + " INNER JOIN " + TRACKING_TABLE
@@ -70,9 +69,10 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
                     , null);
 
             if (cursor != null && cursor.getCount() > 0) {
-                cursor.moveToFirst();
+                HabitTracking habitTracking = new HabitTracking();
+                HabitDaoImpl habitDao = new HabitDaoImpl();
 
-                HabitDaoImpl habitDao = new HabitDaoImpl(null);
+                cursor.moveToFirst();
                 habitTracking.setHabitEntity(habitDao.cursorToEntity(cursor));
 
                 while (!cursor.isAfterLast()) {
@@ -107,8 +107,10 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
     public TrackingEntity getTracking(String habitId, String currentDate) {
         final String selectionArgs[] = {habitId, currentDate};
         final String selection = HABIT_ID + " = ? AND " + CURRENT_DATE + " = ?";
+
         TrackingEntity entity;
         cursor = super.query(TRACKING_TABLE, TRACKING_COLUMNS, selection, selectionArgs, TRACKING_ID);
+
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
             entity = cursorToEntity(cursor);

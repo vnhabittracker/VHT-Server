@@ -111,8 +111,10 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         }
 
         ArrayList<BarEntry> values = loadData(currentDate);
-        setData(values);
-        chart.invalidate();
+        if (values != null && values.size() > 0) {
+            setData(values);
+//            chart.invalidate();
+        }
     }
 
     @OnClick(R.id.pre)
@@ -130,7 +132,7 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         }
         ArrayList<BarEntry> values = loadData(currentDate);
         setData(values);
-        chart.invalidate();
+//        chart.invalidate();
     }
 
     @OnClick(R.id.next)
@@ -149,7 +151,7 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         if (currentDate != null && currentDate.compareTo(firstCurrentDate) < 1) {
             ArrayList<BarEntry> values = loadData(currentDate);
             setData(values);
-            chart.invalidate();
+//            chart.invalidate();
         }
     }
 

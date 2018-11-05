@@ -287,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
 
     @OnClick(R.id.imgNext)
     public void next(ImageView img) {
-        String nextDate = AppGenerator.getNextDate(currentDate);
+        String nextDate = AppGenerator.getNextDate(currentDate, AppGenerator.formatYMD2);
         Database db = new Database(this);
         db.open();
         if (nextDate != null) {
@@ -302,7 +302,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
 
     @OnClick(R.id.imgBack)
     public void back(ImageView img) {
-        String preDate = AppGenerator.getPreDate(currentDate);
+        String preDate = AppGenerator.getPreDate(currentDate, AppGenerator.formatYMD2);
         Database db = new Database(this);
         db.open();
         if (preDate != null) {

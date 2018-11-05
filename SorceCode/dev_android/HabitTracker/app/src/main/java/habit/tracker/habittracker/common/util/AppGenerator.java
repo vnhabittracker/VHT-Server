@@ -56,9 +56,9 @@ public class AppGenerator {
         return null;
     }
 
-    public static String getPreDate(String currentDate) {
+    public static String getPreDate(String currentDate, String format) {
         try {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            DateFormat dateFormat = new SimpleDateFormat(format, Locale.getDefault());
             Date date = dateFormat.parse(currentDate);
             Date oneDayBefore = new Date(date.getTime() - AppGenerator.MILLISECOND_IN_DAY);
             return dateFormat.format(oneDayBefore);
@@ -68,9 +68,9 @@ public class AppGenerator {
         return null;
     }
 
-    public static String getNextDate(String currentDate) {
+    public static String getNextDate(String currentDate, String format) {
         try {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            DateFormat dateFormat = new SimpleDateFormat(format, Locale.getDefault());
             Date date = dateFormat.parse(currentDate);
             Date oneDayBefore = new Date(date.getTime() + AppGenerator.MILLISECOND_IN_DAY);
             return dateFormat.format(oneDayBefore);
@@ -174,12 +174,12 @@ public class AppGenerator {
         }
         week[index] = currentDate;
         for (int i = index - 1; i >= 0; i--) {
-            week[i] = getPreDate(currentDate);
+            week[i] = getPreDate(currentDate, AppGenerator.formatYMD2);
             currentDate = week[i];
         }
         currentDate = week[index];
         for (int i = index + 1; i < 7; i++) {
-            week[i] = getNextDate(currentDate);
+            week[i] = getNextDate(currentDate, AppGenerator.formatYMD2);
             currentDate = week[i];
         }
         return week;
@@ -201,7 +201,7 @@ public class AppGenerator {
             daysInMonth = new String[numberOfDays];
             daysInMonth[date - 1] = currentDate;
             for (int i = date - 2; i >= 0; i--) {
-                daysInMonth[i] = getPreDate(currentDate);
+                daysInMonth[i] = getPreDate(currentDate, AppGenerator.formatYMD2);
                 currentDate = daysInMonth[i];
             }
             currentDate = daysInMonth[date - 1];
@@ -213,7 +213,7 @@ public class AppGenerator {
         }
 
         for (int i = date; i < numberOfDays; i++) {
-            daysInMonth[i] = getNextDate(currentDate);
+            daysInMonth[i] = getNextDate(currentDate, AppGenerator.formatYMD2);
             currentDate = daysInMonth[i];
         }
         return daysInMonth;

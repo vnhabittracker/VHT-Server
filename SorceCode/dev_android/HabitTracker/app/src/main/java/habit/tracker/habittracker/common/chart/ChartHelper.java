@@ -141,6 +141,7 @@ public class ChartHelper implements OnChartValueSelectedListener {
             chart.setData(data);
             chart.animateY(500);
         }
+        chart.invalidate();
     }
 
     @Override
