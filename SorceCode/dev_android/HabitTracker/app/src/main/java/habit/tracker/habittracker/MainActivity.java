@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
     public static final int USE_FILTER = 2;
 
     public static final String HABIT_ID = "HABIT_ID";
+    public static final String HABIT_COLOR = "habit_color";
 
     List<TrackingItem> trackingItemList = new ArrayList<>();
     HabitRecyclerViewAdapter trackingAdapter;
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
         ButterKnife.bind(this);
 
         Calendar ca = Calendar.getInstance();
-        currentDate = ca.get(Calendar.YEAR) + "-" + (ca.get(Calendar.MONTH) + 1) + "-" + ca.get(Calendar.DATE);
+        currentDate = AppGenerator.getCurrentDate(AppGenerator.formatYMD2);
         firstCurrentDate = currentDate;
         initData();
     }
@@ -166,14 +167,14 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
         Tracking tracking = new Tracking();
         tracking.setTrackingId(item.getTrackId());
         tracking.setHabitId(item.getHabitId());
-        tracking.setCurrentDate(currentDate);
+        tracking.setCurrentDate(this.currentDate);
         tracking.setCount(String.valueOf(item.getCount()));
         trackingData.getTrackingList().add(tracking);
-
         if (!Database.sTrackingImpl
-                .updateTrackCount(Database.sTrackingImpl.convert(tracking))) {
+                .updateTracking(Database.sTrackingImpl.convert(tracking))) {
             return;
         }
+        db.close();
 
         VnHabitApiService service = VnHabitApiUtils.getApiService();
         service.replace(trackingData).enqueue(new Callback<ResponseBody>() {
@@ -185,7 +186,6 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
             public void onFailure(Call<ResponseBody> call, Throwable t) {
             }
         });
-        db.close();
     }
 
     @Override
@@ -196,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
         } else {
             Intent intent = new Intent(this, ReportDetailsActivity.class);
             intent.putExtra(HABIT_ID, trackingItemList.get(position).getHabitId());
+            intent.putExtra(HABIT_COLOR, trackingItemList.get(position).getColor());
             startActivity(intent);
         }
     }
@@ -287,7 +288,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
 
     @OnClick(R.id.imgNext)
     public void next(ImageView img) {
-        String nextDate = AppGenerator.getNextDate(currentDate);
+        String nextDate = AppGenerator.getNextDate(currentDate, AppGenerator.formatYMD2);
         Database db = new Database(this);
         db.open();
         if (nextDate != null) {
@@ -302,7 +303,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
 
     @OnClick(R.id.imgBack)
     public void back(ImageView img) {
-        String preDate = AppGenerator.getPreDate(currentDate);
+        String preDate = AppGenerator.getPreDate(currentDate, AppGenerator.formatYMD2);
         Database db = new Database(this);
         db.open();
         if (preDate != null) {

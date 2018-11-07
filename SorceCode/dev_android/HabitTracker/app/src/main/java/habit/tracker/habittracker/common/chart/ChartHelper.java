@@ -31,6 +31,9 @@ public class ChartHelper implements OnChartValueSelectedListener {
     public static final int MODE_MONTH = 1;
     public static final int MODE_YEAR = 2;
 
+    int startColor;
+    int endColor;
+
     public ChartHelper(Context context, BarChart chart) {
         this.context = context;
         this.chart = chart;
@@ -82,26 +85,32 @@ public class ChartHelper implements OnChartValueSelectedListener {
         chart.setMarker(mv); // Set the marker to the chart
     }
 
-    public void setData(ArrayList<BarEntry> values, int mode) {
-        BarDataSet set1;
-        int startColor1 = ContextCompat.getColor(context, R.color.red1);
-        int endColor1 = ContextCompat.getColor(context, R.color.red2);
+    public void setChartColorByMode(int mode) {
         switch (mode) {
             case MODE_WEEK:
-                startColor1 = ContextCompat.getColor(context, R.color.red1);
-                endColor1 = ContextCompat.getColor(context, R.color.red2);
+                startColor = ContextCompat.getColor(context, R.color.red1);
+                endColor = ContextCompat.getColor(context, R.color.red2);
                 break;
             case MODE_MONTH:
-                startColor1 = ContextCompat.getColor(context, R.color.purple1);
-                endColor1 = ContextCompat.getColor(context, R.color.purple2);
+                startColor = ContextCompat.getColor(context, R.color.purple1);
+                endColor = ContextCompat.getColor(context, R.color.purple2);
                 break;
             case MODE_YEAR:
-                startColor1 = ContextCompat.getColor(context, R.color.blue1);
-                endColor1 = ContextCompat.getColor(context, R.color.blue2);
+                startColor = ContextCompat.getColor(context, R.color.blue1);
+                endColor = ContextCompat.getColor(context, R.color.blue2);
                 break;
             default:
                 break;
         }
+    }
+    public void setChartColor(int start, int end) {
+        startColor = start;
+        endColor = end;
+    }
+
+
+    public void setData(ArrayList<BarEntry> values, int mode) {
+        BarDataSet set1;
 
         IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(mode);
         XAxis xAxis = chart.getXAxis();
@@ -111,7 +120,7 @@ public class ChartHelper implements OnChartValueSelectedListener {
             set1 = (BarDataSet) chart.getData().getDataSetByIndex(0);
 
             List<GradientColor> gradientColors = new ArrayList<>();
-            gradientColors.add(new com.github.mikephil.charting.model.GradientColor(startColor1, endColor1));
+            gradientColors.add(new com.github.mikephil.charting.model.GradientColor(startColor, endColor));
 
             set1.setGradientColors(gradientColors);
 
@@ -126,7 +135,7 @@ public class ChartHelper implements OnChartValueSelectedListener {
             set1.setDrawIcons(false);
 
             List<GradientColor> gradientColors = new ArrayList<>();
-            gradientColors.add(new com.github.mikephil.charting.model.GradientColor(startColor1, endColor1));
+            gradientColors.add(new com.github.mikephil.charting.model.GradientColor(startColor, endColor));
 
             set1.setGradientColors(gradientColors);
 
@@ -141,6 +150,7 @@ public class ChartHelper implements OnChartValueSelectedListener {
             chart.setData(data);
             chart.animateY(500);
         }
+        chart.invalidate();
     }
 
     @Override

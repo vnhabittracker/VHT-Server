@@ -26,6 +26,8 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
         super(db);
     }
 
+    public HabitDaoImpl() {}
+
     @Override
     public List<DateTracking> getHabitsBetween(String startDate, String endDate) {
         List<DateTracking> list = new ArrayList<>();

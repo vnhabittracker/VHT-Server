@@ -37,14 +37,15 @@
             android:theme="@style/AppTheme" />
         <activity android:name=".SplashActivity" />
         <activity android:name=".GroupActivity" />
-        <activity android:name=".ReminderCreateActivity"></activity>
+        <activity android:name=".ReminderCreateActivity" />
 
         <receiver android:name=".common.receiver.ReminderReceiver" />
 
         <activity android:name=".GuideActivity" />
         <activity android:name=".ReportActivity" />
         <activity android:name=".FilterMainActivity" />
-        <activity android:name=".ReportDetailsActivity"></activity>
+        <activity android:name=".ReportDetailsActivity" />
+        <activity android:name=".ReportSummaryActivity"></activity>
     </application>
 
 </manifest>

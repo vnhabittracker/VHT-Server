@@ -276,9 +276,9 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         rvRemind.setAdapter(remindAdapter);
 
         // load habit from local trackingItemList
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            this.savedHabitId = extras.getString(MainActivity.HABIT_ID, null);
+        Bundle data = getIntent().getExtras();
+        if (data != null) {
+            this.savedHabitId = data.getString(MainActivity.HABIT_ID, null);
             if (savedHabitId != null) {
                 // mode CREATE
                 this.createMode = 1;
