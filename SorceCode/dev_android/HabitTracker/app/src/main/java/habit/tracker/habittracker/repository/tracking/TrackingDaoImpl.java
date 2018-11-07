@@ -137,16 +137,8 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
         final String selection = TRACKING_ID + " = ?";
         setContentValue(entity);
         try {
-            return super.update(TRACKING_TABLE, getContentValue(), selection, selectionArgs) > 0;
-        } catch (SQLiteConstraintException ex) {
-            return false;
-        }
-    }
-
-    public boolean updateTrackCount(TrackingEntity trackingEntity) {
-        setContentValue(trackingEntity);
-        try {
-            return super.replace(TRACKING_TABLE, getContentValue()) > 0;
+            boolean res = super.update(TRACKING_TABLE, getContentValue(), selection, selectionArgs) > 0;
+            return res;
         } catch (SQLiteConstraintException ex) {
             return false;
         }

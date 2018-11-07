@@ -51,7 +51,7 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
 
     @Override
     public int getItemCount() {
-        return  mData == null? 0: mData.size() + 1;
+        return mData == null ? 0 : mData.size() + 1;
     }
 
     @Override
@@ -100,7 +100,7 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
     private Drawable getBackground(String color) {
         Drawable mDrawable = ContextCompat.getDrawable(context, R.drawable.bg_shadow);
         if (mDrawable != null && color != null) {
-            mDrawable.setColorFilter(new PorterDuffColorFilter(Color.parseColor(color),PorterDuff.Mode.MULTIPLY));
+            mDrawable.setColorFilter(new PorterDuffColorFilter(Color.parseColor(color), PorterDuff.Mode.MULTIPLY));
         }
         return mDrawable;
     }
@@ -294,6 +294,7 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
 
     public interface ItemClickListener {
         void onTrackingValueChanged(View view, int type, int position, int count);
+
         void onItemClick(View view, int type, int position);
     }
 }
