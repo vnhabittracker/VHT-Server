@@ -88,20 +88,23 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
     }
 
     @Override
-    public TrackingEntity getTracking(String trackId) {
-        final String selectionArgs[] = {String.valueOf(trackId)};
-        final String selection = TRACKING_ID + " = ?";
-        TrackingEntity entity = new TrackingEntity();
-        cursor = super.query(TRACKING_TABLE, TRACKING_COLUMNS, selection, selectionArgs, TRACKING_ID);
-        if (cursor != null) {
+    public List<TrackingEntity> getRecordByHabit(String habitId) {
+        List<TrackingEntity> list = new ArrayList<>();
+        final String selectionArgs[] = {String.valueOf(habitId)};
+        final String selection = HABIT_ID + " = ?";
+        cursor = super.query(TRACKING_TABLE, TRACKING_COLUMNS, selection, selectionArgs, CURRENT_DATE);
+        if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
-            entity = cursorToEntity(cursor);
-            if (entity.getHabitId() == null) {
-                entity.setHabitId(cursor.getString(cursor.getColumnIndexOrThrow(HABIT_ID)));
+            while (!cursor.isAfterLast()) {
+                list.add(cursorToEntity(cursor));
+                cursor.moveToNext();
             }
             cursor.close();
         }
-        return entity;
+        if (list.size() > 0) {
+            return list;
+        }
+        return null;
     }
 
     public TrackingEntity getTracking(String habitId, String currentDate) {

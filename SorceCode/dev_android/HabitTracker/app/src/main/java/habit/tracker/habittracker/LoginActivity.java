@@ -141,7 +141,7 @@ public class LoginActivity extends BaseActivity {
                         userEntity.setUserIcon(user.getUserIcon());
                         userEntity.setAvatar(user.getAvatar());
                         userEntity.setUserDescription(user.getUserDescription());
-                        Database.sUserDaoImpl.saveUser(userEntity);
+                        Database.userDaoImpl.saveUser(userEntity);
                         db.close();
                         showMainScreen(user.getUserId(), user.getUsername());
                     }
@@ -154,7 +154,7 @@ public class LoginActivity extends BaseActivity {
             public void onFailure(Call<UserResponse> call, Throwable t) {
                 Database db = new Database(LoginActivity.this);
                 db.open();
-                UserEntity userEntity = Database.sUserDaoImpl.getUser(username, password);
+                UserEntity userEntity = Database.userDaoImpl.getUser(username, password);
                 db.close();
                 if (userEntity.getUserId() != null) {
                     showMainScreen(userEntity.getUserId(), userEntity.getUsername());

@@ -1,5 +1,7 @@
 package habit.tracker.habittracker.repository.tracking;
 
+import android.text.TextUtils;
+
 public class TrackingEntity {
     private String trackingId;
     private String habitId;
@@ -21,6 +23,13 @@ public class TrackingEntity {
 
     public String getCount() {
         return count;
+    }
+
+    public int getIntCount() {
+        if (TextUtils.isEmpty(count)) {
+            return 0;
+        }
+        return Integer.parseInt(count);
     }
 
     public String getDescription() {

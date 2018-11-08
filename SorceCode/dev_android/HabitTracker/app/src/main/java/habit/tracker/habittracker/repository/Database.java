@@ -20,17 +20,37 @@ import habit.tracker.habittracker.repository.user.UserSchema;
  * Created by DatTVT1 on 10/12/2018
  */
 public class Database {
-
     private static final String DATABASE_NAME = "vnhabit";
     private static final int DATABASE_VERSION = 1;
+
     private DatabaseHelper dbHelper;
     private final Context mContext;
 
-    public static UserDaoImpl sUserDaoImpl;
-    public static HabitDaoImpl sHabitDaoImpl;
-    public static GroupDaoImpl sGroupDaoImpl;
-    public static TrackingDaoImpl sTrackingImpl;
-    public static ReminderDaoImpl sReminderImpl;
+    public static UserDaoImpl userDaoImpl;
+    public static HabitDaoImpl habitDaoImpl;
+    public static GroupDaoImpl groupDaoImpl;
+    public static TrackingDaoImpl trackingImpl;
+    public static ReminderDaoImpl reminderImpl;
+
+    public static UserDaoImpl getUser() {
+        return userDaoImpl;
+    }
+
+    public static HabitDaoImpl getHabitDb() {
+        return habitDaoImpl;
+    }
+
+    public static GroupDaoImpl getGroupDb() {
+        return groupDaoImpl;
+    }
+
+    public static TrackingDaoImpl getTrackingDb() {
+        return trackingImpl;
+    }
+
+    public static ReminderDaoImpl getReminderDb() {
+        return reminderImpl;
+    }
 
     public Database(Context context) {
         this.mContext = context;
@@ -39,7 +59,7 @@ public class Database {
 
     public static synchronized Database getInstance(Context context) {
         if (sInstance == null) {
-            return new Database(context);
+            return sInstance = new Database(context);
         }
         return sInstance;
     }
@@ -47,11 +67,11 @@ public class Database {
     public Database open() throws SQLException {
         dbHelper = new DatabaseHelper(mContext);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        sUserDaoImpl = new UserDaoImpl(db);
-        sHabitDaoImpl = new HabitDaoImpl(db);
-        sGroupDaoImpl = new GroupDaoImpl(db);
-        sTrackingImpl = new TrackingDaoImpl(db);
-        sReminderImpl = new ReminderDaoImpl(db);
+        userDaoImpl = new UserDaoImpl(db);
+        habitDaoImpl = new HabitDaoImpl(db);
+        groupDaoImpl = new GroupDaoImpl(db);
+        trackingImpl = new TrackingDaoImpl(db);
+        reminderImpl = new ReminderDaoImpl(db);
         return this;
     }
 

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +18,14 @@ public class TrackingCalendarAdapter extends RecyclerView.Adapter<TrackingCalend
 
     private LayoutInflater mInflater;
     Context context;
-    List<CalendarNumber> data;
+    List<TrackingCalendarItem> data;
+    OnItemClickListener clickListener;
 
-    public TrackingCalendarAdapter(Context context, List<CalendarNumber> data) {
+    public void setClickListener(OnItemClickListener clickListener) {
+        this.clickListener = clickListener;
+    }
+
+    public TrackingCalendarAdapter(Context context, List<TrackingCalendarItem> data) {
         this.context = context;
         this.data = data;
         this.mInflater = LayoutInflater.from(context);
@@ -34,10 +40,15 @@ public class TrackingCalendarAdapter extends RecyclerView.Adapter<TrackingCalend
 
     @Override
     public void onBindViewHolder(@NonNull CalendarNumberViewHolder holder, int pos) {
-        if (data.get(pos).isSelected()) {
+        if (data.get(pos).isFilled()) {
             holder.tvNumber.setBackground(ContextCompat.getDrawable(context, R.drawable.bg_circle_fill));
         } else {
             holder.tvNumber.setBackground(ContextCompat.getDrawable(context, android.R.color.transparent));
+        }
+        if (data.get(pos).isOutOfRange()) {
+            holder.tvNumber.setAlpha(0.4f);
+        } else {
+            holder.tvNumber.setAlpha(1f);
         }
 
         holder.tvNumber.setText( data.get(pos).getText() );
@@ -59,7 +70,15 @@ public class TrackingCalendarAdapter extends RecyclerView.Adapter<TrackingCalend
 
         @Override
         public void onClick(View v) {
-
+            if (data.get(this.getAdapterPosition()).isHeader()) {
+                return;
+            }
+            clickListener.onItemClick(v, this.getAdapterPosition());
+//            Log.i("calendar_click", "clicked: " + data.get(this.getAdapterPosition()).getText());
         }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(View v, int position);
     }
 }

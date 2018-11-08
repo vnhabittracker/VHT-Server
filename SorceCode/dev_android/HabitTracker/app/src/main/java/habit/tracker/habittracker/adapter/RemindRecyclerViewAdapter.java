@@ -14,12 +14,12 @@ import habit.tracker.habittracker.R;
 import habit.tracker.habittracker.api.model.reminder.Reminder;
 import habit.tracker.habittracker.common.util.AppGenerator;
 
-public class RemindRecyclerViewAdaper extends RecyclerView.Adapter<RemindRecyclerViewAdaper.ReminderViewHolder> {
+public class RemindRecyclerViewAdapter extends RecyclerView.Adapter<RemindRecyclerViewAdapter.ReminderViewHolder> {
     List<Reminder> data;
     private LayoutInflater mInflater;
     Context context;
 
-    public RemindRecyclerViewAdaper(Context context, List<Reminder> data){
+    public RemindRecyclerViewAdapter(Context context, List<Reminder> data){
         this.context = context;
         this.data = data;
         mInflater = LayoutInflater.from(context);

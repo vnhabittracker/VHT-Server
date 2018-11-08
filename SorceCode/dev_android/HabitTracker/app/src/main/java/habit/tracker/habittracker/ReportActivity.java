@@ -163,7 +163,7 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
 
         chart.getDescription().setEnabled(false);
 
-        // if more than 60 entries are displayed in the chart, no values will be
+        // if more than 60 entries are displayed in the chart, no calendarItemList will be
         // drawn
         chart.setMaxVisibleValueCount(60);
 
@@ -311,7 +311,7 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
 
         // get all completed habits in one week
         List<DateTracking> weekData = Database
-                .sHabitDaoImpl.getHabitsBetween(daysInWeek[0], daysInWeek[6]);
+                .habitDaoImpl.getHabitsBetween(daysInWeek[0], daysInWeek[6]);
         db.close();
 
         Map<String, Integer> countHabit = new HashMap<>();
@@ -378,7 +378,7 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         db.open();
 
         List<DateTracking> total = Database
-                .sHabitDaoImpl.getHabitsBetween(
+                .habitDaoImpl.getHabitsBetween(
                         daysInMonth[0], daysInMonth[daysInMonth.length - 1]);
 
         Map<String, Integer> countHabit = new HashMap<>();
@@ -446,7 +446,7 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         Map<String, Integer> habitNumber = new HashMap<>();
 
         for (int m = 0; m < 12; m++) {
-            monthData = Database.sHabitDaoImpl.getHabitsBetween(
+            monthData = Database.habitDaoImpl.getHabitsBetween(
                     year + "-" + (m + 1) + "-" + 1, year + "-" + (m + 1) + "-" + AppGenerator.getMaxDayInMonth(year, m));
 
             for (DateTracking item : monthData) {

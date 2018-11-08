@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
 
                             // update tracking data from server
                             for (Tracking track : habit.getTracksList()) {
-                                Database.sTrackingImpl.saveTracking(Database.sTrackingImpl.convert(track));
+                                Database.trackingImpl.saveTracking(Database.trackingImpl.convert(track));
                             }
 
                             // get today tracking record
@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
                     }
 
                     for (Habit habit : habitList) {
-                        Database.sHabitDaoImpl.saveUpdateHabit(Database.sHabitDaoImpl.convert(habit));
+                        Database.habitDaoImpl.saveUpdateHabit(Database.habitDaoImpl.convert(habit));
                     }
                     db.close();
                 }
@@ -212,8 +212,8 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
         tracking.setCurrentDate(this.currentDate);
         tracking.setCount(String.valueOf(item.getCount()));
         trackingData.getTrackingList().add(tracking);
-        if (!Database.sTrackingImpl
-                .updateTracking(Database.sTrackingImpl.convert(tracking))) {
+        if (!Database.trackingImpl
+                .updateTracking(Database.trackingImpl.convert(tracking))) {
             return;
         }
         db.close();
@@ -253,18 +253,18 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
         Database db = Database.getInstance(this);
         db.open();
         List<HabitEntity> habitEntities = Database
-                .sHabitDaoImpl.fetchTodayHabit(schedule, currentDate);
+                .habitDaoImpl.fetchTodayHabit(schedule, currentDate);
 
         boolean isDataSetChanged = false;
         for (HabitEntity habit : habitEntities) {
 
             // get tracking records on current date
-            TrackingEntity record = Database.sTrackingImpl
+            TrackingEntity record = Database.trackingImpl
                     .getTracking(habit.getHabitId(), currentDate);
 
             if (record == null) {
                 record = getTodayTracking(habit.getHabitId(), currentDate, 0);
-                Database.sTrackingImpl.saveTracking(record);
+                Database.trackingImpl.saveTracking(record);
             }
             TrackingItem item = new TrackingItem(
                     record.getTrackingId(),
@@ -293,7 +293,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
     }
 
     public TrackingEntity getTodayTracking(String habitId, String currentDate, int defaultVal) {
-        TrackingEntity todayTracking = Database.sTrackingImpl
+        TrackingEntity todayTracking = Database.trackingImpl
                 .getTracking(habitId, currentDate);
 
         if (todayTracking == null) {
@@ -303,7 +303,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
             todayTracking.setCount(String.valueOf(defaultVal));
             todayTracking.setCurrentDate(currentDate);
             todayTracking.setDescription(currentDate);
-            Database.sTrackingImpl.saveTracking(todayTracking);
+            Database.trackingImpl.saveTracking(todayTracking);
         }
         return todayTracking;
     }

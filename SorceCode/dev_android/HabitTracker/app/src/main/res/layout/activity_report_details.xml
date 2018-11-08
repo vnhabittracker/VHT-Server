@@ -55,7 +55,7 @@
             android:layout_alignBottom="@+id/tvCurrentTime"
             android:src="@drawable/arrow_right"/>
         <TextView
-            android:id="@+id/tvCount"
+            android:id="@+id/tvTrackCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -68,18 +68,18 @@
             android:id="@+id/minusCount"
             android:layout_width="20dp"
             android:layout_height="0dp"
-            android:layout_toStartOf="@+id/tvCount"
-            android:layout_alignTop="@+id/tvCount"
-            android:layout_alignBottom="@+id/tvCount"
+            android:layout_toStartOf="@+id/tvTrackCount"
+            android:layout_alignTop="@+id/tvTrackCount"
+            android:layout_alignBottom="@+id/tvTrackCount"
             android:src="@drawable/minus_purple"/>
 
         <ImageView
             android:id="@+id/addCount"
             android:layout_width="20dp"
             android:layout_height="0dp"
-            android:layout_toEndOf="@+id/tvCount"
-            android:layout_alignTop="@+id/tvCount"
-            android:layout_alignBottom="@+id/tvCount"
+            android:layout_toEndOf="@+id/tvTrackCount"
+            android:layout_alignTop="@+id/tvTrackCount"
+            android:layout_alignBottom="@+id/tvTrackCount"
             android:src="@drawable/plus_purple"/>
     </RelativeLayout>
 

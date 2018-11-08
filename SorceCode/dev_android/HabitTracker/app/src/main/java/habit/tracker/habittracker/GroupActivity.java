@@ -63,7 +63,7 @@ public class GroupActivity extends AppCompatActivity implements GroupRecyclerVie
                     Database db = new Database(GroupActivity.this);
                     db.open();
                     for (Group g : data) {
-                        Database.sGroupDaoImpl.save(g);
+                        Database.groupDaoImpl.save(g);
                     }
                     db.close();
                     rvGroupItem = findViewById(R.id.rv_group);
@@ -117,7 +117,7 @@ public class GroupActivity extends AppCompatActivity implements GroupRecyclerVie
 
                     Database db = new Database(GroupActivity.this);
                     db.open();
-                    Database.sGroupDaoImpl.save(newGroup);
+                    Database.groupDaoImpl.save(newGroup);
                     db.close();
 
                     edGroupName.setText(null);

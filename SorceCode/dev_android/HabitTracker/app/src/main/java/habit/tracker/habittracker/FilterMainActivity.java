@@ -89,7 +89,7 @@ public class FilterMainActivity extends AppCompatActivity implements GroupRecycl
                     Database db = new Database(FilterMainActivity.this);
                     db.open();
                     for (Group g : data) {
-                        Database.sGroupDaoImpl.save(g);
+                        Database.groupDaoImpl.save(g);
                     }
                     db.close();
                     rvGroupItem = findViewById(R.id.rv_group);

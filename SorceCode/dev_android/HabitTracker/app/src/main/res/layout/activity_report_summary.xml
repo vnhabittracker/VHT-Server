@@ -55,7 +55,7 @@
             android:layout_alignBottom="@+id/tvCurrentTime"
             android:src="@drawable/arrow_right"/>
         <TextView
-            android:id="@+id/tvCount"
+            android:id="@+id/tvTrackCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -68,18 +68,18 @@
             android:id="@+id/minusCount"
             android:layout_width="20dp"
             android:layout_height="0dp"
-            android:layout_toStartOf="@+id/tvCount"
-            android:layout_alignTop="@+id/tvCount"
-            android:layout_alignBottom="@+id/tvCount"
+            android:layout_toStartOf="@+id/tvTrackCount"
+            android:layout_alignTop="@+id/tvTrackCount"
+            android:layout_alignBottom="@+id/tvTrackCount"
             android:src="@drawable/minus_purple"/>
 
         <ImageView
             android:id="@+id/addCount"
             android:layout_width="20dp"
             android:layout_height="0dp"
-            android:layout_toEndOf="@+id/tvCount"
-            android:layout_alignTop="@+id/tvCount"
-            android:layout_alignBottom="@+id/tvCount"
+            android:layout_toEndOf="@+id/tvTrackCount"
+            android:layout_alignTop="@+id/tvTrackCount"
+            android:layout_alignBottom="@+id/tvTrackCount"
             android:src="@drawable/plus_purple"/>
     </RelativeLayout>
 
@@ -95,7 +95,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textSize="20sp"
+            android:layout_marginBottom="5dp"
+            android:textSize="18sp"
             android:textColor="#313131"
             android:text="Tháng 11, 2018"/>
 
@@ -125,6 +126,7 @@
                 android:text="Đạt được:"/>
 
             <TextView
+                android:id="@+id/tvTotalCount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -144,6 +146,7 @@
                 android:textSize="15sp"
                 android:text="Chuổi hiện tại:"/>
             <TextView
+                android:id="@+id/tvCurrentChain"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -164,6 +167,7 @@
                 android:text="Chuỗi dài nhất:"
                 android:textSize="15sp" />
             <TextView
+                android:id="@+id/tvBestTrackingChain"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"

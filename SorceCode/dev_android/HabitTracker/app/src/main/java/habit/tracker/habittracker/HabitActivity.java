@@ -29,7 +29,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import habit.tracker.habittracker.adapter.RemindRecyclerViewAdaper;
+import habit.tracker.habittracker.adapter.RemindRecyclerViewAdapter;
 import habit.tracker.habittracker.api.VnHabitApiUtils;
 import habit.tracker.habittracker.api.model.habit.Habit;
 import habit.tracker.habittracker.api.model.reminder.Reminder;
@@ -199,7 +199,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
     RecyclerView rvRemind;
     List<Reminder> remindDispList = new ArrayList<>();
     List<Reminder> remindAddNew = new ArrayList<>();
-    RemindRecyclerViewAdaper remindAdapter;
+    RemindRecyclerViewAdapter remindAdapter;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -270,7 +270,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         endDay = calendar.get(Calendar.DATE);
 
         // init remind list
-        remindAdapter = new RemindRecyclerViewAdaper(this, remindDispList);
+        remindAdapter = new RemindRecyclerViewAdapter(this, remindDispList);
         rvRemind.setLayoutManager(new LinearLayoutManager(this));
         rvRemind.setOnClickListener(null);
         rvRemind.setAdapter(remindAdapter);
@@ -309,11 +309,11 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
 
             Database db = new Database(this);
             db.open();
-            HabitEntity habitEntity = Database.sHabitDaoImpl.getHabit(habitId);
+            HabitEntity habitEntity = Database.habitDaoImpl.getHabit(habitId);
             if (habitEntity != null) {
                 if (habitEntity.getGroupId() != null) {
                     this.savedGroupId = habitEntity.getGroupId();
-                    GroupEntity groupEntity = Database.sGroupDaoImpl.getGroup(habitEntity.getGroupId());
+                    GroupEntity groupEntity = Database.groupDaoImpl.getGroup(habitEntity.getGroupId());
                     tvGroupName.setText(groupEntity.getGroupName());
                 }
                 if (habitEntity.getMonitorId() != null) {
@@ -444,7 +444,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                     }
                 }
                 // habit reminders
-                List<ReminderEntity> reminders = Database.sReminderImpl.getRemindersByHabit(habitId);
+                List<ReminderEntity> reminders = Database.reminderImpl.getRemindersByHabit(habitId);
                 Reminder reminder;
                 for (ReminderEntity entity : reminders) {
                     reminder = new Reminder();
@@ -554,13 +554,13 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         // save habit
         Database db = new Database(HabitActivity.this);
         db.open();
-        if (Database.sHabitDaoImpl.saveUpdateHabit(
-                Database.sHabitDaoImpl.convert(habit))) {
+        if (Database.habitDaoImpl.saveUpdateHabit(
+                Database.habitDaoImpl.convert(habit))) {
             // save reminder list
             for (Reminder reminder : remindAddNew) {
                 reminder.setHabitId(habit.getHabitId());
-                int remindId = Database.sReminderImpl.addReminder(
-                        Database.sReminderImpl.convert(reminder));
+                int remindId = Database.reminderImpl.addReminder(
+                        Database.reminderImpl.convert(reminder));
                 reminder.setReminderId(String.valueOf(remindId));
             }
         }
@@ -618,7 +618,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
             // delete habit
             Database db = new Database(this);
             db.open();
-            Database.sHabitDaoImpl.deleteHabit(this.savedHabitId);
+            Database.habitDaoImpl.deleteHabit(this.savedHabitId);
             db.close();
 
             VnHabitApiService service = VnHabitApiUtils.getApiService();
