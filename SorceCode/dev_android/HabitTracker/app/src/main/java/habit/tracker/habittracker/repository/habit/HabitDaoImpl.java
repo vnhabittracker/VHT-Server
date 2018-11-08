@@ -32,7 +32,7 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
     public List<DateTracking> getHabitsBetween(String startDate, String endDate) {
         List<DateTracking> list = new ArrayList<>();
         try {
-            Cursor cursor = super.rawQuery(
+            cursor = super.rawQuery(
                     "SELECT * FROM " + HABIT_TABLE + " INNER JOIN " + TRACKING_TABLE
                             + " ON " +
                             HABIT_TABLE + "." + HabitSchema.HABIT_ID + " = " + HABIT_TABLE + "." + TrackingSchema.HABIT_ID
@@ -64,10 +64,13 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
     }
 
     @Override
-    public List<HabitEntity> fetchHabit() {
+    public List<HabitEntity> getHabitByUser(String userId) {
         List<HabitEntity> list = new ArrayList<>();
-        Cursor cursor = super.query(HABIT_TABLE, HABIT_COLUMNS, null, null, null);
-        if (cursor != null) {
+        final String selectionArgs[] = {userId};
+        final String selection = HabitSchema.USER_ID + " = ?";
+
+        cursor = super.query(HABIT_TABLE, HABIT_COLUMNS, selection, selectionArgs, null);
+        if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 list.add(cursorToEntity(cursor));
@@ -78,16 +81,27 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
         return list;
     }
 
+    public int countHabitByUser(String userId) {
+        int count = 0;
+        final String sql = "select count(*) as count from " + HABIT_TABLE + " where " + USER_ID + " = '" + userId + "'";
+        cursor = super.rawQuery(sql, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            if (cursor.getColumnIndex("count") != -1) {
+                count = cursor.getInt(cursor.getColumnIndexOrThrow("count"));
+            }
+        }
+        return count;
+    }
+
     public List<HabitEntity> getTodayHabit(TrackingDate date, String currentDate) {
         List<HabitEntity> list = new ArrayList<>();
-        final String[] selectionArgs = new String[]{currentDate};
 
-        final String selection = "(? >= " + HabitSchema.START_DATE + ")"
-                + " AND " +
-                "(" + HabitSchema.END_DATE + " IS NULL OR ? <= " + HabitSchema.END_DATE + ")"
+        final String sql = "SELECT * FROM " + HabitSchema.HABIT_TABLE + " WHERE ( '" + currentDate + "' >= " + HabitSchema.START_DATE + ")"
+                + " AND ( " + HabitSchema.END_DATE + " IS NULL OR '" + currentDate + "' <= " + HabitSchema.END_DATE + ")"
                 + " AND " + getTodayCond(date);
 
-        Cursor cursor = super.query(HABIT_TABLE, HABIT_COLUMNS, selection, selectionArgs, null);
+        cursor = super.rawQuery(sql, null);
 
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();

@@ -1,5 +1,6 @@
 package habit.tracker.habittracker.common.util;
 
+import android.content.Intent;
 import android.text.TextUtils;
 
 import java.text.DateFormat;
@@ -110,20 +111,24 @@ public class AppGenerator {
 
     public static String getPreMonth(String currentDate) {
         String[] arrDate = currentDate.split("-");
+        int year = Integer.parseInt(arrDate[0]);
         int month = Integer.parseInt(arrDate[1]) - 1;
-        if (month < 1 || month > 12) {
-            return currentDate;
+        if (month < 1) {
+            year--;
+            return format(year + "-12-01", YMD_SHORT, YMD_SHORT);
         }
-        return format(arrDate[0] + "-" + month + "-" + arrDate[2], YMD_SHORT, YMD_SHORT);
+        return format(year + "-" + month + "-01", YMD_SHORT, YMD_SHORT);
     }
 
     public static String getNextMonth(String currentDate) {
         String[] arrDate = currentDate.split("-");
+        int year = Integer.parseInt(arrDate[0]);
         int month = Integer.parseInt(arrDate[1]) + 1;
-        if (month < 1 || month > 12) {
-            return currentDate;
+        if (month > 12) {
+            year++;
+            return format(year + "-01-01", YMD_SHORT, YMD_SHORT);
         }
-        return format(arrDate[0] + "-" + month + "-" + arrDate[2], YMD_SHORT, YMD_SHORT);
+        return format(arrDate[0] + "-" + month + "-01", YMD_SHORT, YMD_SHORT);
     }
 
     public static String getPreYear(String currentDate) {
@@ -132,16 +137,16 @@ public class AppGenerator {
         if (year < 1970) {
             return currentDate;
         }
-        return format(year + "-" + arrDate[1] + "-" + arrDate[2], YMD_SHORT, YMD_SHORT);
+        return format(year + "-01-01", YMD_SHORT, YMD_SHORT);
     }
 
     public static String getNextYear(String currentDate) {
         String[] arrDate = currentDate.split("-");
         int year = Integer.parseInt(arrDate[0]) + 1;
-        if (year > 2020) {
+        if (year > 9999) {
             return currentDate;
         }
-        return format(year + "-" + arrDate[1] + "-" + arrDate[2], YMD_SHORT, YMD_SHORT);
+        return format(year + "-01-01", YMD_SHORT, YMD_SHORT);
     }
 
     public static String getPreDate(String currentDate, boolean[] availDaysInWeek) {

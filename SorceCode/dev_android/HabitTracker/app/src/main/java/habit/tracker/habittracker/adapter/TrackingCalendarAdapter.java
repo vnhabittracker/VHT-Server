@@ -1,6 +1,10 @@
 package habit.tracker.habittracker.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -20,15 +24,17 @@ public class TrackingCalendarAdapter extends RecyclerView.Adapter<TrackingCalend
     Context context;
     List<TrackingCalendarItem> data;
     OnItemClickListener clickListener;
+    String colorTheme;
 
     public void setClickListener(OnItemClickListener clickListener) {
         this.clickListener = clickListener;
     }
 
-    public TrackingCalendarAdapter(Context context, List<TrackingCalendarItem> data) {
+    public TrackingCalendarAdapter(Context context, List<TrackingCalendarItem> data, String colorTheme) {
         this.context = context;
         this.data = data;
         this.mInflater = LayoutInflater.from(context);
+        this.colorTheme = colorTheme;
     }
 
     @NonNull
@@ -41,7 +47,7 @@ public class TrackingCalendarAdapter extends RecyclerView.Adapter<TrackingCalend
     @Override
     public void onBindViewHolder(@NonNull CalendarNumberViewHolder holder, int pos) {
         if (data.get(pos).isFilled()) {
-            holder.tvNumber.setBackground(ContextCompat.getDrawable(context, R.drawable.bg_circle_fill));
+            holder.tvNumber.setBackground(getBackground(colorTheme));
         } else {
             holder.tvNumber.setBackground(ContextCompat.getDrawable(context, android.R.color.transparent));
         }
@@ -80,5 +86,13 @@ public class TrackingCalendarAdapter extends RecyclerView.Adapter<TrackingCalend
 
     public interface OnItemClickListener {
         void onItemClick(View v, int position);
+    }
+
+    private Drawable getBackground(String color) {
+        Drawable mDrawable = ContextCompat.getDrawable(context, R.drawable.bg_circle_fill);
+        if (mDrawable != null && color != null) {
+            mDrawable.setColorFilter(new PorterDuffColorFilter(Color.parseColor(color), PorterDuff.Mode.MULTIPLY));
+        }
+        return mDrawable;
     }
 }

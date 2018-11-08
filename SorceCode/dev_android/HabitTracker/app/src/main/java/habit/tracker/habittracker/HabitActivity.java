@@ -1,5 +1,6 @@
 package habit.tracker.habittracker;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -321,6 +322,10 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                 // habit name
                 editHabitName.setText(habitEntity.getHabitName());
 
+                // habit stat and end date
+                startHabitDate = habitEntity.getStartDate();
+                endHabitDate = habitEntity.getEndDate();
+
                 // habit target
                 switch (habitEntity.getHabitTarget()) {
                     case TYPE_0:
@@ -463,6 +468,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         }
     }
 
+    @SuppressLint("ResourceType")
     @OnClick(R.id.btn_save)
     public void saveHabit(View v) {
         // validate user input
@@ -530,7 +536,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         habit.setEndDate(endHabitDate);
         habit.setCreatedDate(AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT));
 
-        habit.setHabitColor(this.habitColorCode);
+        habit.setHabitColor(habitColorCode);
         habit.setHabitDescription(this.editDescription.getText().toString());
 
         habit.setMon(String.valueOf(this.monitorDate[0] ? 1 : 0));
@@ -763,11 +769,11 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
     @Override
     public void onDateSet(DatePicker view, int year, int month, int day) {
         if (onSetStartDate) {
-            startHabitDate = AppGenerator.getDate(year, month, day, AppGenerator.YMD_SHORT);
+            startHabitDate = AppGenerator.getDate(year, month + 1, day, AppGenerator.YMD_SHORT);
             tvStartDate.setText(AppGenerator.format(startHabitDate, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT));
 
         } else {
-            endHabitDate = AppGenerator.getDate(year, month, day, AppGenerator.YMD_SHORT);
+            endHabitDate = AppGenerator.getDate(year, month + 1, day, AppGenerator.YMD_SHORT);
             tvEndDate.setText(AppGenerator.format(endHabitDate, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT));
         }
     }

@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface HabitDao {
     List<DateTracking> getHabitsBetween(String startDate, String endDate);
-    List<HabitEntity> fetchHabit();
+    List<HabitEntity> getHabitByUser(String userId);
     HabitEntity getHabit(String habitId);
     boolean saveUpdateHabit(HabitEntity habitEntity);
     boolean deleteHabit(String habitId);

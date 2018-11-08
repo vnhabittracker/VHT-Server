@@ -46,6 +46,8 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
     @BindView(R.id.header)
     View vHeader;
 
+    @BindView(R.id.tvHabitName)
+    TextView tvHabitName;
     @BindView(R.id.tvCurrentTime)
     TextView tvCurrentTime;
     @BindView(R.id.tvTrackCount)
@@ -71,6 +73,9 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
     @BindView(R.id.tvBestTrackingChain)
     TextView tvBestTrackingChain;
 
+    @BindView(R.id.tvCalendarHead)
+    TextView tvCalendarHead;
+
     private HabitEntity habitEntity;
     TrackingCalendarAdapter calendarAdapter;
     List<TrackingCalendarItem> trackingCalendarItemList = new ArrayList<>();
@@ -88,6 +93,7 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
     List<TrackingEntity> bestTrackingChain = new ArrayList<>();
 
     Database db = Database.getInstance(this);
+    boolean isDbOpen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +108,6 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             db.open();
-
             String habitId = bundle.getString(MainActivity.HABIT_ID);
             String habitColor = bundle.getString(MainActivity.HABIT_COLOR);
             currentTrackingDate = AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT);
@@ -166,7 +171,7 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
         // </1>
 
         // <init calendar>
-        calendarAdapter = new TrackingCalendarAdapter(this, trackingCalendarItemList);
+        calendarAdapter = new TrackingCalendarAdapter(this, trackingCalendarItemList, habitEntity.getHabitColor());
         calendarAdapter.setClickListener(this);
         recyclerViewCalendar.setLayoutManager(new GridLayoutManager(this, 7));
         recyclerViewCalendar.setAdapter(calendarAdapter);
@@ -175,6 +180,14 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
 
         // init other view
         updateUI();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (isDbOpen) {
+            db.open();
+        }
     }
 
     private void loadCalendar(String currentTrackingDate) {
@@ -220,6 +233,8 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
             e.printStackTrace();
         }
 
+        tvCalendarHead.setText("Tháng " + (calendar.get(Calendar.MONTH) + 1) + ", " + calendar.get(Calendar.YEAR));
+
         trackingCalendarItemList.add(new TrackingCalendarItem("Hai", null, false, false, true));
         trackingCalendarItemList.add(new TrackingCalendarItem("Ba", null, false, false, true));
         trackingCalendarItemList.add(new TrackingCalendarItem("Tư", null, false, false, true));
@@ -241,17 +256,7 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
         watchDay[5] = habitEntity.getSat().equals("1");
         watchDay[6] = habitEntity.getSun().equals("1");
 
-        // add days in month
-//        boolean isClickable;
-//        int pos;
         for (int i = 0; i < datesInMonth.length; i++) {
-//            pos = (head.size() + i + 1) % 7 - 1;
-//            if (pos >= 0) {
-//                isClickable = watchDay[pos];
-//            } else {
-//                isClickable = watchDay[6];
-//            }
-
             if (mapValues.containsKey(datesInMonth[i])) {
                 trackingCalendarItemList.add(new TrackingCalendarItem(String.valueOf(i + 1), datesInMonth[i], true, false));
             } else {
@@ -312,7 +317,9 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
 
     @OnClick({R.id.minusCount, R.id.addCount})
     public void onTrackingCountChanged(View v) {
-        if (timeLine > 0 || !AppGenerator.isValidTrackingDay(currentTrackingDate, availDaysInWeek)) {
+        if (timeLine > 0
+                || currentTrackingDate.compareTo(habitEntity.getStartDate()) < 0
+                || !AppGenerator.isValidTrackingDay(currentTrackingDate, availDaysInWeek)) {
             return;
         }
 
@@ -372,11 +379,15 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
                     AppGenerator.format(currentTrackingDate, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT));
         }
 
-        if (timeLine <= 0 && AppGenerator.isValidTrackingDay(currentTrackingDate, availDaysInWeek)) {
+        if (timeLine <= 0
+                && currentTrackingDate.compareTo(habitEntity.getStartDate()) >= 0
+                && AppGenerator.isValidTrackingDay(currentTrackingDate, availDaysInWeek)) {
             tvTrackCount.setText(String.valueOf(curTrackingCount));
         } else {
             tvTrackCount.setText("--");
         }
+
+        tvHabitName.setText(habitEntity.getHabitName());
 
         tvTotalCount.setText(String.valueOf(totalCount));
 
@@ -386,7 +397,9 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
 
         // reload calendar
         if ((currentTrackingDate.compareTo(lastDayPreMonth) <= 0
-                || currentTrackingDate.compareTo(firstDayNextMonth) >= 0) && currentTrackingDate.compareTo(firstCurTrackingDate) <= 0) {
+                || currentTrackingDate.compareTo(firstDayNextMonth) >= 0)
+//                && currentTrackingDate.compareTo(firstCurTrackingDate) <=
+                ) {
             loadCalendar(currentTrackingDate);
         }
     }
@@ -451,6 +464,7 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
     @Override
     protected void onStop() {
         db.close();
+        isDbOpen = true;
         super.onStop();
     }
 }

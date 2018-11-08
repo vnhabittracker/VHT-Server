@@ -39,6 +39,7 @@ import habit.tracker.habittracker.common.util.AppGenerator;
 import habit.tracker.habittracker.common.chart.DayAxisValueFormatter;
 import habit.tracker.habittracker.common.chart.MyAxisValueFormatter;
 import habit.tracker.habittracker.common.chart.XYMarkerView;
+import habit.tracker.habittracker.common.util.MySharedPreference;
 import habit.tracker.habittracker.repository.Database;
 import habit.tracker.habittracker.repository.habit.DateTracking;
 import habit.tracker.habittracker.repository.habit.HabitEntity;
@@ -65,7 +66,7 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
     @BindView(R.id.tabYear)
     View tabYear;
 
-    View selectedTab;
+    View selectedTab = tabWeek;
 
     private int mode = 0;
     public static final int MODE_WEEK = 0;
@@ -85,8 +86,76 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_report);
         ButterKnife.bind(this);
+
         selectedTab = tabWeek;
+
         initChart();
+    }
+
+    private void initChart() {
+        chart.setOnChartValueSelectedListener(this);
+
+        chart.setDrawBarShadow(false);
+        chart.setDrawValueAboveBar(true);
+
+        chart.getDescription().setEnabled(false);
+
+        // if more than 60 entries are displayed in the chart, no calendarItemList will be
+        // drawn
+        chart.setMaxVisibleValueCount(60);
+        // scaling can now only be done on x- and y-axis separately
+        chart.setPinchZoom(false);
+        chart.setDrawGridBackground(false);
+        // chart.setDrawYLabels(false);
+
+        IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter();
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setLabelCount(10);
+        xAxis.setValueFormatter(xAxisFormatter);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        xAxis.setGranularity(1f); // only intervals of 1 day
+
+        IAxisValueFormatter custom = new MyAxisValueFormatter();
+        YAxis leftAxis = chart.getAxisLeft();
+        leftAxis.setLabelCount(5, false);
+        leftAxis.setValueFormatter(custom);
+        leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+        leftAxis.setSpaceTop(15f);
+        leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+
+        YAxis rightAxis = chart.getAxisRight();
+        rightAxis.setEnabled(false);
+
+        Legend l = chart.getLegend();
+        l.setEnabled(false);
+
+        XYMarkerView mv = new XYMarkerView(this, xAxisFormatter);
+        mv.setChartView(chart); // For bounds control
+        chart.setMarker(mv); // Set the marker to the chart
+
+        try {
+            currentDate = AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT);
+
+            Database db = Database.getInstance(this);
+            db.open();
+            String userId = MySharedPreference.getUserId(this);
+            int countHabit = Database.getHabitDb().countHabitByUser(userId);
+            int countTracking = Database.getTrackingDb().countTrackByUser(userId);
+            db.close();
+            tvTotal.setText(String.valueOf(countHabit));
+            tvTotalDone.setText(String.valueOf(countTracking));
+
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            currentDate = dateFormat.format(dateFormat.parse(currentDate));
+            firstCurrentDate = currentDate;
+
+            ArrayList<BarEntry> values = loadWeekData(currentDate);
+            setData(values);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     @OnClick({R.id.tabWeek, R.id.tabMonth, R.id.tabYear})
@@ -135,91 +204,20 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
 
     @OnClick(R.id.next)
     public void next(View v) {
-        String nextYearDate = null;
         switch (mode) {
             case MODE_WEEK:
-                nextYearDate = AppGenerator.getDayNextWeek(currentDate);
+                currentDate = AppGenerator.getDayNextWeek(currentDate);
                 break;
             case MODE_MONTH:
-                nextYearDate = AppGenerator.getNextMonth(currentDate);
+                currentDate = AppGenerator.getNextMonth(currentDate);
                 break;
             case MODE_YEAR:
-                nextYearDate = AppGenerator.getNextYear(currentDate);
+                currentDate = AppGenerator.getNextYear(currentDate);
                 break;
         }
 
-        if (nextYearDate.compareTo(firstCurrentDate) < 1) {
-            currentDate = nextYearDate;
-            ArrayList<BarEntry> values = loadData(currentDate);
-            setData(values);
-        }
-    }
-
-    private void initChart() {
-        chart.setOnChartValueSelectedListener(this);
-
-        chart.setDrawBarShadow(false);
-        chart.setDrawValueAboveBar(true);
-
-        chart.getDescription().setEnabled(false);
-
-        // if more than 60 entries are displayed in the chart, no calendarItemList will be
-        // drawn
-        chart.setMaxVisibleValueCount(60);
-
-        // scaling can now only be done on x- and y-axis separately
-        chart.setPinchZoom(false);
-
-        chart.setDrawGridBackground(false);
-        // chart.setDrawYLabels(false);
-
-        IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter();
-
-        XAxis xAxis = chart.getXAxis();
-        xAxis.setLabelCount(10);
-        xAxis.setValueFormatter(xAxisFormatter);
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setDrawGridLines(false);
-        xAxis.setGranularity(1f); // only intervals of 1 day
-
-        IAxisValueFormatter custom = new MyAxisValueFormatter();
-
-        YAxis leftAxis = chart.getAxisLeft();
-        leftAxis.setLabelCount(5, false);
-        leftAxis.setValueFormatter(custom);
-        leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
-        leftAxis.setSpaceTop(15f);
-        leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
-
-        YAxis rightAxis = chart.getAxisRight();
-        rightAxis.setEnabled(false);
-
-        Legend l = chart.getLegend();
-        l.setEnabled(false);
-
-        XYMarkerView mv = new XYMarkerView(this, xAxisFormatter);
-        mv.setChartView(chart); // For bounds control
-        chart.setMarker(mv); // Set the marker to the chart
-
-        // chart.setDrawLegend(false);
-
-        Calendar ca = Calendar.getInstance();
-        int year = ca.get(Calendar.YEAR);
-        int month = ca.get(Calendar.MONTH) + 1;
-        int date = ca.get(Calendar.DATE);
-        currentDate = year + "-" + month + "-" + date;
-
-        try {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            currentDate = dateFormat.format(dateFormat.parse(currentDate));
-            firstCurrentDate = currentDate;
-
-            ArrayList<BarEntry> values = loadWeekData(currentDate);
-            setData(values);
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        ArrayList<BarEntry> values = loadData(currentDate);
+        setData(values);
     }
 
     private void setData(ArrayList<BarEntry> values) {
@@ -280,15 +278,6 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
 
             chart.setData(data);
             chart.animateY(500);
-        }
-
-        // update UI
-        if (currentDate.compareTo(firstCurrentDate) == 0) {
-            next.setEnabled(false);
-            next.setAlpha(0.3f);
-        } else {
-            next.setEnabled(true);
-            next.setAlpha(1f);
         }
     }
 
@@ -371,8 +360,8 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
             values.add(new BarEntry(i, count[i - 1]));
         }
 
-        tvTotal.setText(String.valueOf(countHabit.size()));
-        tvTotalDone.setText(String.valueOf(completedList.size()));
+//        tvTotal.setText(String.valueOf(countHabit.size()));
+//        tvTotalDone.setText(String.valueOf(completedList.size()));
 
         return values;
     }
@@ -426,8 +415,8 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         }
         db.close();
 
-        tvTotal.setText(String.valueOf(countHabit.size()));
-        tvTotalDone.setText(String.valueOf(completedList.size()));
+//        tvTotal.setText(String.valueOf(countHabit.size()));
+//        tvTotalDone.setText(String.valueOf(completedList.size()));
 
         return values;
     }
@@ -440,8 +429,8 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         int month = Integer.parseInt(arrDate[1]);
         int date = Integer.parseInt(arrDate[2]);
 
-        String timeLine = "Tháng 01" + "/" + year + " - " + "Tháng 12" + "/" + year;
-        time.setText(timeLine);
+        String t = "Tháng 01" + "/" + year + " - " + "Tháng 12" + "/" + year;
+        time.setText(t);
 
         Database db = new Database(this);
         db.open();
@@ -455,10 +444,12 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         TrackingEntity tr;
 
         Map<String, Integer> habitNumber = new HashMap<>();
-
+        String start;
+        String end;
         for (int m = 0; m < 12; m++) {
-            monthData = Database.habitDaoImpl.getHabitsBetween(
-                    year + "-" + (m + 1) + "-" + 1, year + "-" + (m + 1) + "-" + AppGenerator.getMaxDayInMonth(year, m));
+            start = AppGenerator.getDate(year, m + 1, 1, AppGenerator.YMD_SHORT);
+            end = AppGenerator.getDate(year, m + 1, AppGenerator.getMaxDayInMonth(year, m), AppGenerator.YMD_SHORT);
+            monthData = Database.getHabitDb().getHabitsBetween(start, end);
 
             for (DateTracking item : monthData) {
                 hb = item.getHabitEntity();
@@ -468,8 +459,7 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
 
                         && tr.getCount() != null
 
-                        && tr.getCount().compareTo(hb.getMonitorNumber()) >= 0 )
-                {
+                        && tr.getCount().compareTo(hb.getMonitorNumber()) >= 0) {
                     completeRecord += 1;
                     ++completePerMonth[m];
                     habitNumber.put(hb.getHabitId(), 0);
@@ -482,8 +472,8 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         }
         db.close();
 
-        tvTotal.setText(String.valueOf(habitNumber.size()));
-        tvTotalDone.setText(String.valueOf(completeRecord));
+//        tvTotal.setText(String.valueOf(habitNumber.size()));
+//        tvTotalDone.setText(String.valueOf(completeRecord));
 
         return values;
     }

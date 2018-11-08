@@ -87,6 +87,22 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
         return null;
     }
 
+    public int countTrackByUser(String userId) {
+        int count = 0;
+
+        final String sql = "SELECT COUNT(*) as countTracking FROM " + TRACKING_TABLE + " INNER JOIN " + HabitSchema.HABIT_TABLE
+                + " ON " + TRACKING_TABLE + "." + HABIT_ID + " = " + HabitSchema.HABIT_TABLE + "." + HabitSchema.HABIT_ID
+                + " WHERE " + HabitSchema.HABIT_TABLE + "." + HabitSchema.USER_ID + " = '" + userId + "'";
+        cursor = super.rawQuery(sql, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            if (cursor.getColumnIndex("countTracking") != -1) {
+                count = cursor.getInt(cursor.getColumnIndexOrThrow("countTracking"));
+            }
+        }
+        return count;
+    }
+
     @Override
     public List<TrackingEntity> getRecordByHabit(String habitId) {
         List<TrackingEntity> list = new ArrayList<>();
