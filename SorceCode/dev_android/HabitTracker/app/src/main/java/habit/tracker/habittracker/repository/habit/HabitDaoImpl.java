@@ -78,15 +78,18 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
         return list;
     }
 
-    public List<HabitEntity> fetchTodayHabit(TrackingDate date, String currentDate) {
+    public List<HabitEntity> getTodayHabit(TrackingDate date, String currentDate) {
         List<HabitEntity> list = new ArrayList<>();
         final String[] selectionArgs = new String[]{currentDate};
-        final String selection =
-                "? BETWEEN " + HabitSchema.START_DATE + " AND " + HabitSchema.END_DATE + " AND "
-                        + getTodayCond(date);
+
+        final String selection = "(? >= " + HabitSchema.START_DATE + ")"
+                + " AND " +
+                "(" + HabitSchema.END_DATE + " IS NULL OR ? <= " + HabitSchema.END_DATE + ")"
+                + " AND " + getTodayCond(date);
 
         Cursor cursor = super.query(HABIT_TABLE, HABIT_COLUMNS, selection, selectionArgs, null);
-        if (cursor != null) {
+
+        if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 list.add(cursorToEntity(cursor));

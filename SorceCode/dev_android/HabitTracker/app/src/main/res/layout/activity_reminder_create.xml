@@ -16,7 +16,7 @@
         android:textSize="18sp"
         android:textColor="#2f6aea"
         android:gravity="center"
-        android:text="Nội dung nhắc nhỏ"/>
+        android:text="Nội dung nhắc nhở"/>
 
     <EditText
         android:id="@+id/edRemindText"

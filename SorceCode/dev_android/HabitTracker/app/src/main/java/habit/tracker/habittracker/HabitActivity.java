@@ -6,10 +6,10 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -34,9 +34,9 @@ import habit.tracker.habittracker.api.VnHabitApiUtils;
 import habit.tracker.habittracker.api.model.habit.Habit;
 import habit.tracker.habittracker.api.model.reminder.Reminder;
 import habit.tracker.habittracker.api.service.VnHabitApiService;
-import habit.tracker.habittracker.common.util.AppGenerator;
 import habit.tracker.habittracker.common.Validator;
 import habit.tracker.habittracker.common.ValidatorType;
+import habit.tracker.habittracker.common.util.AppGenerator;
 import habit.tracker.habittracker.common.util.MySharedPreference;
 import habit.tracker.habittracker.common.util.ReminderManager;
 import habit.tracker.habittracker.repository.Database;
@@ -66,7 +66,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
 
     @BindView(R.id.edit_habitName)
     EditText editHabitName;
-    String savedHabitId;
+    String initHabitId;
 
     @BindView(R.id.btn_TargetBuild)
     Button btnHabitBuild;
@@ -172,14 +172,11 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
     TextView tvStartDate;
     @BindView(R.id.edit_endDate)
     TextView tvEndDate;
+
+    String startHabitDate;
+    String endHabitDate;
     boolean[] startOrEndDate = new boolean[2];
-    boolean isSetStartDate = false;
-    int startYear;
-    int startMonth;
-    int startDay;
-    int endYear;
-    int endMonth;
-    int endDay;
+    boolean onSetStartDate = false;
 
     static final int MODE_CREATE = 0;
     static final int MODE_UPDATE = 1;
@@ -211,18 +208,18 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                 }
             } else if (requestCode == ADD_REMINDER) {
                 if (data != null && data.getExtras() != null) {
-                    String format = "%02d";
                     String remindType = String.valueOf(
                             data.getIntExtra(ReminderCreateActivity.REMIND_TYPE, -1));
                     String remindText = data.getStringExtra(ReminderCreateActivity.REMIND_TEXT);
                     String date = data.getStringExtra(ReminderCreateActivity.REMIND_DATE);
+                    String format = "%02d";
                     String hour = String.format(format, data.getIntExtra(ReminderCreateActivity.REMIND_HOUR, 0));
                     String minute = String.format(format, data.getIntExtra(ReminderCreateActivity.REMIND_MINUTE, 0));
 
                     Reminder reminder = new Reminder();
                     reminder.setServerId(AppGenerator.getNewId());
                     reminder.setRemindText(remindText);
-                    reminder.setReminderTime(date + " " + hour + ":" + minute + ":00");
+                    reminder.setReminderTime(date + " " + hour + ":" + minute);
                     reminder.setRepeatType(remindType);
                     remindDispList.add(reminder);
                     remindAddNew.add(reminder);
@@ -261,13 +258,8 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         setHabitColor(color1);
 
         // start and end date
-        Calendar calendar = Calendar.getInstance();
-        startYear = calendar.get(Calendar.YEAR);
-        startMonth = calendar.get(Calendar.MONTH);
-        startDay = calendar.get(Calendar.DATE);
-        endYear = calendar.get(Calendar.YEAR);
-        endMonth = calendar.get(Calendar.MONTH);
-        endDay = calendar.get(Calendar.DATE);
+        startHabitDate = AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT);
+        endHabitDate = null;
 
         // init remind list
         remindAdapter = new RemindRecyclerViewAdapter(this, remindDispList);
@@ -278,13 +270,18 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         // load habit from local trackingItemList
         Bundle data = getIntent().getExtras();
         if (data != null) {
-            this.savedHabitId = data.getString(MainActivity.HABIT_ID, null);
-            if (savedHabitId != null) {
+
+            initHabitId = data.getString(MainActivity.HABIT_ID, null);
+
+            if (initHabitId != null) {
+
                 // mode CREATE
-                this.createMode = 1;
-                initFromSavedHabit(savedHabitId);
+                createMode = 1;
+                initFromSavedHabit(initHabitId);
             }
+
         } else {
+
             // init monitor date
             setMonitorDate(btnMon);
             setMonitorDate(btnTue);
@@ -293,11 +290,10 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
             setMonitorDate(btnFri);
             setMonitorDate(btnSat);
             setMonitorDate(btnSun);
+
             // set plan date
-            StringBuilder date = new StringBuilder(String.valueOf(startDay));
-            date.append("/").append(startMonth + 1).append("/").append(startYear);
-            tvStartDate.setText(date);
-            tvEndDate.setText(date);
+            tvStartDate.setText(startHabitDate);
+            tvEndDate.setText(endHabitDate);
         }
     }
 
@@ -310,7 +306,9 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
             Database db = new Database(this);
             db.open();
             HabitEntity habitEntity = Database.habitDaoImpl.getHabit(habitId);
+
             if (habitEntity != null) {
+
                 if (habitEntity.getGroupId() != null) {
                     this.savedGroupId = habitEntity.getGroupId();
                     GroupEntity groupEntity = Database.groupDaoImpl.getGroup(habitEntity.getGroupId());
@@ -319,8 +317,10 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                 if (habitEntity.getMonitorId() != null) {
                     this.savedMonitorDateId = habitEntity.getMonitorId();
                 }
+
                 // habit name
                 editHabitName.setText(habitEntity.getHabitName());
+
                 // habit target
                 switch (habitEntity.getHabitTarget()) {
                     case TYPE_0:
@@ -330,6 +330,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                         setHabitTarget(btnHabitQuit);
                         break;
                 }
+
                 // monitor date
                 if (habitEntity.getMon() != null && habitEntity.getMon().equals(TYPE_1)) {
                     setMonitorDate(btnMon);
@@ -352,23 +353,17 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                 if (habitEntity.getSat() != null && habitEntity.getSun().equals(TYPE_1)) {
                     setMonitorDate(btnSun);
                 }
-                // plan date
+
+                // start and end date of habit
                 if (habitEntity.getStartDate() != null) {
-                    String[] date = habitEntity.getStartDate().split("-");
-                    startDay = Integer.parseInt(date[2]);
-                    startMonth = Integer.parseInt(date[1]) - 1;
-                    startYear = Integer.parseInt(date[0]);
                     setStartEndDate(mStartDate);
                     tvStartDate.setText(habitEntity.getStartDate());
                 }
                 if (habitEntity.getEndDate() != null) {
-                    String[] date = habitEntity.getEndDate().split("-");
-                    endDay = Integer.parseInt(date[2]);
-                    endMonth = Integer.parseInt(date[1]) - 1;
-                    endYear = Integer.parseInt(date[0]);
                     setStartEndDate(mEndDate);
                     tvEndDate.setText(habitEntity.getEndDate());
                 }
+
                 // habit type
                 switch (habitEntity.getHabitType()) {
                     case TYPE_0:
@@ -392,6 +387,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                         selectMonitorType(chkMonitorCount);
                         break;
                 }
+
                 // habit monitor type
                 switch (habitEntity.getMonitorType()) {
                     case TYPE_0:
@@ -403,6 +399,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                 }
                 editCheckNumber.setText(habitEntity.getMonitorNumber());
                 editMonitorUnit.setText(habitEntity.getMonitorUnit());
+
                 // habit color
                 if (habitEntity.getHabitColor() != null) {
                     for (int i = 0; i < colorsList.size(); i++) {
@@ -443,6 +440,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                         }
                     }
                 }
+
                 // habit reminders
                 List<ReminderEntity> reminders = Database.reminderImpl.getRemindersByHabit(habitId);
                 Reminder reminder;
@@ -457,6 +455,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                     remindDispList.add(reminder);
                 }
                 remindAdapter.notifyDataSetChanged();
+
                 // habit description
                 editDescription.setText(habitEntity.getHabitDescription());
             }
@@ -514,7 +513,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
             habit.setHabitId(AppGenerator.getNewId());
             habit.setMonitorId(AppGenerator.getNewId());
         } else if (createMode == MODE_UPDATE) {
-            habit.setHabitId(this.savedHabitId);
+            habit.setHabitId(this.initHabitId);
             habit.setMonitorId(this.savedMonitorDateId);
         }
         habit.setUserId(savedUserId);
@@ -527,9 +526,9 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         habit.setMonitorUnit(monitorUnit);
         habit.setMonitorNumber(monitorNumber);
 
-        habit.setStartDate(this.startYear + "-" + (this.startMonth + 1) + "-" + this.startDay);
-        habit.setEndDate(this.endYear + "-" + (this.endMonth + 1) + "-" + this.endDay);
-        habit.setCreatedDate(ca.get(1) + "-" + (ca.get(2) + 1) + "-" + ca.get(5));
+        habit.setStartDate(startHabitDate);
+        habit.setEndDate(endHabitDate);
+        habit.setCreatedDate(AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT));
 
         habit.setHabitColor(this.habitColorCode);
         habit.setHabitDescription(this.editDescription.getText().toString());
@@ -554,8 +553,8 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         // save habit
         Database db = new Database(HabitActivity.this);
         db.open();
-        if (Database.habitDaoImpl.saveUpdateHabit(
-                Database.habitDaoImpl.convert(habit))) {
+        if (Database.getHabitDb().saveUpdateHabit(
+                Database.getHabitDb().convert(habit))) {
             // save reminder list
             for (Reminder reminder : remindAddNew) {
                 reminder.setHabitId(habit.getHabitId());
@@ -614,19 +613,23 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
     public void cancel(View v) {
         if (createMode == MODE_CREATE) {
             finish();
+
         } else if (createMode == MODE_UPDATE) {
+
             // delete habit
             Database db = new Database(this);
             db.open();
-            Database.habitDaoImpl.deleteHabit(this.savedHabitId);
+            Database.getHabitDb().deleteHabit(initHabitId);
             db.close();
 
             VnHabitApiService service = VnHabitApiUtils.getApiService();
-            service.deleteHabit(this.savedHabitId).enqueue(new Callback<ResponseBody>() {
+            service.deleteHabit(this.initHabitId).enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     Toast.makeText(HabitActivity.this, "Đã xóa thói quen", Toast.LENGTH_SHORT).show();
-                    HabitActivity.this.setResult(HabitActivity.RESULT_OK);
+                    Intent intent = new Intent();
+                    intent.putExtra("delete", true);
+                    HabitActivity.this.setResult(HabitActivity.RESULT_OK, intent);
                     finish();
                 }
 
@@ -700,21 +703,32 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
     }
 
     @OnClick({R.id.edit_startDate, R.id.edit_endDate})
-    public void setPlanDate(View v) {
-        Calendar calendar = Calendar.getInstance();
+    public void showDatePicker(View v) {
+        Calendar ca = Calendar.getInstance();
         DatePickerDialog dialog;
+        onSetStartDate = v.getId() == R.id.edit_startDate;
+
         if (v.getId() == R.id.edit_startDate) {
-            dialog = new DatePickerDialog(this, this, startYear, startMonth, startDay);
-            isSetStartDate = true;
+            ca.setTime(AppGenerator.getDate(startHabitDate, AppGenerator.YMD_SHORT));
+            dialog = new DatePickerDialog(this, this,
+                    ca.get(Calendar.YEAR), ca.get(Calendar.MONTH), ca.get(Calendar.DATE));
             dialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
             dialog.show();
+
         } else {
-            dialog = new DatePickerDialog(this, this, endYear, endMonth, endDay);
-            isSetStartDate = false;
-            calendar.set(startYear, startMonth, startDay);
-            dialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
+            String end = endHabitDate;
+            if (TextUtils.isEmpty(end)) {
+                end = startHabitDate;
+            }
+            ca.setTime(AppGenerator.getDate(end, AppGenerator.YMD_SHORT));
+            dialog = new DatePickerDialog(this, this,
+                    ca.get(Calendar.YEAR), ca.get(Calendar.MONTH), ca.get(Calendar.DATE));
+
+            ca.setTime(AppGenerator.getDate(startHabitDate, AppGenerator.YMD_SHORT));
+            dialog.getDatePicker().setMinDate(ca.getTimeInMillis());
             dialog.show();
         }
+
         Button pos = dialog.getButton(DatePickerDialog.BUTTON_POSITIVE);
         pos.setAllCaps(false);
         pos.setText("Chọn");
@@ -727,18 +741,13 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int day) {
-        if (isSetStartDate) {
-            startYear = year;
-            startMonth = month;
-            startDay = day;
-            String date = new StringBuilder(String.valueOf(startDay)).append("/").append(startMonth + 1).append("/").append(startYear).toString();
-            tvStartDate.setText(date);
+        if (onSetStartDate) {
+            startHabitDate = AppGenerator.getDate(year, month, day, AppGenerator.YMD_SHORT);
+            tvStartDate.setText(AppGenerator.format(startHabitDate, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT));
+
         } else {
-            endYear = year;
-            endMonth = month;
-            endDay = day;
-            String date = new StringBuilder(String.valueOf(endDay)).append("/").append(endMonth + 1).append("/").append(endYear).toString();
-            tvEndDate.setText(date);
+            endHabitDate = AppGenerator.getDate(year, month, day, AppGenerator.YMD_SHORT);
+            tvEndDate.setText(AppGenerator.format(endHabitDate, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT));
         }
     }
 
@@ -777,7 +786,6 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
             startOrEndDate[1] = !startOrEndDate[1];
         }
     }
-
 
     @OnClick({R.id.color1,
             R.id.color2,

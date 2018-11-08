@@ -105,7 +105,7 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
 
             String habitId = bundle.getString(MainActivity.HABIT_ID);
             String habitColor = bundle.getString(MainActivity.HABIT_COLOR);
-            currentTrackingDate = AppGenerator.getCurrentDate(AppGenerator.formatYMD2);
+            currentTrackingDate = AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT);
             firstCurTrackingDate = currentTrackingDate;
             habitEntity = Database.getHabitDb().getHabit(habitId);
             TrackingEntity trackingEntity = Database.getTrackingDb().getTracking(habitId, currentTrackingDate);
@@ -184,22 +184,22 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
 
         String[] datesInMonth = AppGenerator.getDatesInMonth(currentTrackingDate, false);
         Calendar calendar = Calendar.getInstance();
-        firstDayNextMonth = AppGenerator.getNextDate(datesInMonth[datesInMonth.length - 1], AppGenerator.formatYMD2);
-        lastDayPreMonth = AppGenerator.getPreDate(datesInMonth[0], AppGenerator.formatYMD2);
+        firstDayNextMonth = AppGenerator.getNextDate(datesInMonth[datesInMonth.length - 1], AppGenerator.YMD_SHORT);
+        lastDayPreMonth = AppGenerator.getPreDate(datesInMonth[0], AppGenerator.YMD_SHORT);
 
         try {
             String cur = datesInMonth[0];
             String next;
             String pre;
 
-            SimpleDateFormat format = new SimpleDateFormat(AppGenerator.formatYMD2, Locale.getDefault());
+            SimpleDateFormat format = new SimpleDateFormat(AppGenerator.YMD_SHORT, Locale.getDefault());
             Date d = format.parse(datesInMonth[0]);
             calendar.setTimeInMillis(d.getTime());
 
             int dayInW = calendar.get(Calendar.DAY_OF_WEEK);
             int padding = getPadding(dayInW);
             for (int i = 0; i < padding; i++) {
-                pre = AppGenerator.getPreDate(cur, AppGenerator.formatYMD2);
+                pre = AppGenerator.getPreDate(cur, AppGenerator.YMD_SHORT);
                 head.add(new TrackingCalendarItem(pre.split("-")[2], pre, false, true));
                 cur = pre;
             }
@@ -211,7 +211,7 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
             padding = 6 - getPadding(dayInW);
             cur = datesInMonth[datesInMonth.length - 1];
             for (int i = 0; i < padding; i++) {
-                next = AppGenerator.getNextDate(cur, AppGenerator.formatYMD2);
+                next = AppGenerator.getNextDate(cur, AppGenerator.YMD_SHORT);
                 tail.add(new TrackingCalendarItem(next.split("-")[2], next, false, true));
                 cur = next;
             }
@@ -288,11 +288,11 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
         switch (v.getId()) {
             case R.id.pre:
                 timeLine--;
-                currentTrackingDate = AppGenerator.getPreDate(currentTrackingDate, AppGenerator.formatYMD2);
+                currentTrackingDate = AppGenerator.getPreDate(currentTrackingDate, AppGenerator.YMD_SHORT);
                 break;
             case R.id.next:
                 timeLine++;
-                currentTrackingDate = AppGenerator.getNextDate(currentTrackingDate, AppGenerator.formatYMD2);
+                currentTrackingDate = AppGenerator.getNextDate(currentTrackingDate, AppGenerator.YMD_SHORT);
                 break;
         }
 
@@ -369,7 +369,7 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
             tvCurrentTime.setText("Hôm qua");
         } else {
             tvCurrentTime.setText(
-                    AppGenerator.format(currentTrackingDate, AppGenerator.formatYMD2, AppGenerator.formatDMY2));
+                    AppGenerator.format(currentTrackingDate, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT));
         }
 
         if (timeLine <= 0 && AppGenerator.isValidTrackingDay(currentTrackingDate, availDaysInWeek)) {

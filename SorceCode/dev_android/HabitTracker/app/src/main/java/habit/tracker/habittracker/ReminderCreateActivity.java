@@ -73,7 +73,7 @@ public class ReminderCreateActivity extends AppCompatActivity implements NumberP
         vType = btnTypeAll;
 
         dates = AppGenerator.getDatesInMonth(
-                AppGenerator.getCurrentDate(AppGenerator.formatYMD2), true);
+                AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT), true);
         String[] displayDates = convertDisplayDate(dates);
         pickerDate.setMinValue(0);
         pickerDate.setMaxValue(displayDates.length - 1);
@@ -91,7 +91,7 @@ public class ReminderCreateActivity extends AppCompatActivity implements NumberP
         pickerHour.setDisplayedValues(getStringArr(hours));
         pickerHour.setOnValueChangedListener(this);
 
-        minutes = new int[59];
+        minutes = new int[60];
         for (int i = 0; i < minutes.length; i++) {
             minutes[i] = i;
         }
@@ -124,7 +124,7 @@ public class ReminderCreateActivity extends AppCompatActivity implements NumberP
     @OnClick(R.id.btn_save)
     public void save(View v) {
         if (TextUtils.isEmpty(edRemindText.getText().toString().trim())) {
-            Toast.makeText(this, "Chưa thêm nội dung nhắt nhở.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Chưa thêm nội dung nhắc nhở.", Toast.LENGTH_SHORT).show();
             return;
         }
 

@@ -72,9 +72,11 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == CREATE_NEW_HABIT || requestCode == UPDATE_HABIT) {
+
             if (resultCode == RESULT_OK) {
                 loadData(true);
             }
+
         } else if (requestCode == USE_FILTER) {
             if (resultCode == RESULT_OK) {
                 Bundle filter = data.getExtras();
@@ -114,8 +116,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
 
         ButterKnife.bind(this);
 
-        Calendar ca = Calendar.getInstance();
-        currentDate = AppGenerator.getCurrentDate(AppGenerator.formatYMD2);
+        currentDate = AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT);
         firstCurrentDate = currentDate;
 
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
@@ -150,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
                         int month = ca.get(Calendar.MONTH) + 1;
                         int date = ca.get(Calendar.DATE);
                         String currentDate = year + "-" + month + "-" + date;
-                        currentDate = AppGenerator.format(currentDate, AppGenerator.formatYMD2, AppGenerator.formatYMD2);
+                        currentDate = AppGenerator.format(currentDate, AppGenerator.YMD_SHORT, AppGenerator.YMD_SHORT);
 
                         if (isTodayHabit(year, month - 1, date, habit)) {
 
@@ -180,14 +181,15 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
                             }
                         }
                     }
-                    if (display) {
-                        trackingAdapter.notifyDataSetChanged();
-                    }
 
                     for (Habit habit : habitList) {
                         Database.habitDaoImpl.saveUpdateHabit(Database.habitDaoImpl.convert(habit));
                     }
                     db.close();
+                }
+
+                if (display) {
+                    trackingAdapter.notifyDataSetChanged();
                 }
             }
 
@@ -252,19 +254,18 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
 
         Database db = Database.getInstance(this);
         db.open();
-        List<HabitEntity> habitEntities = Database
-                .habitDaoImpl.fetchTodayHabit(schedule, currentDate);
+        List<HabitEntity> habitEntities = Database.getHabitDb().getTodayHabit(schedule, currentDate);
 
         boolean isDataSetChanged = false;
         for (HabitEntity habit : habitEntities) {
 
             // get tracking records on current date
-            TrackingEntity record = Database.trackingImpl
+            TrackingEntity record = Database.getTrackingDb()
                     .getTracking(habit.getHabitId(), currentDate);
 
             if (record == null) {
                 record = getTodayTracking(habit.getHabitId(), currentDate, 0);
-                Database.trackingImpl.saveTracking(record);
+                Database.getTrackingDb().saveTracking(record);
             }
             TrackingItem item = new TrackingItem(
                     record.getTrackingId(),
@@ -287,9 +288,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
         db.close();
 
         trackingAdapter.setEditable(currentDate.compareTo(firstCurrentDate) < 1);
-//        if (isDataSetChanged) {
         trackingAdapter.notifyDataSetChanged();
-//        }
     }
 
     public TrackingEntity getTodayTracking(String habitId, String currentDate, int defaultVal) {
@@ -309,8 +308,8 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
     }
 
     @OnClick(R.id.imgNext)
-    public void next(ImageView img) {
-        String nextDate = AppGenerator.getNextDate(currentDate, AppGenerator.formatYMD2);
+    public void loadNextDateHabit(View v) {
+        String nextDate = AppGenerator.getNextDate(currentDate, AppGenerator.YMD_SHORT);
         if (nextDate != null) {
             dayStack++;
             updateTitle(nextDate);
@@ -321,8 +320,8 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
     }
 
     @OnClick(R.id.imgBack)
-    public void back(ImageView img) {
-        String preDate = AppGenerator.getPreDate(currentDate, AppGenerator.formatYMD2);
+    public void loadPreDateHabit(View v) {
+        String preDate = AppGenerator.getPreDate(currentDate, AppGenerator.YMD_SHORT);
         if (preDate != null) {
             dayStack--;
             updateTitle(preDate);
@@ -379,7 +378,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
             tvDate.setText("Hôm qua");
         }
         else {
-            tvDate.setText(AppGenerator.format(date, AppGenerator.formatYMD2, AppGenerator.formatDMY2));
+            tvDate.setText(AppGenerator.format(date, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT));
         }
     }
 }

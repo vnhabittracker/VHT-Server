@@ -36,7 +36,7 @@ public class ReminderReceiver extends BroadcastReceiver {
 
             if (endTime != null) {
                 try {
-                    SimpleDateFormat fm = new SimpleDateFormat(AppGenerator.formatYMD, Locale.getDefault());
+                    SimpleDateFormat fm = new SimpleDateFormat(AppGenerator.YMD, Locale.getDefault());
                     Date endDate = fm.parse(endTime);
                     if (endDate.getTime() < System.currentTimeMillis()) {
 

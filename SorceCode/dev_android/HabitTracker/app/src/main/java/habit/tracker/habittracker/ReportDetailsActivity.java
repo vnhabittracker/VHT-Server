@@ -97,7 +97,9 @@ public class ReportDetailsActivity extends AppCompatActivity {
 
     private HabitEntity habitEntity;
     private String firstCurrentDate;
-    private String currentTrackingDate;
+    private String currentDate;
+    private String startHabitDate;
+    private String endHabitDate;
     private String startReportDate;
     private String endReportDate;
     private boolean[] availDaysInWeek = new boolean[7];
@@ -117,8 +119,8 @@ public class ReportDetailsActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         mode = ChartHelper.MODE_WEEK;
-        currentTrackingDate = AppGenerator.getCurrentDate(AppGenerator.formatYMD2);
-        firstCurrentDate = currentTrackingDate;
+        currentDate = AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT);
+        firstCurrentDate = currentDate;
 
         curTrackingCount = 0;
 
@@ -136,9 +138,8 @@ public class ReportDetailsActivity extends AppCompatActivity {
 
                 Database db = Database.getInstance(this);
                 db.open();
-                habitEntity = Database.habitDaoImpl.getHabit(habitId);
-                TrackingEntity trackingEntity = Database.trackingImpl
-                        .getTracking(habitId, currentTrackingDate);
+                habitEntity = Database.getHabitDb().getHabit(habitId);
+                TrackingEntity trackingEntity = Database.getTrackingDb().getTracking(habitId, currentDate);
                 db.close();
 
                 if (trackingEntity != null) {
@@ -170,7 +171,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
                 selectedTabHL = tabWeekHL;
 
                 // innit chart
-                ArrayList<BarEntry> values = loadData(currentTrackingDate);
+                ArrayList<BarEntry> values = loadData(currentDate);
                 chartHelper = new ChartHelper(this, chart);
                 chartHelper.initChart();
                 chartHelper.setChartColor(startColor, endColor);
@@ -185,9 +186,19 @@ public class ReportDetailsActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == UPDATE) {
-            ArrayList<BarEntry> values = loadData(currentTrackingDate);
-            chartHelper.setData(values, mode);
-            updateUI();
+
+            boolean delete = false;
+            if (data != null) {
+                delete = data.getBooleanExtra("delete", false);
+            }
+
+            if (!delete) {
+                ArrayList<BarEntry> values = loadData(currentDate);
+                chartHelper.setData(values, mode);
+                updateUI();
+            } else {
+                finish();
+            }
         }
     }
 
@@ -212,7 +223,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
                 break;
         }
 
-        ArrayList<BarEntry> values = loadData(currentTrackingDate);
+        ArrayList<BarEntry> values = loadData(currentDate);
         if (values != null && values.size() > 0) {
             chartHelper.setData(values, mode);
         }
@@ -223,11 +234,11 @@ public class ReportDetailsActivity extends AppCompatActivity {
         switch (v.getId()) {
             case R.id.pre:
                 timeLine--;
-                currentTrackingDate = AppGenerator.getPreDate(currentTrackingDate, AppGenerator.formatYMD2);
+                currentDate = AppGenerator.getPreDate(currentDate, AppGenerator.YMD_SHORT);
                 break;
             case R.id.next:
                 timeLine++;
-                currentTrackingDate = AppGenerator.getNextDate(currentTrackingDate, AppGenerator.formatYMD2);
+                currentDate = AppGenerator.getNextDate(currentDate, AppGenerator.YMD_SHORT);
                 break;
         }
 
@@ -240,7 +251,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
         Database db = Database.getInstance(this);
         db.open();
         TrackingEntity todayTracking = Database.trackingImpl
-                .getTracking(this.habitEntity.getHabitId(), this.currentTrackingDate);
+                .getTracking(this.habitEntity.getHabitId(), this.currentDate);
         db.close();
 
         curTrackingCount = 0;
@@ -249,12 +260,10 @@ public class ReportDetailsActivity extends AppCompatActivity {
         }
 
         // current date is before the start date of report
-        if (currentTrackingDate.compareTo(startReportDate) < 0
-                || currentTrackingDate.compareTo(endReportDate) > 0) {
+        if (currentDate.compareTo(startReportDate) < 0
+                || currentDate.compareTo(endReportDate) > 0) {
 
-            curSumCount = 0;
-
-            ArrayList<BarEntry> values = loadData(currentTrackingDate);
+            ArrayList<BarEntry> values = loadData(currentDate);
             chartHelper.setData(values, mode);
         }
 
@@ -263,7 +272,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
 
     @OnClick({R.id.minusCount, R.id.addCount})
     public void onTrackingCountChanged(View v) {
-        if (!AppGenerator.isValidTrackingDay(currentTrackingDate, availDaysInWeek)) {
+        if (!AppGenerator.isValidTrackingDay(currentDate, availDaysInWeek)) {
             return;
         }
 
@@ -283,12 +292,12 @@ public class ReportDetailsActivity extends AppCompatActivity {
         Database db = Database.getInstance(this);
         db.open();
         TrackingEntity record =
-                Database.trackingImpl.getTracking(this.habitEntity.getHabitId(), this.currentTrackingDate);
+                Database.trackingImpl.getTracking(this.habitEntity.getHabitId(), this.currentDate);
         if (record == null) {
             record = new TrackingEntity();
             record.setTrackingId(AppGenerator.getNewId());
             record.setHabitId(this.habitEntity.getHabitId());
-            record.setCurrentDate(this.currentTrackingDate);
+            record.setCurrentDate(this.currentDate);
         }
         record.setCount(String.valueOf(curTrackingCount));
         Database.trackingImpl.saveTracking(record);
@@ -297,7 +306,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
         if ((!above && curTrackingCount == goalNumber)
                 || (above && goalNumber - curTrackingCount == 1)) {
 
-            ArrayList<BarEntry> values = loadData(currentTrackingDate);
+            ArrayList<BarEntry> values = loadData(currentDate);
             chartHelper.setData(values, mode);
         }
 
@@ -307,7 +316,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
         Tracking tracking = new Tracking();
         tracking.setTrackingId(record.getTrackingId());
         tracking.setHabitId(record.getHabitId());
-        tracking.setCurrentDate(currentTrackingDate);
+        tracking.setCurrentDate(currentDate);
         tracking.setCount(String.valueOf(record.getCount()));
         trackingData.getTrackingList().add(tracking);
         VnHabitApiService service = VnHabitApiUtils.getApiService();
@@ -364,12 +373,14 @@ public class ReportDetailsActivity extends AppCompatActivity {
 
         Database db = Database.getInstance(this);
         db.open();
-        HabitTracking habitTracking = Database.trackingImpl
-                .getHabitTrackingBetween(this.habitEntity.getHabitId(), startReportDate, endReportDate);
+        HabitTracking habitTracking = Database.getTrackingDb()
+                .getHabitTrackingBetween(habitEntity.getHabitId(), startReportDate, endReportDate);
         db.close();
 
-        if (habitTracking.getHabitEntity() != null) {
-            this.habitEntity = habitTracking.getHabitEntity();
+        if (habitTracking != null && habitTracking.getHabitEntity() != null) {
+            habitEntity = habitTracking.getHabitEntity();
+            startHabitDate = habitEntity.getStartDate();
+            endHabitDate = habitEntity.getEndDate();
         }
 
         return prepareData(habitTracking, daysInWeek);
@@ -384,11 +395,13 @@ public class ReportDetailsActivity extends AppCompatActivity {
         Database db = Database.getInstance(this);
         db.open();
         HabitTracking habitTracking = Database.trackingImpl
-                .getHabitTrackingBetween(this.habitEntity.getHabitId(), startReportDate, endReportDate);
+                .getHabitTrackingBetween(habitEntity.getHabitId(), startReportDate, endReportDate);
         db.close();
 
-        if (habitTracking.getHabitEntity() != null) {
-            this.habitEntity = habitTracking.getHabitEntity();
+        if (habitTracking != null && habitTracking.getHabitEntity() != null) {
+            habitEntity = habitTracking.getHabitEntity();
+            startHabitDate = habitEntity.getStartDate();
+            endHabitDate = habitEntity.getEndDate();
         }
 
         return prepareData(habitTracking, daysInMonth);
@@ -412,11 +425,12 @@ public class ReportDetailsActivity extends AppCompatActivity {
         String start;
         String end;
 
+        curSumCount = 0;
         for (int m = 0; m < 12; m++) {
             start = year + "-" + (m + 1) + "-" + 1;
             end = year + "-" + (m + 1) + "-" + AppGenerator.getMaxDayInMonth(year, m);
-            start = AppGenerator.format(start, AppGenerator.formatYMD2, AppGenerator.formatYMD2);
-            end = AppGenerator.format(end, AppGenerator.formatYMD2, AppGenerator.formatYMD2);
+            start = AppGenerator.format(start, AppGenerator.YMD_SHORT, AppGenerator.YMD_SHORT);
+            end = AppGenerator.format(end, AppGenerator.YMD_SHORT, AppGenerator.YMD_SHORT);
 
             // data per month
             habitTracking = Database.trackingImpl
@@ -426,9 +440,9 @@ public class ReportDetailsActivity extends AppCompatActivity {
                 if (hb == null) {
                     hb = habitTracking.getHabitEntity();
                 }
+
                 // data per day in month
                 for (TrackingEntity track : habitTracking.getTrackingEntityList()) {
-
                     if (Integer.parseInt(track.getCount()) >= Integer.parseInt(hb.getMonitorNumber())) {
                         ++completedPerMonth[m];
                     }
@@ -436,7 +450,9 @@ public class ReportDetailsActivity extends AppCompatActivity {
                 }
 
                 if (habitTracking.getHabitEntity() != null) {
-                    this.habitEntity = habitTracking.getHabitEntity();
+                    habitEntity = habitTracking.getHabitEntity();
+                    startHabitDate = habitEntity.getStartDate();
+                    endHabitDate = habitEntity.getEndDate();
                 }
             }
         }
@@ -457,6 +473,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
             mapDayInMonth.put(d, 0);
         }
 
+        curSumCount = 0;
         if (habitTracking != null) {
             HabitEntity habit = habitTracking.getHabitEntity();
             List<TrackingEntity> trackList = habitTracking.getTrackingEntityList();
@@ -464,11 +481,11 @@ public class ReportDetailsActivity extends AppCompatActivity {
             for (TrackingEntity track : trackList) {
 
                 if (Integer.parseInt(track.getCount()) >= Integer.parseInt(habit.getMonitorNumber())) {
-
                     mapDayInMonth.put(track.getCurrentDate(),
                             mapDayInMonth.get(track.getCurrentDate()) + 1);
-                    curSumCount += Integer.parseInt(track.getCount());
+//                    curSumCount += Integer.parseInt(track.getCount());
                 }
+                curSumCount += Integer.parseInt(track.getCount());
             }
         }
 
@@ -486,7 +503,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
             tvCurrentTime.setText("Hôm qua");
         } else {
             tvCurrentTime.setText(
-                    AppGenerator.format(currentTrackingDate, AppGenerator.formatYMD2, AppGenerator.formatDMY2));
+                    AppGenerator.format(currentDate, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT));
         }
 
         if (timeLine == 0) {
@@ -495,9 +512,15 @@ public class ReportDetailsActivity extends AppCompatActivity {
             btnNextDate.setVisibility(View.VISIBLE);
         }
 
+        if (currentDate.compareTo(startHabitDate) <= 0) {
+            btnPreDate.setVisibility(View.INVISIBLE);
+        } else {
+            btnPreDate.setVisibility(View.VISIBLE);
+        }
+
         tvGoal.setText(habitEntity.getMonitorNumber() + " " + habitEntity.getMonitorUnit());
 
-        if (AppGenerator.isValidTrackingDay(currentTrackingDate, availDaysInWeek)) {
+        if (AppGenerator.isValidTrackingDay(currentDate, availDaysInWeek)) {
             tvTrackCount.setText(String.valueOf(curTrackingCount) + " " + habitEntity.getMonitorUnit());
         } else {
             tvTrackCount.setText("--");

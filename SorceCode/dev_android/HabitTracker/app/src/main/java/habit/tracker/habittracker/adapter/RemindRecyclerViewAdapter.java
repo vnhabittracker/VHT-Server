@@ -37,8 +37,8 @@ public class RemindRecyclerViewAdapter extends RecyclerView.Adapter<RemindRecycl
         Reminder reminder = data.get(position);
         String dspStr = AppGenerator.format(
                 reminder.getReminderTime(),
-                AppGenerator.formatYMD,
-                AppGenerator.formatDMY) + " " + reminder.getRemindText();
+                AppGenerator.YMD,
+                AppGenerator.DMY) + " " + reminder.getRemindText();
 
         holder.tvRemindTime.setText(dspStr);
     }

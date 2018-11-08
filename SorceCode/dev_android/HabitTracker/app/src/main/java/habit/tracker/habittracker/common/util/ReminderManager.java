@@ -41,7 +41,7 @@ public class ReminderManager {
         int minute;
         RepeatType repeatType = RepeatType.DAILY;
 
-        SimpleDateFormat fm = new SimpleDateFormat(AppGenerator.formatYMD, Locale.getDefault());
+        SimpleDateFormat fm = new SimpleDateFormat(AppGenerator.YMD, Locale.getDefault());
         Date date;
         Calendar ca = Calendar.getInstance();
         Reminder reminder;

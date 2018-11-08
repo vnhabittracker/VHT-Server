@@ -15,10 +15,10 @@ public class AppGenerator {
     public static final long MILLISECOND_IN_WEEK = 86400000 * 7;
 
     // formats
-    public static final String formatYMD = "yyyy-MM-dd HH:mm:ss";
-    public static final String formatYMD2 = "yyyy-MM-dd";
-    public static final String formatDMY = "dd-MM-yyyy HH:mm:ss";
-    public static final String formatDMY2 = "dd/MM/yyyy";
+    public static final String YMD = "yyyy-MM-dd HH:mm:ss";
+    public static final String YMD_SHORT = "yyyy-MM-dd";
+    public static final String DMY = "dd-MM-yyyy HH:mm:ss";
+    public static final String DMY_SHORT = "dd/MM/yyyy";
 
     public static Date getDate(String date, String format) {
         try {
@@ -28,6 +28,22 @@ public class AppGenerator {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     *
+     * @param year
+     * @param month: 1-12
+     * @param date
+     * @param pattern
+     * @return
+     */
+    public static String getDate(int year, int month, int date, String pattern) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month - 1, date);
+        Date d = new Date(calendar.getTimeInMillis());
+        DateFormat dateFormat = new SimpleDateFormat(pattern, Locale.getDefault());
+        return dateFormat.format(d);
     }
 
     public static String getCurrentDate(String format) {
@@ -98,7 +114,7 @@ public class AppGenerator {
         if (month < 1 || month > 12) {
             return currentDate;
         }
-        return format(arrDate[0] + "-" + month + "-" + arrDate[2], formatYMD2, formatYMD2);
+        return format(arrDate[0] + "-" + month + "-" + arrDate[2], YMD_SHORT, YMD_SHORT);
     }
 
     public static String getNextMonth(String currentDate) {
@@ -107,7 +123,7 @@ public class AppGenerator {
         if (month < 1 || month > 12) {
             return currentDate;
         }
-        return format(arrDate[0] + "-" + month + "-" + arrDate[2], formatYMD2, formatYMD2);
+        return format(arrDate[0] + "-" + month + "-" + arrDate[2], YMD_SHORT, YMD_SHORT);
     }
 
     public static String getPreYear(String currentDate) {
@@ -116,7 +132,7 @@ public class AppGenerator {
         if (year < 1970) {
             return currentDate;
         }
-        return format(year + "-" + arrDate[1] + "-" + arrDate[2], formatYMD2, formatYMD2);
+        return format(year + "-" + arrDate[1] + "-" + arrDate[2], YMD_SHORT, YMD_SHORT);
     }
 
     public static String getNextYear(String currentDate) {
@@ -125,13 +141,13 @@ public class AppGenerator {
         if (year > 2020) {
             return currentDate;
         }
-        return format(year + "-" + arrDate[1] + "-" + arrDate[2], formatYMD2, formatYMD2);
+        return format(year + "-" + arrDate[1] + "-" + arrDate[2], YMD_SHORT, YMD_SHORT);
     }
 
     public static String getPreDate(String currentDate, boolean[] availDaysInWeek) {
         String preDate = null;
         while (preDate == null || !isValidTrackingDay(preDate, availDaysInWeek)) {
-            preDate = getPreDate(currentDate, formatYMD2);
+            preDate = getPreDate(currentDate, YMD_SHORT);
             currentDate = preDate;
         }
         return preDate;
@@ -144,7 +160,7 @@ public class AppGenerator {
 
         Calendar calendar = Calendar.getInstance();
         try {
-            SimpleDateFormat fm = new SimpleDateFormat(formatYMD2, Locale.getDefault());
+            SimpleDateFormat fm = new SimpleDateFormat(YMD_SHORT, Locale.getDefault());
             Date d = fm.parse(day);
             calendar.setTime(d);
         } catch (ParseException e) {
@@ -220,12 +236,12 @@ public class AppGenerator {
         }
         week[index] = currentDate;
         for (int i = index - 1; i >= 0; i--) {
-            week[i] = getPreDate(currentDate, AppGenerator.formatYMD2);
+            week[i] = getPreDate(currentDate, AppGenerator.YMD_SHORT);
             currentDate = week[i];
         }
         currentDate = week[index];
         for (int i = index + 1; i < 7; i++) {
-            week[i] = getNextDate(currentDate, AppGenerator.formatYMD2);
+            week[i] = getNextDate(currentDate, AppGenerator.YMD_SHORT);
             currentDate = week[i];
         }
         return week;
@@ -247,7 +263,7 @@ public class AppGenerator {
             daysInMonth = new String[numberOfDays];
             daysInMonth[date - 1] = currentDate;
             for (int i = date - 2; i >= 0; i--) {
-                daysInMonth[i] = getPreDate(currentDate, AppGenerator.formatYMD2);
+                daysInMonth[i] = getPreDate(currentDate, AppGenerator.YMD_SHORT);
                 currentDate = daysInMonth[i];
             }
             currentDate = daysInMonth[date - 1];
@@ -259,7 +275,7 @@ public class AppGenerator {
         }
 
         for (int i = date; i < numberOfDays; i++) {
-            daysInMonth[i] = getNextDate(currentDate, AppGenerator.formatYMD2);
+            daysInMonth[i] = getNextDate(currentDate, AppGenerator.YMD_SHORT);
             currentDate = daysInMonth[i];
         }
         return daysInMonth;
@@ -278,8 +294,8 @@ public class AppGenerator {
     }
 
     public static int countDayBetween(String d1, String d2) {
-        Date date1 = getDate(d1, formatYMD2);
-        Date date2 = getDate(d2, formatYMD2);
+        Date date1 = getDate(d1, YMD_SHORT);
+        Date date2 = getDate(d2, YMD_SHORT);
         long off = date2.getTime() - date1.getTime();
         return (int) (off / MILLISECOND_IN_DAY);
     }
