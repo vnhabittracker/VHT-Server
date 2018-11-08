@@ -109,20 +109,21 @@ public class GroupActivity extends AppCompatActivity implements GroupRecyclerVie
         newGroup.setGroupId(AppGenerator.getNewId());
         newGroup.setGroupName(groupName);
 
+        Database db = new Database(GroupActivity.this);
+        db.open();
+        Database.getGroupDb().save(newGroup);
+        db.close();
+
+        edGroupName.setText(null);
+        data.add(0, newGroup);
+        groupViewAdapter.notifyDataSetChanged();
+
         VnHabitApiService mService = VnHabitApiUtils.getApiService();
         mService.addNewGroup(newGroup).enqueue(new Callback<GroupResponse>() {
             @Override
             public void onResponse(Call<GroupResponse> call, Response<GroupResponse> response) {
                 if (response.body().getResult().equals("1")) {
 
-                    Database db = new Database(GroupActivity.this);
-                    db.open();
-                    Database.groupDaoImpl.save(newGroup);
-                    db.close();
-
-                    edGroupName.setText(null);
-                    data.add(0, newGroup);
-                    groupViewAdapter.notifyDataSetChanged();
                 }
             }
 

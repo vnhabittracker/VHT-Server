@@ -110,8 +110,14 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
         holder.tvCategory.setText(item.getName());
         holder.tvDescription.setText(item.getDescription());
         holder.tvHabitType.setText(item.getHabitTypeName());
-        holder.tvNumber.setText("/" + item.getNumber() + " " + item.getUnit());
-        holder.tvCount.setText(String.valueOf(item.getCount()));
+
+        if (isEditable) {
+            holder.tvCount.setText(String.valueOf(item.getCount()));
+            holder.tvNumber.setText("/" + item.getNumber() + " " + item.getUnit());
+        } else {
+            holder.tvCount.setText("--");
+            holder.tvNumber.setText(null);
+        }
 
         String color = item.getColor();
         if (color != null && color.equals(context.getString(R.color.color0))) {
@@ -142,6 +148,7 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
             holder.isCheck = true;
             holder.imgCheck.setImageResource(R.drawable.ck_checked);
             scaleView(holder.background, 1f, 1f, 0);
+
         } else if (item.getCount() == 0) {
             holder.isCheck = false;
             holder.imgCheck.setImageResource(R.drawable.ck_unchecked);
@@ -181,17 +188,19 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
             if (!isEditable) {
                 return;
             }
+
             int num = Integer.parseInt(tvCount.getText().toString());
+
             if (view.getId() == R.id.btn_plus) {
-//                Toast.makeText(context, "btn_plus", Toast.LENGTH_SHORT).show();
                 num = num + 1;
                 tvCount.setText(num + "");
                 mClickListener.onTrackingValueChanged(view, TYPE_COUNT, getAdapterPosition(), num);
+
             } else if (view.getId() == R.id.btn_minus) {
-//                Toast.makeText(context, "btn_minus", Toast.LENGTH_SHORT).show();
                 num = num > 0 ? num - 1 : 0;
                 tvCount.setText(num + "");
                 mClickListener.onTrackingValueChanged(view, TYPE_COUNT, getAdapterPosition(), num);
+
             } else if (mClickListener != null) {
                 mClickListener.onItemClick(view, TYPE_COUNT, getAdapterPosition());
             }
@@ -229,18 +238,21 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
             if (!isEditable) {
                 return;
             }
+
             if (view.getId() == R.id.ck_check) {
                 if (isCheck) {
                     isCheck = false;
                     imgCheck.setImageResource(R.drawable.ck_unchecked);
                     mClickListener.onTrackingValueChanged(view, TYPE_CHECK, getAdapterPosition(), 0);
                     scaleView(background, 1f, 0f, 500);
+
                 } else {
                     isCheck = true;
                     imgCheck.setImageResource(R.drawable.ck_checked);
                     mClickListener.onTrackingValueChanged(view, TYPE_CHECK, getAdapterPosition(), 1);
                     scaleView(background, 0f, 1f, 599);
                 }
+
             } else if (mClickListener != null) {
                 mClickListener.onItemClick(view, TYPE_CHECK, getAdapterPosition());
             }

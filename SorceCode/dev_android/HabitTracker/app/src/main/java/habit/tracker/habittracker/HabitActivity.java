@@ -175,7 +175,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
 
     String startHabitDate;
     String endHabitDate;
-    boolean[] startOrEndDate = new boolean[2];
+    boolean[] enableHabitLimitTime = new boolean[2];
     boolean onSetStartDate = false;
 
     static final int MODE_CREATE = 0;
@@ -356,11 +356,11 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
 
                 // start and end date of habit
                 if (habitEntity.getStartDate() != null) {
-                    setStartEndDate(mStartDate);
+                    setHabitDate(mStartDate);
                     tvStartDate.setText(habitEntity.getStartDate());
                 }
                 if (habitEntity.getEndDate() != null) {
-                    setStartEndDate(mEndDate);
+                    setHabitDate(mEndDate);
                     tvEndDate.setText(habitEntity.getEndDate());
                 }
 
@@ -739,6 +739,27 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         nav.setTextColor(getResources().getColor(R.color.colorAccent));
     }
 
+    @OnClick({R.id.ll_start_date, R.id.ll_end_date})
+    public void setHabitDate(View v) {
+        if (v.getId() == R.id.ll_start_date) {
+            if (enableHabitLimitTime[0]) {
+                uncheckBox(chkStartDate);
+            } else {
+                checkBox(chkStartDate);
+            }
+            enableHabitLimitTime[0] = !enableHabitLimitTime[0];
+            tvStartDate.setEnabled(enableHabitLimitTime[0]);
+        } else if (v.getId() == R.id.ll_end_date) {
+            if (enableHabitLimitTime[1]) {
+                uncheckBox(chkEndDate);
+            } else {
+                checkBox(chkEndDate);
+            }
+            enableHabitLimitTime[1] = !enableHabitLimitTime[1];
+            tvEndDate.setEnabled(enableHabitLimitTime[1]);
+        }
+    }
+
     @Override
     public void onDateSet(DatePicker view, int year, int month, int day) {
         if (onSetStartDate) {
@@ -766,25 +787,6 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
             checkDate(v);
         }
         monitorDate[tag] = !monitorDate[tag];
-    }
-
-    @OnClick({R.id.ll_start_date, R.id.ll_end_date})
-    public void setStartEndDate(View v) {
-        if (v.getId() == R.id.ll_start_date) {
-            if (startOrEndDate[0]) {
-                uncheckBox(chkStartDate);
-            } else {
-                checkBox(chkStartDate);
-            }
-            startOrEndDate[0] = !startOrEndDate[0];
-        } else if (v.getId() == R.id.ll_end_date) {
-            if (startOrEndDate[1]) {
-                uncheckBox(chkEndDate);
-            } else {
-                checkBox(chkEndDate);
-            }
-            startOrEndDate[1] = !startOrEndDate[1];
-        }
     }
 
     @OnClick({R.id.color1,

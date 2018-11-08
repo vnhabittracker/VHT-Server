@@ -56,11 +56,11 @@
 
         <ImageView
             android:id="@+id/imgAddGroup"
-            android:layout_width="40dp"
+            android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
-            android:padding="3dp"
-            android:alpha="0.7"
+            android:padding="5dp"
+            android:alpha="0.5"
             android:src="@drawable/add_circle"/>
     </RelativeLayout>
 

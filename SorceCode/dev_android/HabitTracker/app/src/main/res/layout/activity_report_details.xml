@@ -226,12 +226,14 @@
             android:padding="10dp"
             app:srcCompat="@drawable/tab_edit"
             android:layout_weight="1"
+            android:alpha="0.4"
             android:layout_width="0dp"
             android:layout_height="match_parent" />
         <ImageView
             android:onClick="showEmpty"
             android:padding="10dp"
             app:srcCompat="@drawable/tab_description"
+            android:alpha="0.5"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent" />
@@ -246,6 +248,7 @@
             android:id="@+id/tabCalendar"
             android:padding="10dp"
             app:srcCompat="@drawable/tab_calendar"
+            android:alpha="0.5"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent" />

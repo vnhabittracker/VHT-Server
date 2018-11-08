@@ -113,7 +113,6 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         ArrayList<BarEntry> values = loadData(currentDate);
         if (values != null && values.size() > 0) {
             setData(values);
-//            chart.invalidate();
         }
     }
 
@@ -132,26 +131,27 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         }
         ArrayList<BarEntry> values = loadData(currentDate);
         setData(values);
-//        chart.invalidate();
     }
 
     @OnClick(R.id.next)
     public void next(View v) {
+        String nextYearDate = null;
         switch (mode) {
             case MODE_WEEK:
-                currentDate = AppGenerator.getDayNextWeek(currentDate);
+                nextYearDate = AppGenerator.getDayNextWeek(currentDate);
                 break;
             case MODE_MONTH:
-                currentDate = AppGenerator.getNextMonth(currentDate);
+                nextYearDate = AppGenerator.getNextMonth(currentDate);
                 break;
             case MODE_YEAR:
-                currentDate = AppGenerator.getNextYear(currentDate);
+                nextYearDate = AppGenerator.getNextYear(currentDate);
                 break;
         }
-        if (currentDate != null && currentDate.compareTo(firstCurrentDate) < 1) {
+
+        if (nextYearDate.compareTo(firstCurrentDate) < 1) {
+            currentDate = nextYearDate;
             ArrayList<BarEntry> values = loadData(currentDate);
             setData(values);
-//            chart.invalidate();
         }
     }
 
@@ -213,8 +213,10 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             currentDate = dateFormat.format(dateFormat.parse(currentDate));
             firstCurrentDate = currentDate;
+
             ArrayList<BarEntry> values = loadWeekData(currentDate);
             setData(values);
+
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -278,6 +280,15 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
 
             chart.setData(data);
             chart.animateY(500);
+        }
+
+        // update UI
+        if (currentDate.compareTo(firstCurrentDate) == 0) {
+            next.setEnabled(false);
+            next.setAlpha(0.3f);
+        } else {
+            next.setEnabled(true);
+            next.setAlpha(1f);
         }
     }
 

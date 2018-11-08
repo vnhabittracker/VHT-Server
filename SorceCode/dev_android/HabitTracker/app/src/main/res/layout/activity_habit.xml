@@ -477,7 +477,8 @@
                     android:background="@drawable/bg_input1"
                     android:textAllCaps="true"
                     android:text="cn 07.10.2018"
-                    android:gravity="center_vertical"/>
+                    android:gravity="center_vertical"
+                    android:enabled="false"/>
 
                 <LinearLayout
                     android:id="@+id/ll_end_date"
@@ -512,7 +513,8 @@
                     android:background="@drawable/bg_input1"
                     android:textAllCaps="true"
                     android:text="t.bảy 14.12.2018"
-                    android:gravity="center_vertical"/>
+                    android:gravity="center_vertical"
+                    android:enabled="false"/>
             </RelativeLayout>
 
             <!-- 7 -->
