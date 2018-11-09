@@ -103,6 +103,21 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
         return count;
     }
 
+    public int sumCountByHabit(String habitId) {
+        int count = 0;
+
+        final String sql = "SELECT SUM(" + COUNT + ") as sumTracking FROM " + TRACKING_TABLE
+                + " WHERE " + HABIT_ID + " = '" + habitId + "'";
+        cursor = super.rawQuery(sql, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            if (cursor.getColumnIndex("sumTracking") != -1) {
+                count = cursor.getInt(cursor.getColumnIndexOrThrow("sumTracking"));
+            }
+        }
+        return count;
+    }
+
     @Override
     public List<TrackingEntity> getRecordByHabit(String habitId) {
         List<TrackingEntity> list = new ArrayList<>();

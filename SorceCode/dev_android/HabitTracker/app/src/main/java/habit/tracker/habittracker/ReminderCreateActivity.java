@@ -12,6 +12,7 @@ import android.widget.NumberPicker;
 import android.widget.Toast;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,7 +53,7 @@ public class ReminderCreateActivity extends AppCompatActivity implements NumberP
 
     int[] hours;
     int[] minutes;
-    String[] dates;
+    String[] daysInYear;
 
     int hour;
     int minute;
@@ -72,15 +73,23 @@ public class ReminderCreateActivity extends AppCompatActivity implements NumberP
         type = -1;
         vType = btnTypeAll;
 
-        dates = AppGenerator.getDatesInMonth(
-                AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT), true);
-        String[] displayDates = convertDisplayDate(dates);
+
+        String currentDate = AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT);
+        daysInYear = new String[1000];
+        daysInYear[0] = currentDate;
+        for (int i = 1; i < daysInYear.length; i++) {
+            daysInYear[i] = AppGenerator.getNextDate(currentDate, AppGenerator.YMD_SHORT);
+            currentDate = daysInYear[i];
+        }
+
+        String[] displayDates = convertDisplayDate(daysInYear);
         pickerDate.setMinValue(0);
         pickerDate.setMaxValue(displayDates.length - 1);
+        pickerDate.setWrapSelectorWheel(false);
         pickerDate.setDisplayedValues(displayDates);
         pickerDate.setOnValueChangedListener(this);
 
-        this.date = dates[0];
+        this.date = daysInYear[0];
 
         hours = new int[24];
         for (int i = 0; i < hours.length; i++) {
@@ -111,7 +120,7 @@ public class ReminderCreateActivity extends AppCompatActivity implements NumberP
                 minute = minutes[newVal];
                 break;
             case R.id.picker_date:
-                date = dates[newVal];
+                date = daysInYear[newVal];
                 break;
         }
     }
@@ -184,7 +193,7 @@ public class ReminderCreateActivity extends AppCompatActivity implements NumberP
                     str = "CN";
                     break;
             }
-            str += " "+ day + " Th " + month;
+            str += " "+ day + " Th " + month + " " + year;
             res[i] = str;
         }
         return res;

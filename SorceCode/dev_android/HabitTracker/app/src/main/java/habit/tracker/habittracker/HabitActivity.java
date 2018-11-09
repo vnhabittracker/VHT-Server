@@ -52,6 +52,7 @@ import retrofit2.Response;
 public class HabitActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     public static final int SELECT_GROUP = 1;
     public static final int ADD_REMINDER = 2;
+    public static final int REQUEST_UPDATE = 0;
 
     public static final String TYPE_0 = "0";
     public static final String TYPE_1 = "1";

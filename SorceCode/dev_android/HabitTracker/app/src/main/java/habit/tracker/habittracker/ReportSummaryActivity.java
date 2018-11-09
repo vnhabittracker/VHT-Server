@@ -2,6 +2,7 @@ package habit.tracker.habittracker;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.annotation.Nullable;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -92,8 +93,31 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
     List<TrackingEntity> curTrackingChain = new ArrayList<>();
     List<TrackingEntity> bestTrackingChain = new ArrayList<>();
 
-    Database db = Database.getInstance(this);
+    Database appDatabase = Database.getInstance(this);
     boolean isDbOpen = false;
+
+    @BindView(R.id.tabEditHabit)
+    View tabEditHabit;
+    @BindView(R.id.tabChart)
+    View tabChart;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == HabitActivity.REQUEST_UPDATE) {
+            boolean delete = false;
+            if (data != null) {
+                delete = data.getBooleanExtra("delete", false);
+            }
+            if (!delete) {
+                initializeScreen(habitEntity.getHabitId());
+
+            } else {
+                finish();
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,39 +127,40 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
         setContentView(R.layout.activity_report_summary);
         ButterKnife.bind(this);
 
-        List<TrackingEntity> totalList = null;
-
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-            db.open();
             String habitId = bundle.getString(MainActivity.HABIT_ID);
-            String habitColor = bundle.getString(MainActivity.HABIT_COLOR);
-            currentTrackingDate = AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT);
-            firstCurTrackingDate = currentTrackingDate;
-            habitEntity = Database.getHabitDb().getHabit(habitId);
-            TrackingEntity trackingEntity = Database.getTrackingDb().getTracking(habitId, currentTrackingDate);
-            totalList = Database.getTrackingDb().getRecordByHabit(habitId);
-
-            if (trackingEntity != null) {
-                curTrackingCount = Integer.parseInt(trackingEntity.getCount());
-            }
-            vHeader.setBackgroundColor(ColorUtils.setAlphaComponent(Color.parseColor(habitColor), 100));
-
-            availDaysInWeek[0] = habitEntity.getMon().equals("1");
-            availDaysInWeek[1] = habitEntity.getTue().equals("1");
-            availDaysInWeek[2] = habitEntity.getWed().equals("1");
-            availDaysInWeek[3] = habitEntity.getThu().equals("1");
-            availDaysInWeek[4] = habitEntity.getFri().equals("1");
-            availDaysInWeek[5] = habitEntity.getSat().equals("1");
-            availDaysInWeek[6] = habitEntity.getSun().equals("1");
+            initializeScreen(habitId);
         }
+    }
 
-        // <1> get nearest/longest tracking chain
+    private void initializeScreen(String habitId) {
+        appDatabase.open();
+        isDbOpen = true;
+
+        currentTrackingDate = AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT);
+        firstCurTrackingDate = currentTrackingDate;
+        habitEntity = Database.getHabitDb().getHabit(habitId);
+        String habitColor = habitEntity.getHabitColor();
+        TrackingEntity trackingEntity = Database.getTrackingDb().getTracking(habitId, currentTrackingDate);
+        List<TrackingEntity> totalList = Database.getTrackingDb().getRecordByHabit(habitId);
+
+        if (trackingEntity != null) {
+            curTrackingCount = Integer.parseInt(trackingEntity.getCount());
+        }
+        vHeader.setBackgroundColor(ColorUtils.setAlphaComponent(Color.parseColor(habitColor), 100));
+
+        availDaysInWeek[0] = habitEntity.getMon().equals("1");
+        availDaysInWeek[1] = habitEntity.getTue().equals("1");
+        availDaysInWeek[2] = habitEntity.getWed().equals("1");
+        availDaysInWeek[3] = habitEntity.getThu().equals("1");
+        availDaysInWeek[4] = habitEntity.getFri().equals("1");
+        availDaysInWeek[5] = habitEntity.getSat().equals("1");
+        availDaysInWeek[6] = habitEntity.getSun().equals("1");
+
         String curDay = currentTrackingDate;
         String preDay;
-
         List<List<TrackingEntity>> groupList = new ArrayList<>();
-
         if (totalList != null && totalList.size() > 0) {
             int k = totalList.size() - 1;
             curTrackingChain.add(totalList.get(k));
@@ -168,25 +193,21 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
                 }
             }
         }
-        // </1>
 
-        // <init calendar>
         calendarAdapter = new TrackingCalendarAdapter(this, trackingCalendarItemList, habitEntity.getHabitColor());
         calendarAdapter.setClickListener(this);
         recyclerViewCalendar.setLayoutManager(new GridLayoutManager(this, 7));
         recyclerViewCalendar.setAdapter(calendarAdapter);
         loadCalendar(currentTrackingDate);
-        // </init calendar>
 
-        // init other view
         updateUI();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (isDbOpen) {
-            db.open();
+        if (!isDbOpen) {
+            appDatabase.open();
         }
     }
 
@@ -334,7 +355,7 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
                 break;
         }
 
-        // save to db
+        // save to appDatabase
         TrackingEntity record =
                 Database.trackingImpl.getTracking(this.habitEntity.getHabitId(), this.currentTrackingDate);
         if (record == null) {
@@ -397,9 +418,7 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
 
         // reload calendar
         if ((currentTrackingDate.compareTo(lastDayPreMonth) <= 0
-                || currentTrackingDate.compareTo(firstDayNextMonth) >= 0)
-//                && currentTrackingDate.compareTo(firstCurTrackingDate) <=
-                ) {
+                || currentTrackingDate.compareTo(firstDayNextMonth) >= 0)) {
             loadCalendar(currentTrackingDate);
         }
     }
@@ -420,7 +439,6 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
 
             for (TrackingEntity entity : habitTracking.getTrackingEntityList()) {
                 mapDayInMonth.put(entity.getCurrentDate(), entity);
-//            totalCount += entity.getIntCount();
             }
 
             habitEntity = habitTracking.getHabitEntity();
@@ -461,10 +479,26 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
         startActivity(intent);
     }
 
+    @OnClick(R.id.tabEditHabit)
+    public void editHabitDetails(View v) {
+        Intent intent = new Intent(this, HabitActivity.class);
+        intent.putExtra(MainActivity.HABIT_ID, this.habitEntity.getHabitId());
+        startActivityForResult(intent, HabitActivity.REQUEST_UPDATE);
+    }
+
+    @OnClick(R.id.tabChart)
+    public void showDetailsChart(View v) {
+        Intent intent = new Intent(this, ReportDetailsActivity.class);
+        intent.putExtra(MainActivity.HABIT_ID, habitEntity.getHabitId());
+        intent.putExtra(MainActivity.HABIT_COLOR, habitEntity.getHabitColor());
+        startActivity(intent);
+        finish();
+    }
+
     @Override
     protected void onStop() {
-        db.close();
-        isDbOpen = true;
+        appDatabase.close();
+        isDbOpen = false;
         super.onStop();
     }
 }

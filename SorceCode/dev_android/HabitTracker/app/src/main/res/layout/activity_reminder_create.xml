@@ -36,12 +36,12 @@
         android:textColor="#2f6aea"
         android:gravity="center"
         android:text="Chọn ngày và giờ"/>
-    
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp">
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp">
 
         <NumberPicker
             android:id="@+id/picker_hour"

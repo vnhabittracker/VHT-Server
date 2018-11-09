@@ -17,8 +17,10 @@ public class AppGenerator {
 
     // formats
     public static final String YMD = "yyyy-MM-dd HH:mm:ss";
+    public static final String YMD2 = "yyyy-MM-dd HH:mm";
     public static final String YMD_SHORT = "yyyy-MM-dd";
     public static final String DMY = "dd-MM-yyyy HH:mm:ss";
+    public static final String DMY2 = "dd-MM-yyyy HH:mm";
     public static final String DMY_SHORT = "dd/MM/yyyy";
 
     public static Date getDate(String date, String format) {
