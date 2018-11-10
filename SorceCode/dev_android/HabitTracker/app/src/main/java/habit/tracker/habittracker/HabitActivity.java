@@ -261,7 +261,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
 
         // start and end date
         startHabitDate = AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT);
-        endHabitDate = null;
+        endHabitDate = AppGenerator.getNextDate(startHabitDate, AppGenerator.YMD_SHORT);
 
         // init remind list
         remindAdapter = new RemindRecyclerViewAdapter(this, remindDispList);
@@ -533,8 +533,8 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         habit.setMonitorUnit(monitorUnit);
         habit.setMonitorNumber(monitorNumber);
 
-        habit.setStartDate(startHabitDate);
-        habit.setEndDate(endHabitDate);
+        habit.setStartDate(enableHabitLimitTime[0]? startHabitDate: null);
+        habit.setEndDate(enableHabitLimitTime[1]? endHabitDate: null);
         habit.setCreatedDate(AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT));
 
         habit.setHabitColor(habitColorCode);

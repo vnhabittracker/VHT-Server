@@ -11,7 +11,9 @@ import java.util.List;
 import habit.tracker.habittracker.api.model.tracking.Tracking;
 import habit.tracker.habittracker.repository.MyDatabaseHelper;
 import habit.tracker.habittracker.repository.habit.HabitDaoImpl;
+import habit.tracker.habittracker.repository.habit.HabitEntity;
 import habit.tracker.habittracker.repository.habit.HabitSchema;
+import habit.tracker.habittracker.repository.habit.HabitTracking;
 
 public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, TrackingSchema {
     private Cursor cursor;
@@ -26,13 +28,15 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
         super(db);
     }
 
+    public TrackingDaoImpl() {}
+
     @Override
     public int delete(String id) {
         return 0;
     }
 
     @Override
-    protected TrackingEntity cursorToEntity(Cursor cursor) {
+    public TrackingEntity cursorToEntity(Cursor cursor) {
         TrackingEntity entity = new TrackingEntity();
         if (cursor != null) {
             if (cursor.getColumnIndex(TRACKING_ID) != -1) {
@@ -55,28 +59,27 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
     }
 
     public HabitTracking getHabitTrackingBetween(String habitId, String startDate, String endDate) {
+        HabitTracking habitTracking = null;
         try {
-            Cursor cursor = super.rawQuery(
-                    "SELECT * FROM " + HabitSchema.HABIT_TABLE + " INNER JOIN " + TRACKING_TABLE
-                            + " ON "
-                            + TrackingSchema.TRACKING_TABLE + "." + TrackingSchema.HABIT_ID + " = " + HabitSchema.HABIT_TABLE + "." + HabitSchema.HABIT_ID
-                            + " WHERE "
-                            + TrackingSchema.TRACKING_TABLE + "." + TrackingSchema.CURRENT_DATE
-                            + " BETWEEN "
-                            + "'" + startDate + "' AND '" + endDate + "'"
-                            + " AND "
-                            + HabitSchema.HABIT_TABLE + "." + HabitSchema.HABIT_ID + " = '" + habitId + "'"
-                    , null);
+            final String sql = "SELECT " + getParams(HabitSchema.HABIT_COLUMNS, "h", false) + getParams(TRACKING_COLUMNS, "t", true)
+                    + " FROM " + HabitSchema.HABIT_TABLE + " h INNER JOIN " + TRACKING_TABLE + " t "
+                    + " ON "
+                    + "h." + HabitSchema.HABIT_ID + " = t." + TrackingSchema.HABIT_ID
+                    + " WHERE "
+                    + "t." + HABIT_ID + " = '" + habitId + "'"
+                    + " AND t." + TrackingSchema.CURRENT_DATE + " BETWEEN '" + startDate + "' AND '" + endDate + "'";
+
+            Cursor cursor = super.rawQuery(sql, null);
 
             if (cursor != null && cursor.getCount() > 0) {
-                HabitTracking habitTracking = new HabitTracking();
-                HabitDaoImpl habitDao = new HabitDaoImpl();
-
                 cursor.moveToFirst();
-                habitTracking.setHabitEntity(habitDao.cursorToEntity(cursor));
-
+                HabitDaoImpl habitDao = new HabitDaoImpl();
+                habitTracking = new HabitTracking();
+                habitTracking.setHabit(habitDao.cursorToEntity(cursor));
+                habitTracking.getTrackingList().add(cursorToEntity(cursor));
+                cursor.moveToNext();
                 while (!cursor.isAfterLast()) {
-                    habitTracking.getTrackingEntityList().add(cursorToEntity(cursor));
+                    habitTracking.getTrackingList().add(cursorToEntity(cursor));
                     cursor.moveToNext();
                 }
                 cursor.close();
@@ -84,7 +87,7 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
             }
         } catch (SQLiteConstraintException ex) {
         }
-        return null;
+        return habitTracking;
     }
 
     public int countTrackByUser(String userId) {
@@ -208,5 +211,16 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
         entity.setCount(track.getCount());
         entity.setCurrentDate(track.getCurrentDate());
         return entity;
+    }
+
+    public String getParams(String[] columns, String alias, boolean removeEnd) {
+        String str = "";
+        for (int i = 0; i < columns.length; i++) {
+            str = str + alias + "." + columns[i] + ", ";
+            if (removeEnd && i == columns.length - 1) {
+                return str.substring(0, str.length() - 2);
+            }
+        }
+        return str;
     }
 }

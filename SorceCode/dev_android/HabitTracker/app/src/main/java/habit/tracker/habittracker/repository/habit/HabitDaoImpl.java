@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +11,7 @@ import java.util.List;
 import habit.tracker.habittracker.api.model.habit.Habit;
 import habit.tracker.habittracker.common.TrackingDate;
 import habit.tracker.habittracker.repository.MyDatabaseHelper;
+import habit.tracker.habittracker.repository.tracking.TrackingDaoImpl;
 import habit.tracker.habittracker.repository.tracking.TrackingEntity;
 import habit.tracker.habittracker.repository.tracking.TrackingSchema;
 
@@ -29,36 +29,46 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
     public HabitDaoImpl() {}
 
     @Override
-    public List<DateTracking> getHabitsBetween(String startDate, String endDate) {
-        List<DateTracking> list = new ArrayList<>();
+    public List<HabitTracking> getHabitTrackingBetween(String startDate, String endDate) {
+        List<HabitTracking> list = new ArrayList<>();
         try {
-            cursor = super.rawQuery(
-                    "SELECT * FROM " + HABIT_TABLE + " INNER JOIN " + TRACKING_TABLE
-                            + " ON " +
-                            HABIT_TABLE + "." + HabitSchema.HABIT_ID + " = " + HABIT_TABLE + "." + TrackingSchema.HABIT_ID
-                            + " WHERE "
-//                            + HABIT_TABLE + "." + HabitSchema.MONITOR_NUMBER + " = " + TRACKING_TABLE + "." + TrackingSchema.COUNT
-//                            + " AND "
-                            + TrackingSchema.TRACKING_TABLE + "." + TrackingSchema.CURRENT_DATE
-                            + " BETWEEN "
-                            + "'" + startDate + "' AND '" + endDate + "'"
-                    , null);
+            final String sql = "SELECT " + getParams(HABIT_COLUMNS, "h", false) + getParams(TRACKING_COLUMNS, "t", true)
+                    + " FROM " + HABIT_TABLE + " h INNER JOIN " + TRACKING_TABLE + " t "
+                    + " ON "
+                    + "h." + HabitSchema.HABIT_ID + " = t." + TrackingSchema.HABIT_ID
+                    + " WHERE t." + TrackingSchema.CURRENT_DATE
+                    + " BETWEEN '" + startDate + "' AND '" + endDate + "'";
 
-            if (cursor != null) {
-                DateTracking dateTracking;
+            cursor = super.rawQuery(sql, null);
+
+            if (cursor != null && cursor.getCount() > 0) {
+                TrackingDaoImpl trackingDao = new TrackingDaoImpl();
                 cursor.moveToFirst();
+                HabitTracking habitTracking = new HabitTracking();
+                HabitEntity habit = cursorToEntity(cursor);
+                TrackingEntity track = trackingDao.cursorToEntity(cursor);
+                habitTracking.setHabit(habit);
+                habitTracking.getTrackingList().add(track);
+                list.add(habitTracking);
+                cursor.moveToNext();
                 while (!cursor.isAfterLast()) {
-                    dateTracking = new DateTracking();
-                    dateTracking.setHabitEntity(cursorToEntity(cursor));
-                    dateTracking.setTrackingEntity(cursorToTrackingEntity(cursor));
-                    list.add(dateTracking);
+                    habit = cursorToEntity(cursor);
+                    track = trackingDao.cursorToEntity(cursor);
+                    if (list.get(list.size() - 1).getHabit().getHabitId().equals(habit.getHabitId())) {
+                        list.get(list.size() - 1).getTrackingList().add(track);
+                    } else {
+                        habitTracking = new HabitTracking();
+                        habitTracking.setHabit(habit);
+                        habitTracking.getTrackingList().add(track);
+                        list.add(habitTracking);
+                    }
                     cursor.moveToNext();
                 }
                 cursor.close();
                 return list;
             }
+
         } catch (SQLiteConstraintException ex) {
-            Log.e("error", "error in HabitDaoImpl.getHabitOnTrackingDay");
         }
         return list;
     }
@@ -83,7 +93,7 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
 
     public int countHabitByUser(String userId) {
         int count = 0;
-        final String sql = "select count(*) as count from " + HABIT_TABLE + " where " + USER_ID + " = '" + userId + "'";
+        final String sql = "SELECT count(*) as count FROM " + HABIT_TABLE + " WHERE " + USER_ID + " = '" + userId + "'";
         cursor = super.rawQuery(sql, null);
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
@@ -132,38 +142,6 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
             str = HabitSchema.SUN;
         }
         return str + " = 1";
-    }
-
-    public List<DateTracking> getHabitOnTrackingDay(String day) {
-        List<DateTracking> list = new ArrayList<>();
-        try {
-            Cursor cursor = super.rawQuery("SELECT "
-                            + getParams(HABIT_COLUMNS, "h", false)
-                            + getParams(TRACKING_COLUMNS, "t", true)
-                            + " FROM " + HABIT_TABLE + " AS h INNER JOIN " + TRACKING_TABLE + " AS t"
-                            + " ON "
-                            + getParam(HabitSchema.HABIT_ID, "h") + " = " + getParam(TrackingSchema.HABIT_ID, "t")
-                            + " WHERE "
-                            + getParam(TrackingSchema.CURRENT_DATE, "t") + " = '" + day  + "'"
-                    , null);
-
-            if (cursor != null) {
-                DateTracking dateTracking;
-                cursor.moveToFirst();
-                while (!cursor.isAfterLast()) {
-                    dateTracking = new DateTracking();
-                    dateTracking.setHabitEntity(cursorToEntity(cursor));
-                    dateTracking.setTrackingEntity(cursorToTrackingEntity(cursor));
-                    list.add(dateTracking);
-                    cursor.moveToNext();
-                }
-                cursor.close();
-                return list;
-            }
-        } catch (SQLiteConstraintException ex) {
-            Log.e("error", "error in HabitDaoImpl.getHabitOnTrackingDay");
-        }
-        return list;
     }
 
     @Override

@@ -8,7 +8,7 @@ import java.util.List;
  * Created by DatTVT1 on 10/16/2018
  */
 public interface HabitDao {
-    List<DateTracking> getHabitsBetween(String startDate, String endDate);
+    List<HabitTracking> getHabitTrackingBetween(String startDate, String endDate);
     List<HabitEntity> getHabitByUser(String userId);
     HabitEntity getHabit(String habitId);
     boolean saveUpdateHabit(HabitEntity habitEntity);
