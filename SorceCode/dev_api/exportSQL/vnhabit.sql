@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 26, 2018 at 02:04 AM
+-- Generation Time: Nov 08, 2018 at 04:39 PM
 -- Server version: 10.1.35-MariaDB
 -- PHP Version: 7.2.9
 
@@ -83,8 +83,8 @@ CREATE TABLE `group` (
   `group_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `group_name` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `parent_id` varchar(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `group_icon` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `group_description` text COLLATE utf8mb4_unicode_ci NOT NULL
+  `group_icon` text COLLATE utf8mb4_unicode_ci,
+  `group_description` text COLLATE utf8mb4_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -96,7 +96,9 @@ INSERT INTO `group` (`group_id`, `group_name`, `parent_id`, `group_icon`, `group
 ('2', 'Tài chính', NULL, '', ''),
 ('3', 'Gia đình', NULL, '', ''),
 ('4', 'Học tập', NULL, '', ''),
-('5', 'Mua sắm', NULL, '', '');
+('5', 'Mua sắm', NULL, '', ''),
+('7681de99-f8', 'hhhhh', NULL, NULL, NULL),
+('902ef421-82', 'abc', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -122,13 +124,6 @@ CREATE TABLE `habit` (
   `habit_description` text COLLATE utf8mb4_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `habit`
---
-
-INSERT INTO `habit` (`habit_id`, `user_id`, `group_id`, `monitor_id`, `habit_name`, `habit_target`, `habit_type`, `monitor_type`, `monitor_unit`, `monitor_number`, `start_date`, `end_date`, `created_date`, `habit_color`, `habit_description`) VALUES
-('0085761d-d0', '1', '3', 'a0a9c691-ef', 'chay bo', 0, 0, 1, 'Lần', 5, '2018-10-25', '2018-10-25', '2018-10-25', '#647f8737', 'chay bo');
-
 -- --------------------------------------------------------
 
 --
@@ -147,13 +142,6 @@ CREATE TABLE `monitor_date` (
   `sun` tinyint(1) DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `monitor_date`
---
-
-INSERT INTO `monitor_date` (`monitor_id`, `habit_id`, `mon`, `tue`, `wed`, `thu`, `fri`, `sat`, `sun`) VALUES
-('a0a9c691-ef', '0085761d-d0', 1, 1, 1, 1, 1, 0, 0);
-
 -- --------------------------------------------------------
 
 --
@@ -168,14 +156,6 @@ CREATE TABLE `reminder` (
   `reminder_description` text COLLATE utf8mb4_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `reminder`
---
-
-INSERT INTO `reminder` (`reminder_id`, `habit_id`, `reminder_time`, `repeat_time`, `reminder_description`) VALUES
-('35c249dc-42', '0085761d-d0', '7-41', 5, NULL),
-('e4981fdf-81', '0085761d-d0', '13-47', 1, NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -185,17 +165,10 @@ INSERT INTO `reminder` (`reminder_id`, `habit_id`, `reminder_time`, `repeat_time
 CREATE TABLE `tracking` (
   `tracking_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `habit_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `current_date` text COLLATE utf8mb4_unicode_ci,
+  `current_date` date DEFAULT NULL,
   `count` int(11) DEFAULT '0',
   `tracking_description` text COLLATE utf8mb4_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `tracking`
---
-
-INSERT INTO `tracking` (`tracking_id`, `habit_id`, `current_date`, `count`, `tracking_description`) VALUES
-('', '0085761d-d0', '2018-10-25', 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -215,13 +188,6 @@ CREATE TABLE `user` (
   `avatar` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_description` text COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `user`
---
-
-INSERT INTO `user` (`user_id`, `username`, `password`, `phone`, `email`, `date_of_birth`, `gender`, `user_icon`, `avatar`, `user_description`) VALUES
-('1', 'user01', '12345678', '', 'user01@mail.com', '1990-10-24', -1, '', '', '');
 
 --
 -- Indexes for dumped tables

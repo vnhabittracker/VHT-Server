@@ -2,10 +2,10 @@ package habit.tracker.habittracker;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -26,8 +26,8 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import habit.tracker.habittracker.adapter.TrackingCalendarItem;
 import habit.tracker.habittracker.adapter.TrackingCalendarAdapter;
+import habit.tracker.habittracker.adapter.TrackingCalendarItem;
 import habit.tracker.habittracker.api.VnHabitApiUtils;
 import habit.tracker.habittracker.api.model.tracking.Tracking;
 import habit.tracker.habittracker.api.model.tracking.TrackingList;
@@ -35,7 +35,7 @@ import habit.tracker.habittracker.api.service.VnHabitApiService;
 import habit.tracker.habittracker.common.util.AppGenerator;
 import habit.tracker.habittracker.repository.Database;
 import habit.tracker.habittracker.repository.habit.HabitEntity;
-import habit.tracker.habittracker.repository.tracking.HabitTracking;
+import habit.tracker.habittracker.repository.habit.HabitTracking;
 import habit.tracker.habittracker.repository.tracking.TrackingEntity;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -430,20 +430,16 @@ public class ReportSummaryActivity extends AppCompatActivity implements Tracking
 
         Map<String, TrackingEntity> mapDayInMonth = new HashMap<>(31);
 
-        HabitTracking habitTracking = Database.trackingImpl
+        HabitTracking habitTracking = Database.getTrackingDb()
                 .getHabitTrackingBetween(habitEntity.getHabitId(), startReportDate, endReportDate);
 
         if (habitTracking != null) {
-
-            totalCount = habitTracking.getTrackingEntityList().size();
-
-            for (TrackingEntity entity : habitTracking.getTrackingEntityList()) {
+            totalCount = habitTracking.getTrackingList().size();
+            for (TrackingEntity entity : habitTracking.getTrackingList()) {
                 mapDayInMonth.put(entity.getCurrentDate(), entity);
             }
-
-            habitEntity = habitTracking.getHabitEntity();
+            habitEntity = habitTracking.getHabit();
         }
-
         return mapDayInMonth;
     }
 
