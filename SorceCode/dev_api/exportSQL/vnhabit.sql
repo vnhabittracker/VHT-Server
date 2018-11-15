@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 08, 2018 at 04:39 PM
+-- Generation Time: Nov 15, 2018 at 01:35 PM
 -- Server version: 10.1.35-MariaDB
 -- PHP Version: 7.2.9
 
@@ -97,8 +97,8 @@ INSERT INTO `group` (`group_id`, `group_name`, `parent_id`, `group_icon`, `group
 ('3', 'Gia đình', NULL, '', ''),
 ('4', 'Học tập', NULL, '', ''),
 ('5', 'Mua sắm', NULL, '', ''),
-('7681de99-f8', 'hhhhh', NULL, NULL, NULL),
-('902ef421-82', 'abc', NULL, NULL, NULL);
+('6', 'hhhhh', NULL, NULL, NULL),
+('7', 'abc', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -124,6 +124,36 @@ CREATE TABLE `habit` (
   `habit_description` text COLLATE utf8mb4_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `habit`
+--
+
+INSERT INTO `habit` (`habit_id`, `user_id`, `group_id`, `monitor_id`, `habit_name`, `habit_target`, `habit_type`, `monitor_type`, `monitor_unit`, `monitor_number`, `start_date`, `end_date`, `created_date`, `habit_color`, `habit_description`) VALUES
+('b468337e-b8', 'd233c193-6e', NULL, '30cfb386-0f', 'Chạy bộ', 0, 0, 1, 'Lần', 5, '2018-11-15', NULL, '2018-11-15', '#78ed872a', 'chat bo');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `habit_suggestion`
+--
+
+CREATE TABLE `habit_suggestion` (
+  `habit_name_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `group_id` varchar(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `habit_name_uni` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `habit_name` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `habit_name_count` int(11) DEFAULT '0',
+  `total_track` int(11) NOT NULL DEFAULT '0',
+  `success_track` int(11) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `habit_suggestion`
+--
+
+INSERT INTO `habit_suggestion` (`habit_name_id`, `group_id`, `habit_name_uni`, `habit_name`, `habit_name_count`, `total_track`, `success_track`) VALUES
+('1', '1', 'Chạy bộ', 'chay bo', 10, 13, 10);
+
 -- --------------------------------------------------------
 
 --
@@ -141,6 +171,13 @@ CREATE TABLE `monitor_date` (
   `sat` tinyint(1) DEFAULT '1',
   `sun` tinyint(1) DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `monitor_date`
+--
+
+INSERT INTO `monitor_date` (`monitor_id`, `habit_id`, `mon`, `tue`, `wed`, `thu`, `fri`, `sat`, `sun`) VALUES
+('30cfb386-0f', 'b468337e-b8', 1, 1, 1, 1, 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -170,6 +207,13 @@ CREATE TABLE `tracking` (
   `tracking_description` text COLLATE utf8mb4_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `tracking`
+--
+
+INSERT INTO `tracking` (`tracking_id`, `habit_id`, `current_date`, `count`, `tracking_description`) VALUES
+('1fdc3568-b8', 'b468337e-b8', '2018-11-15', 2, 'chat bo');
+
 -- --------------------------------------------------------
 
 --
@@ -186,8 +230,16 @@ CREATE TABLE `user` (
   `gender` tinyint(1) NOT NULL DEFAULT '-1',
   `user_icon` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `avatar` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `user_description` text COLLATE utf8mb4_unicode_ci NOT NULL
+  `user_description` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_date` text COLLATE utf8mb4_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`user_id`, `username`, `password`, `phone`, `email`, `date_of_birth`, `gender`, `user_icon`, `avatar`, `user_description`, `created_date`) VALUES
+('d233c193-6e', 'user01', '12345678', '', 'user01@mail.com', '0000-00-00', 0, '', '', '', '2018-11-15');
 
 --
 -- Indexes for dumped tables
@@ -227,6 +279,13 @@ ALTER TABLE `habit`
   ADD KEY `user_id` (`user_id`),
   ADD KEY `group_id` (`group_id`),
   ADD KEY `monitor_id` (`monitor_id`);
+
+--
+-- Indexes for table `habit_suggestion`
+--
+ALTER TABLE `habit_suggestion`
+  ADD PRIMARY KEY (`habit_name_id`),
+  ADD KEY `group_id` (`group_id`);
 
 --
 -- Indexes for table `monitor_date`
@@ -280,6 +339,12 @@ ALTER TABLE `habit`
   ADD CONSTRAINT `habit_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `habit_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `group` (`group_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `habit_ibfk_3` FOREIGN KEY (`monitor_id`) REFERENCES `monitor_date` (`monitor_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `habit_suggestion`
+--
+ALTER TABLE `habit_suggestion`
+  ADD CONSTRAINT `habit_suggestion_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `group` (`group_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `monitor_date`

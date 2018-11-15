@@ -53,7 +53,6 @@ public class GroupActivity extends AppCompatActivity implements GroupRecyclerVie
         setContentView(R.layout.activity_group);
         ButterKnife.bind(this);
 
-
         VnHabitApiService mService = VnHabitApiUtils.getApiService();
         mService.getGroupItems().enqueue(new Callback<GroupResponse>() {
             @Override

@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface UserDao {
     List<UserEntity> fetchUser();
-    UserEntity getUser(int userId);
+    UserEntity getUser(String userId);
     UserEntity getUser(String username, String password);
     boolean saveUser(UserEntity userEntity);
     boolean deleteUser(String userId);

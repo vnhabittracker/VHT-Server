@@ -109,11 +109,11 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
             Database db = Database.getInstance(this);
             db.open();
             String userId = MySharedPreference.getUserId(this);
-            int sumHabit = Database.getHabitDb().countHabitByUser(userId);
-            int sumTracking = Database.getTrackingDb().countTrackByUser(userId);
+//            int sumHabit = Database.getHabitDb().countHabitByUser(userId);
+//            int sumTracking = Database.getTrackingDb().countTrackByUser(userId);
             db.close();
-            tvTotal.setText(String.valueOf(sumHabit));
-            tvTotalDone.setText(String.valueOf(sumTracking));
+//            tvTotal.setText(String.valueOf(sumHabit));
+//            tvTotalDone.setText(String.valueOf(sumTracking));
 
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             currentDate = dateFormat.format(dateFormat.parse(currentDate));
@@ -240,6 +240,10 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         for (int i = 1; i <= 7; i++) {
             values.add(new BarEntry(i, count[i - 1]));
         }
+
+        tvTotal.setText(String.valueOf(weekData.size()));
+        tvTotalDone.setText(String.valueOf(meetGoalTrackingList.size()));
+
         return values;
     }
 
@@ -269,6 +273,9 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
             values.add(new BarEntry(i, count[i - 1]));
         }
         db.close();
+
+        tvTotal.setText(String.valueOf(monthData.size()));
+        tvTotalDone.setText(String.valueOf(meetGoalTrackingList.size()));
         return values;
     }
 
@@ -298,6 +305,9 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
             values.add(new BarEntry(i, count[i - 1]));
         }
         db.close();
+
+        tvTotal.setText(String.valueOf(yearData.size()));
+        tvTotalDone.setText(String.valueOf(meetGoalTrackingList.size()));
         return values;
     }
 

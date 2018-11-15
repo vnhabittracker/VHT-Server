@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="7dp"
+    >
+
+    <EditText
+        android:id="@+id/editNote"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:padding="10dp"
+        android:inputType="textMultiLine"
+        android:gravity="top|left"
+        android:maxLines="10"
+        android:scrollbars="vertical"
+        android:scrollHorizontally="false"
+        android:background="@drawable/bg_input"
+        android:textSize="12sp"
+        android:hint="ghi chú..."
+        />
+</RelativeLayout>

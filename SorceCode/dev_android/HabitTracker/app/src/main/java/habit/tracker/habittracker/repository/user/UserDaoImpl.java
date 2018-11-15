@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
+import habit.tracker.habittracker.api.model.user.User;
 import habit.tracker.habittracker.repository.MyDatabaseHelper;
 
 public class UserDaoImpl extends MyDatabaseHelper implements UserDao, UserSchema {
@@ -58,6 +59,9 @@ public class UserDaoImpl extends MyDatabaseHelper implements UserDao, UserSchema
             if (cursor.getColumnIndex(USER_DESCRIPTION) != -1) {
                 userEntity.setUserDescription(cursor.getString(cursor.getColumnIndexOrThrow(USER_DESCRIPTION)));
             }
+            if (cursor.getColumnIndex(USER_CREATED_DATE) != -1) {
+                userEntity.setCreatedDate(cursor.getString(cursor.getColumnIndexOrThrow(USER_CREATED_DATE)));
+            }
         }
         return userEntity;
     }
@@ -79,7 +83,7 @@ public class UserDaoImpl extends MyDatabaseHelper implements UserDao, UserSchema
     }
 
     @Override
-    public UserEntity getUser(int userId) {
+    public UserEntity getUser(String userId) {
         final String selectionArgs[] = {String.valueOf(userId)};
         final String selection = USER_ID + " = ?";
         UserEntity userEntity = new UserEntity();
@@ -151,9 +155,30 @@ public class UserDaoImpl extends MyDatabaseHelper implements UserDao, UserSchema
         initialValues.put(USER_ICON, userEntity.getUserIcon());
         initialValues.put(AVATAR, userEntity.getAvatar());
         initialValues.put(USER_DESCRIPTION, userEntity.getUserDescription());
+        initialValues.put(USER_CREATED_DATE, userEntity.getCreatedDate());
     }
 
     private ContentValues getContentValue() {
         return initialValues;
     }
+
+    public UserEntity convert(User user) {
+        if (user != null) {
+            UserEntity entity = new UserEntity();
+            entity.setUserId(user.getUserId());
+            entity.setUsername(user.getUsername());
+            entity.setPassword(user.getPassword());
+            entity.setGender(user.getGender());
+            entity.setPhone(user.getPhone());
+            entity.setEmail(user.getEmail());
+            entity.setDateOfBirth(user.getDateOfBirth());
+            entity.setAvatar(user.getAvatar());
+            entity.setUserIcon(user.getUserIcon());
+            entity.setUserDescription(user.getUserDescription());
+            entity.setCreatedDate(user.getCreatedDate());
+            return entity;
+        }
+        return null;
+    }
+
 }

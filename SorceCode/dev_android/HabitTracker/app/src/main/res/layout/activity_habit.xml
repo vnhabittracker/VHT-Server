@@ -45,9 +45,9 @@
         android:layout_height="0dp"
         android:layout_weight="11">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingStart="13dp"
             android:paddingEnd="10dp"
@@ -56,42 +56,53 @@
             tools:context=".HabitActivity">
 
             <TextView
+                android:id="@+id/lbHabitName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
                 android:textSize="15sp"
                 android:layout_marginBottom="10dp"
                 android:text="Tên thói quen" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="10dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+            <EditText
+                android:id="@+id/edit_habitName"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:layout_below="@+id/lbHabitName"
+                android:layout_alignParentStart="true"
+                android:layout_toStartOf="@+id/ll_suggestHabit"
+                android:textSize="12sp"
+                android:background="@drawable/bg_input1"
+                android:layout_marginStart="10dp"
+                android:paddingStart="7dp"
+                android:hint="Chạy bộ, đọc sách, ghi chép chi tiêu, vv"/>
 
-                <EditText
-                    android:id="@+id/edit_habitName"
-                    android:layout_width="0dp"
-                    android:layout_weight="10"
-                    android:layout_height="35dp"
-                    android:textSize="12sp"
-                    android:background="@drawable/bg_input1"
-                    android:paddingStart="7dp"
-                    android:hint="Chạy bộ, đọc sách, ghi chép chi tiêu, vv"/>
+            <LinearLayout
+                android:id="@+id/ll_suggestHabit"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:gravity="center"
+                android:layout_alignTop="@+id/edit_habitName"
+                android:layout_alignBottom="@+id/edit_habitName"
+                android:layout_below="@+id/lbHabitName"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="5dp"
+                >
+
                 <Button
-                    android:onClick="showEmpty"
                     android:id="@+id/btn_suggestHabit"
-                    android:layout_width="0dp"
-                    android:layout_weight="3"
+                    android:onClick="showEmpty"
+                    android:layout_width="wrap_content"
                     android:layout_height="22dp"
-                    android:layout_marginStart="5dp"
                     android:gravity="center"
+                    android:background="@drawable/button_green2"
                     android:text="Đề xuất"
-                    android:textSize="11sp"
-                    android:background="@drawable/button_green2"/>
+                    android:textSize="11sp" />
             </LinearLayout>
 
             <View
+                android:id="@+id/line1"
+                android:layout_below="@+id/edit_habitName"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="10dp"
@@ -99,6 +110,8 @@
                 android:background="@color/line"/>
             <!-- 2 -->
             <TextView
+                android:id="@+id/lbHabitTarget"
+                android:layout_below="@+id/line1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
@@ -106,6 +119,8 @@
                 android:text="Xây dựng hay từ bỏ thói quen" />
 
             <LinearLayout
+                android:id="@+id/llHabitTarget"
+                android:layout_below="@+id/lbHabitTarget"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="10dp"
@@ -140,6 +155,8 @@
 
             <!-- 3 -->
             <View
+                android:id="@+id/line2"
+                android:layout_below="@+id/llHabitTarget"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="10dp"
@@ -147,6 +164,8 @@
                 android:background="@color/line"/>
 
             <TextView
+                android:id="@+id/lbHabitType"
+                android:layout_below="@+id/line2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
@@ -154,6 +173,8 @@
                 android:text="Loại mục tiêu" />
 
             <LinearLayout
+                android:id="@+id/llHabitType"
+                android:layout_below="@+id/lbHabitType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="10dp"
@@ -205,6 +226,8 @@
 
             <!-- 5 -->
             <View
+                android:id="@+id/line3"
+                android:layout_below="@+id/llHabitType"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="10dp"
@@ -212,6 +235,8 @@
                 android:background="@color/line"/>
 
             <TextView
+                android:id="@+id/lbMonitorType"
+                android:layout_below="@+id/line3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
@@ -219,6 +244,8 @@
                 android:text="Cách theo dõi" />
 
             <LinearLayout
+                android:id="@+id/llMonitorType"
+                android:layout_below="@+id/lbMonitorType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="10dp"
@@ -291,6 +318,8 @@
             </LinearLayout>
             <!-- 5 -->
             <View
+                android:id="@+id/line4"
+                android:layout_below="@+id/llMonitorType"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="10dp"
@@ -298,6 +327,8 @@
                 android:background="@color/line"/>
 
             <TextView
+                android:id="@+id/lbGroupName"
+                android:layout_below="@+id/line4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
@@ -305,7 +336,8 @@
                 android:text="Nhóm thói quen" />
 
             <RelativeLayout
-                android:id="@+id/ll_group"
+                android:id="@+id/ll_GroupName"
+                android:layout_below="@+id/lbGroupName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="10dp"
@@ -333,6 +365,8 @@
 
             <!-- 6 -->
             <View
+                android:id="@+id/line5"
+                android:layout_below="@+id/ll_GroupName"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="5dp"
@@ -340,6 +374,8 @@
                 android:background="@color/line"/>
 
             <TextView
+                android:id="@+id/lb_monitorDate"
+                android:layout_below="@+id/line5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
@@ -347,6 +383,8 @@
                 android:text="Ngày theo dõi trong tuần" />
 
             <LinearLayout
+                android:id="@+id/ll_monitorDate"
+                android:layout_below="@+id/lb_monitorDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -425,6 +463,8 @@
 
             <!-- 7 -->
             <View
+                android:id="@+id/line6"
+                android:layout_below="@+id/ll_monitorDate"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="10dp"
@@ -432,6 +472,8 @@
                 android:background="@color/line"/>
 
             <TextView
+                android:id="@+id/lb_planDate"
+                android:layout_below="@+id/line6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
@@ -439,6 +481,8 @@
                 android:text="Thời gian thực hiện" />
 
             <RelativeLayout
+                android:id="@+id/rl_planDate"
+                android:layout_below="@+id/lb_planDate"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:paddingStart="10dp"
@@ -519,6 +563,8 @@
 
             <!-- 7 -->
             <View
+                android:id="@+id/line7"
+                android:layout_below="@+id/rl_planDate"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="10dp"
@@ -526,6 +572,8 @@
                 android:background="@color/line"/>
 
             <TextView
+                android:id="@+id/lb_habitColor"
+                android:layout_below="@+id/line7"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
@@ -533,6 +581,8 @@
                 android:text="Màu thói quen"/>
 
             <LinearLayout
+                android:id="@+id/ll_habitColor1"
+                android:layout_below="@+id/lb_habitColor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -574,7 +624,10 @@
                     android:layout_marginEnd="10dp"
                     android:background="@drawable/bg_circle"/>
             </LinearLayout>
+
             <LinearLayout
+                android:id="@+id/ll_habitColor2"
+                android:layout_below="@+id/ll_habitColor1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -618,6 +671,8 @@
 
             <!-- 8 -->
             <View
+                android:id="@+id/line8"
+                android:layout_below="@+id/ll_habitColor2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="10dp"
@@ -625,6 +680,8 @@
                 android:background="@color/line"/>
 
             <TextView
+                android:id="@+id/lb_remind"
+                android:layout_below="@+id/line8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
@@ -632,6 +689,8 @@
                 android:text="Nhắc nhở" />
 
             <RelativeLayout
+                android:id="@+id/rl_remind"
+                android:layout_below="@+id/lb_remind"
                 android:layout_width="match_parent"
                 android:layout_height="70dp">
 
@@ -657,6 +716,8 @@
 
             <!-- 8 -->
             <View
+                android:id="@+id/line9"
+                android:layout_below="@+id/rl_remind"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="10dp"
@@ -664,6 +725,8 @@
                 android:background="@color/line"/>
 
             <TextView
+                android:id="@+id/lb_habitDes"
+                android:layout_below="@+id/line9"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
@@ -671,7 +734,8 @@
                 android:text="Hãy viết động lực cho thói quen này" />
 
             <EditText
-                android:id="@+id/spinner_repeat"
+                android:id="@+id/edit_habitDes"
+                android:layout_below="@+id/lb_habitDes"
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
                 android:textSize="12sp"
@@ -681,6 +745,8 @@
                 android:hint="Động lực của thói quen"/>
 
             <LinearLayout
+                android:id="@+id/ll_control"
+                android:layout_below="@+id/edit_habitDes"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:paddingTop="30dp"
@@ -706,6 +772,17 @@
                     android:text="Lưu lại"/>
             </LinearLayout>
 
-        </LinearLayout>
+            <!-- search result area -->
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rvHabitSuggestion"
+                android:layout_below="@+id/edit_habitName"
+                android:layout_alignEnd="@+id/edit_habitName"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:paddingStart="7dp"
+                android:background="@drawable/bg_border1"
+                />
+        </RelativeLayout>
     </ScrollView>
 </LinearLayout>

@@ -32,7 +32,7 @@ public class Database {
     public static TrackingDaoImpl trackingImpl;
     public static ReminderDaoImpl reminderImpl;
 
-    public static UserDaoImpl getUser() {
+    public static UserDaoImpl getUserDb() {
         return userDaoImpl;
     }
 

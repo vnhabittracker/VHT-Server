@@ -29,6 +29,7 @@ $user->gender = $data->gender;
 $user->user_icon = $data->user_icon;
 $user->avatar = $data->avatar;
 $user->user_description = $data->user_description;
+$user->created_date = $data->created_date;
 
 
 if ($user->find_by_username()) {

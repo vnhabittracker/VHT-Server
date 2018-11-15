@@ -11,6 +11,7 @@ public class UserEntity {
     private String userIcon;
     private String avatar;
     private String userDescription;
+    private String createdDate;
 
     public UserEntity(String userId, String username, String email, String phone, String gender, String dateOfBirth, String password, String userIcon, String avatar, String userDescription) {
         this.userId = userId;
@@ -69,6 +70,10 @@ public class UserEntity {
         return userDescription;
     }
 
+    public String getCreatedDate() {
+        return createdDate;
+    }
+
     public void setUserId(String userId) {
         this.userId = userId;
     }
@@ -107,5 +112,9 @@ public class UserEntity {
 
     public void setUserDescription(String userDescription) {
         this.userDescription = userDescription;
+    }
+
+    public void setCreatedDate(String createdDate) {
+        this.createdDate = createdDate;
     }
 }

@@ -148,7 +148,7 @@
             android:gravity="center_vertical"
             android:textSize="14sp"
             android:textColor="#2d2d2d"
-            android:text="Tỗng Số lượt theo dõi"/>
+            android:text="Tỗng Số lượt  hoàn thành"/>
 
     </RelativeLayout>
 
