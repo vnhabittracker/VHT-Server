@@ -91,6 +91,9 @@ public class ReportDetailsActivity extends AppCompatActivity {
     @BindView(R.id.tabCalendar)
     View tabCalendar;
 
+    @BindView(R.id.tabAddJournal)
+    View tabAddDiary;
+
     private HabitEntity habitEntity;
     private String firstCurrentDate;
     private String currentTrackingDate;
@@ -109,8 +112,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_report_details);
         ButterKnife.bind(this);
 
@@ -126,7 +128,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
 
                 initDefaultUI(habitEntity);
 
-                // load chart data (default is week)
+                // load chart noteItems (default is week)
                 ArrayList<BarEntry> values = loadData(currentTrackingDate);
                 chartHelper.setData(values, mode);
 
@@ -146,7 +148,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
 
         initDefaultUI(habitEntity);
 
-        // load chart data (default is week)
+        // load chart noteItems (default is week)
         ArrayList<BarEntry> values = loadData(currentTrackingDate);
         chartHelper.setData(values, mode);
 
@@ -193,7 +195,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
 
         // init time tab
         selectedTab = tabWeek;
-        GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[] {startColor, endColor});
+        GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[]{startColor, endColor});
         gd.setCornerRadius(0f);
         tabWeekHL.setBackground(gd);
         tabMonthHL.setBackground(gd);
@@ -347,7 +349,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
         tracking.setCount(String.valueOf(record.getCount()));
         trackingData.getTrackingList().add(tracking);
         VnHabitApiService service = VnHabitApiUtils.getApiService();
-        service.replace(trackingData).enqueue(new Callback<ResponseBody>() {
+        service.updateTracking(trackingData).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
             }
@@ -379,14 +381,12 @@ public class ReportDetailsActivity extends AppCompatActivity {
 
     public ArrayList<BarEntry> loadWeekData(String currentDate) {
         String[] daysInWeek = AppGenerator.getDatesInWeek(currentDate);
-
         startReportDate = daysInWeek[0];
         endReportDate = daysInWeek[6];
 
         Database db = Database.getInstance(this);
         db.open();
-        HabitTracking habitTracking = Database.getTrackingDb()
-                .getHabitTrackingBetween(habitEntity.getHabitId(), startReportDate, endReportDate);
+        HabitTracking habitTracking = Database.getTrackingDb().getHabitTrackingBetween(habitEntity.getHabitId(), startReportDate, currentDate);
         db.close();
 
         if (habitTracking != null && habitTracking.getHabit() != null) {
@@ -400,14 +400,12 @@ public class ReportDetailsActivity extends AppCompatActivity {
 
     public ArrayList<BarEntry> loadMonthData(String currentDate) {
         String[] daysInMonth = AppGenerator.getDatesInMonth(currentDate, false);
-
         startReportDate = daysInMonth[0];
         endReportDate = daysInMonth[daysInMonth.length - 1];
 
         Database db = Database.getInstance(this);
         db.open();
-        HabitTracking habitTracking = Database.trackingImpl
-                .getHabitTrackingBetween(habitEntity.getHabitId(), startReportDate, endReportDate);
+        HabitTracking habitTracking = Database.trackingImpl.getHabitTrackingBetween(habitEntity.getHabitId(), startReportDate, currentDate);
         db.close();
 
         if (habitTracking != null && habitTracking.getHabit() != null) {
@@ -434,29 +432,23 @@ public class ReportDetailsActivity extends AppCompatActivity {
         HabitTracking habitTracking;
         HabitEntity hb = null;
         String start;
-        String end;
 
         for (int m = 0; m < 12; m++) {
             start = year + "-" + (m + 1) + "-" + 1;
-            end = year + "-" + (m + 1) + "-" + AppGenerator.getMaxDayInMonth(year, m);
             start = AppGenerator.format(start, AppGenerator.YMD_SHORT, AppGenerator.YMD_SHORT);
-            end = AppGenerator.format(end, AppGenerator.YMD_SHORT, AppGenerator.YMD_SHORT);
 
-            // data per month
-            habitTracking = Database.trackingImpl
-                    .getHabitTrackingBetween(this.habitEntity.getHabitId(), start, end);
+            // noteItems per month
+            habitTracking = Database.trackingImpl.getHabitTrackingBetween(this.habitEntity.getHabitId(), start, currentDate);
 
             if (habitTracking != null) {
                 if (hb == null) {
                     hb = habitTracking.getHabit();
                 }
                 int count;
-                // data per day in month
+                // noteItems per day in month
                 for (TrackingEntity track : habitTracking.getTrackingList()) {
                     count = Integer.parseInt(track.getCount());
-//                    if (count >= Integer.parseInt(hb.getMonitorNumber())) {
-                        completedPerMonth[m] += count;
-//                    }
+                    completedPerMonth[m] += count;
                 }
                 if (habitTracking.getHabit() != null) {
                     habitEntity = habitTracking.getHabit();
@@ -489,8 +481,8 @@ public class ReportDetailsActivity extends AppCompatActivity {
             for (TrackingEntity track : trackList) {
                 count = Integer.parseInt(track.getCount());
 //                if (count >= Integer.parseInt(habit.getMonitorNumber())) {
-                    mapDayInMonth.put(track.getCurrentDate(),
-                            mapDayInMonth.get(track.getCurrentDate()) + count);
+                mapDayInMonth.put(track.getCurrentDate(),
+                        mapDayInMonth.get(track.getCurrentDate()) + count);
 //                }
             }
         }
@@ -542,7 +534,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
                         + " - " + AppGenerator.format(endReportDate, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT);
                 break;
             case ChartHelper.MODE_MONTH:
-                des = "Tháng " + currentTrackingDate.split("-")[1] + ", " + currentTrackingDate.split("-")[0];
+                des = "Tháng " + currentTrackingDate.split("-")[1] + "/ " + currentTrackingDate.split("-")[0];
                 break;
             case ChartHelper.MODE_YEAR:
                 des = "Năm " + currentTrackingDate.split("-")[0];
@@ -560,9 +552,17 @@ public class ReportDetailsActivity extends AppCompatActivity {
 
     @OnClick(R.id.tabCalendar)
     public void showOnCalendar(View v) {
-        Intent intent = new Intent(this, ReportSummaryActivity.class);
+        Intent intent = new Intent(this, ReportCalendarActivity.class);
         intent.putExtra(MainActivity.HABIT_ID, habitEntity.getHabitId());
         intent.putExtra(MainActivity.HABIT_COLOR, habitEntity.getHabitColor());
+        startActivity(intent);
+        finish();
+    }
+
+    @OnClick(R.id.tabAddJournal)
+    public void addJournal(View v) {
+        Intent intent = new Intent(this, NoteActivity.class);
+        intent.putExtra(MainActivity.HABIT_ID, habitEntity.getHabitId());
         startActivity(intent);
         finish();
     }

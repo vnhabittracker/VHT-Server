@@ -209,7 +209,7 @@
             android:layout_marginBottom="10dp"
             android:gravity="center"
             android:textSize="13sp"
-            android:text="Tuần này, 29.10.2018 - 04.11.2018"/>
+            android:text="Tuần này, 29/10/2018 - 04/11/2018"/>
 
     </RelativeLayout>
 
@@ -230,7 +230,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent" />
         <ImageView
-            android:onClick="showEmpty"
+            android:id="@+id/tabAddJournal"
             android:padding="7dp"
             app:srcCompat="@drawable/tab_description"
             android:alpha="0.5"

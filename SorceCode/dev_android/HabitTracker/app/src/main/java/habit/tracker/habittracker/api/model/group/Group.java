@@ -22,6 +22,17 @@ public class Group {
 
     boolean isSelected = false;
 
+    public Group() {
+    }
+
+    public Group(String groupId, String groupName, String parentId, String groupIcon, String groupDescription) {
+        this.groupId = groupId;
+        this.groupName = groupName;
+        this.parentId = parentId;
+        this.groupIcon = groupIcon;
+        this.groupDescription = groupDescription;
+    }
+
     public String getGroupId() {
         return groupId;
     }

@@ -5,6 +5,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import habit.tracker.habittracker.api.model.group.Group;
 import habit.tracker.habittracker.repository.MyDatabaseHelper;
 
@@ -14,6 +17,22 @@ public class GroupDaoImpl extends MyDatabaseHelper implements GroupDao, GroupSch
 
     public GroupDaoImpl(SQLiteDatabase db){
         super(db);
+    }
+
+    @Override
+    public List<GroupEntity> fetchGroup() {
+        List<GroupEntity> groupEntities = new ArrayList<>();
+        cursor = super.query(GROUP_TABLE, GROUP_COLUMNS, null, null, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                groupEntities.add(cursorToEntity(cursor));
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return groupEntities;
+        }
+        return null;
     }
 
     @Override

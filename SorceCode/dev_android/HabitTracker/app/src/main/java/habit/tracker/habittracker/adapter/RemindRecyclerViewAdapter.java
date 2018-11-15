@@ -16,8 +16,13 @@ import habit.tracker.habittracker.common.util.AppGenerator;
 
 public class RemindRecyclerViewAdapter extends RecyclerView.Adapter<RemindRecyclerViewAdapter.ReminderViewHolder> {
     List<Reminder> data;
-    private LayoutInflater mInflater;
+    LayoutInflater mInflater;
     Context context;
+    RecyclerViewItemClickListener mListener;
+
+    public void setListener(RecyclerViewItemClickListener mListener) {
+        this.mListener = mListener;
+    }
 
     public RemindRecyclerViewAdapter(Context context, List<Reminder> data){
         this.context = context;
@@ -44,12 +49,18 @@ public class RemindRecyclerViewAdapter extends RecyclerView.Adapter<RemindRecycl
         return data.size();
     }
 
-    public class ReminderViewHolder extends RecyclerView.ViewHolder {
+    public class ReminderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView tvRemindTime;
 
         public ReminderViewHolder(@NonNull View itemView) {
             super(itemView);
             tvRemindTime = itemView.findViewById(R.id.tvRemindTime);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            mListener.onItemClick(v, getAdapterPosition());
         }
     }
 }

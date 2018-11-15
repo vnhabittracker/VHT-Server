@@ -27,6 +27,7 @@ public interface HabitSchema {
     String FRI = "fri";
     String SAT = "sat";
     String SUN = "sun";
+    String LAST_DATE_SYN = "last_date_syn";
 
     String CREATE_HABIT_TABLE =
             "CREATE TABLE IF NOT EXISTS " + HABIT_TABLE + " ("
@@ -51,12 +52,14 @@ public interface HabitSchema {
                     + THU + " TEXT, "
                     + FRI + " TEXT, "
                     + SAT + " TEXT, "
-                    + SUN + " TEXT"
+                    + SUN + " TEXT, "
+                    + LAST_DATE_SYN + " TEXT"
                     + ")";
 
-    String[] HABIT_COLUMNS = {HABIT_ID, USER_ID, GROUP_ID, MONITOR_ID
-            , HABIT_NAME, HABIT_TARGET, HABIT_TYPE, MONITOR_TYPE
-            , MONITOR_UNIT, MONITOR_NUMBER
-            , START_DATE, END_DATE, CREATED_DATE
-            , HABIT_COLOR, HABIT_DESCRIPTION, MON, TUE, WED, THU, FRI, SAT, SUN};
+    String[] HABIT_COLUMNS = {HABIT_ID, USER_ID, GROUP_ID, MONITOR_ID,
+            HABIT_NAME, HABIT_TARGET, HABIT_TYPE, MONITOR_TYPE,
+            MONITOR_UNIT, MONITOR_NUMBER,
+            START_DATE, END_DATE, CREATED_DATE,
+            HABIT_COLOR, HABIT_DESCRIPTION, MON, TUE, WED, THU, FRI, SAT, SUN,
+            LAST_DATE_SYN};
 }

@@ -1,11 +1,9 @@
 package habit.tracker.habittracker.repository.habit;
 
-import habit.tracker.habittracker.common.TrackingDate;
-
 /**
  * Created by DatTVT1 on 10/16/2018
  */
-public class HabitEntity implements TrackingDate {
+public class HabitEntity implements TrackingDateInWeek {
     private String habitId;
     private String userId;
     private String groupId;
@@ -28,6 +26,7 @@ public class HabitEntity implements TrackingDate {
     private String fri;
     private String sat;
     private String sun;
+    private String lastDateSyn;
 
     public String getHabitId() {
         return habitId;
@@ -117,6 +116,10 @@ public class HabitEntity implements TrackingDate {
         return sun;
     }
 
+    public String getLastDateSyn() {
+        return lastDateSyn;
+    }
+
     public void setHabitId(String habitId) {
         this.habitId = habitId;
     }
@@ -203,5 +206,9 @@ public class HabitEntity implements TrackingDate {
 
     public void setSun(String sun) {
         this.sun = sun;
+    }
+
+    public void setLastDateSyn(String lastDateSyn) {
+        this.lastDateSyn = lastDateSyn;
     }
 }

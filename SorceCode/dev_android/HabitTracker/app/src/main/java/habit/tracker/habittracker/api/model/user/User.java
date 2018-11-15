@@ -35,9 +35,12 @@ public class User {
     @SerializedName("user_description")
     @Expose
     private String userDescription;
+    @SerializedName("created_date")
+    @Expose
+    private String createdDate;
 
     public User() {
-        phone = password = email = dateOfBirth = gender = userIcon = avatar = userDescription = "";
+//        phone = password = email = dateOfBirth = gender = userIcon = avatar = userDescription = "";
     }
 
     public String getUserId() {
@@ -120,4 +123,11 @@ public class User {
         this.userDescription = userDescription;
     }
 
+    public String getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(String createdDate) {
+        this.createdDate = createdDate;
+    }
 }

@@ -10,10 +10,12 @@ include_once '../../config/Database.php';
 include_once '../../models/Reminder.php';
 include_once '../../models/Habit.php';
 include_once '../../models/MonitorDate.php';
+include_once '../../models/HabitSuggestion.php';
 
 // Instantiate DB & connect
 $database = new Database();
 $db = $database->connect();
+$habitSuggestion = new HabitSuggestion($db);
 
 // Instantiate
 $habit = new Habit($db);
@@ -22,6 +24,15 @@ $date = new MonitorDate($db);
 
 // Get raw posted data
 $data = json_decode(file_get_contents("php://input"));
+
+$habitSuggestion->habit_name_id = $data->habit_name_id;
+$habitSuggestion->habit_name_uni = $data->habit_name;
+$habitSuggestion->habit_name = $data->habit_name_ascii;
+$habitSuggestion->habit_name_count = $data->habit_name_count;
+$habitSuggestion->updateCount();
+if ($habitSuggestion->find($data->habit_name)->rowCount() == 0) {
+    $habitSuggestion->create();
+}
 
 $date->monitor_id = $data->monitor_id;
 $date->habit_id = $data->habit_id;

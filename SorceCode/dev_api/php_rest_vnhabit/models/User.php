@@ -20,6 +20,7 @@ include_once '../../models/Model.php';
         public $user_icon;
         public $avatar;
         public $user_description;
+        public $created_date;
 
         public function __construct($db) {
             $this->conn = $db;

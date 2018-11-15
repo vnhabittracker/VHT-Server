@@ -19,8 +19,10 @@ import habit.tracker.habittracker.api.model.user.User;
 import habit.tracker.habittracker.api.model.user.UserResult;
 import habit.tracker.habittracker.api.service.VnHabitApiService;
 import habit.tracker.habittracker.common.util.AppGenerator;
-import habit.tracker.habittracker.common.Validator;
-import habit.tracker.habittracker.common.ValidatorType;
+import habit.tracker.habittracker.common.validator.Validator;
+import habit.tracker.habittracker.common.validator.ValidatorType;
+import habit.tracker.habittracker.repository.Database;
+import habit.tracker.habittracker.repository.user.UserEntity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -99,6 +101,7 @@ public class RegisterActivity extends BaseActivity {
                 newUser.setEmail(email);
                 newUser.setPassword(password);
                 newUser.setUserId(AppGenerator.getNewId());
+                newUser.setCreatedDate(AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT));
                 register(newUser);
                 break;
             case R.id.btn_fb_login:
@@ -120,6 +123,11 @@ public class RegisterActivity extends BaseActivity {
             public void onResponse(Call<UserResult> call, Response<UserResult> response) {
                 if (response.body().getResult().equals("1")) {
                     Toast.makeText(RegisterActivity.this, "Đăng ký tài khoản thành công", Toast.LENGTH_SHORT).show();
+
+                    Database db = Database.getInstance(RegisterActivity.this);
+                    db.open();
+                    Database.getUserDb().saveUser(Database.getUserDb().convert(user));
+                    db.close();
 
                     Intent intent = getIntent();
                     intent.putExtra(LoginActivity.USERNAME, user.getUsername());

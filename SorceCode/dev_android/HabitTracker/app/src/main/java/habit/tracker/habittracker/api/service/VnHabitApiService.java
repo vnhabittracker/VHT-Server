@@ -1,24 +1,20 @@
 package habit.tracker.habittracker.api.service;
 
-import java.util.List;
-
 import habit.tracker.habittracker.api.model.group.Group;
 import habit.tracker.habittracker.api.model.group.GroupResponse;
 import habit.tracker.habittracker.api.model.habit.Habit;
 import habit.tracker.habittracker.api.model.habit.HabitResponse;
-import habit.tracker.habittracker.api.model.habit.HabitResult;
-import habit.tracker.habittracker.api.model.tracking.Tracking;
+import habit.tracker.habittracker.api.model.search.SearchResponse;
+import habit.tracker.habittracker.api.model.suggestion.HabitSuggestion;
+import habit.tracker.habittracker.api.model.suggestion.SuggestByLevelReponse;
 import habit.tracker.habittracker.api.model.tracking.TrackingList;
-import habit.tracker.habittracker.api.model.tracking.TrackingResult;
 import habit.tracker.habittracker.api.model.user.User;
 import habit.tracker.habittracker.api.model.user.UserResponse;
 import habit.tracker.habittracker.api.model.user.UserResult;
-import habit.tracker.habittracker.repository.group.GroupEntity;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
-import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
@@ -49,5 +45,17 @@ public interface VnHabitApiService {
     Call<GroupResponse> addNewGroup(@Body Group group);
 
     @POST("tracking/create_update.php")
-    Call<ResponseBody> replace(@Body TrackingList trackingList);
+    Call<ResponseBody> updateTracking(@Body TrackingList trackingList);
+
+    @GET("search/habit_search.php")
+    Call<SearchResponse> searchHabitName(@Query("search") String searchKey);
+
+    @GET("search/read.php")
+    Call<SearchResponse> getAllHabitSuggestion();
+
+    @POST("search/update_track_status.php")
+    Call<ResponseBody> updateTrackNameStatus(@Body HabitSuggestion habitSuggestion);
+
+    @GET("search/get_suggest_by_level.php")
+    Call<SuggestByLevelReponse> getHabitSuggestByLevel();
 }
