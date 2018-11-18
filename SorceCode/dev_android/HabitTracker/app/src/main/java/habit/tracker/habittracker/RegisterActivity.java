@@ -22,7 +22,6 @@ import habit.tracker.habittracker.common.util.AppGenerator;
 import habit.tracker.habittracker.common.validator.Validator;
 import habit.tracker.habittracker.common.validator.ValidatorType;
 import habit.tracker.habittracker.repository.Database;
-import habit.tracker.habittracker.repository.user.UserEntity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -118,7 +117,7 @@ public class RegisterActivity extends BaseActivity {
 
     private void register(final User user) {
         VnHabitApiService mService = VnHabitApiUtils.getApiService();
-        mService.addUser(user).enqueue(new Callback<UserResult>() {
+        mService.registerUser(user).enqueue(new Callback<UserResult>() {
             @Override
             public void onResponse(Call<UserResult> call, Response<UserResult> response) {
                 if (response.body().getResult().equals("1")) {

@@ -18,7 +18,6 @@ import com.github.mikephil.charting.data.BarEntry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -96,11 +95,15 @@ public class ReportDetailsActivity extends AppCompatActivity {
 
     private HabitEntity habitEntity;
     private String firstCurrentDate;
-    private String currentTrackingDate;
+    private String currentDate;
     private String habitStartDate;
     private String habitEndDate;
-    private String startReportDate;
-    private String endReportDate;
+
+    private String chartStartReportDate;
+    private String chartEndReportDate;
+    private String curStartReportDate;
+    private String curEndReportDate;
+
     private boolean[] availDaysInWeek = new boolean[7];
 
     private int timeLine = 0;
@@ -128,8 +131,11 @@ public class ReportDetailsActivity extends AppCompatActivity {
 
                 initDefaultUI(habitEntity);
 
-                // load chart noteItems (default is week)
-                ArrayList<BarEntry> values = loadData(currentTrackingDate);
+                // load chart mData (default is week)
+                ArrayList<BarEntry> values = loadData(currentDate);
+                chartStartReportDate = curStartReportDate;
+                chartEndReportDate = curEndReportDate;
+
                 chartHelper.setData(values, mode);
 
                 updateUI();
@@ -148,8 +154,8 @@ public class ReportDetailsActivity extends AppCompatActivity {
 
         initDefaultUI(habitEntity);
 
-        // load chart noteItems (default is week)
-        ArrayList<BarEntry> values = loadData(currentTrackingDate);
+        // load chart mData (default is week)
+        ArrayList<BarEntry> values = loadData(currentDate);
         chartHelper.setData(values, mode);
 
         updateUI();
@@ -158,14 +164,14 @@ public class ReportDetailsActivity extends AppCompatActivity {
     @SuppressLint("ResourceType")
     private void initDefaultUI(HabitEntity habitEntity) {
         mode = ChartHelper.MODE_WEEK;
-        currentTrackingDate = AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT);
-        firstCurrentDate = currentTrackingDate;
+        currentDate = AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT);
+        firstCurrentDate = currentDate;
 
         Database db = Database.getInstance(this);
         db.open();
         habitEntity = Database.getHabitDb().getHabit(habitEntity.getHabitId());
-        TrackingEntity currentTrackingList = Database.getTrackingDb().getTracking(habitEntity.getHabitId(), currentTrackingDate);
-        curSumCount = Database.getTrackingDb().sumCountByHabit(habitEntity.getHabitId());
+        TrackingEntity currentTrackingList = Database.getTrackingDb().getTracking(habitEntity.getHabitId(), currentDate);
+//        curSumCount = Database.getTrackingDb().sumCountByHabit(habitEntity.getHabitId());
         db.close();
 
         if (currentTrackingList != null) {
@@ -181,7 +187,8 @@ public class ReportDetailsActivity extends AppCompatActivity {
         availDaysInWeek[6] = habitEntity.getSun().equals("1");
 
         tvHabitName.setText(habitEntity.getHabitName());
-        tvSumCount.setText(curSumCount + " " + habitEntity.getMonitorUnit());
+        tvGoal.setText(habitEntity.getMonitorNumber() + " " + habitEntity.getMonitorUnit());
+//        tvSumCount.setText(curSumCount + " " + habitEntity.getMonitorUnit());
 
         String habitColor = habitEntity.getHabitColor();
 
@@ -193,7 +200,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
         int startColor = ColorUtils.setAlphaComponent(Color.parseColor(habitColor), 50);
         int endColor = ColorUtils.setAlphaComponent(Color.parseColor(habitColor), 225);
 
-        // init time tab
+        // init tvDisplayTime tab
         selectedTab = tabWeek;
         GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[]{startColor, endColor});
         gd.setCornerRadius(0f);
@@ -226,7 +233,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
 
                 initDefaultUI(habitEntity);
 
-                ArrayList<BarEntry> values = loadData(currentTrackingDate);
+                ArrayList<BarEntry> values = loadData(currentDate);
                 chartHelper.setData(values, mode);
                 updateUI();
             } else {
@@ -256,7 +263,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
                 break;
         }
 
-        ArrayList<BarEntry> values = loadData(currentTrackingDate);
+        ArrayList<BarEntry> values = loadData(currentDate);
         if (values != null && values.size() > 0) {
             chartHelper.setData(values, mode);
         }
@@ -268,18 +275,17 @@ public class ReportDetailsActivity extends AppCompatActivity {
         switch (v.getId()) {
             case R.id.pre:
                 timeLine--;
-                currentTrackingDate = AppGenerator.getPreDate(currentTrackingDate, AppGenerator.YMD_SHORT);
+                currentDate = AppGenerator.getPreDate(currentDate, AppGenerator.YMD_SHORT);
                 break;
             case R.id.next:
                 timeLine++;
-                currentTrackingDate = AppGenerator.getNextDate(currentTrackingDate, AppGenerator.YMD_SHORT);
+                currentDate = AppGenerator.getNextDate(currentDate, AppGenerator.YMD_SHORT);
                 break;
         }
 
         Database db = Database.getInstance(this);
         db.open();
-        TrackingEntity todayTracking = Database.getTrackingDb()
-                .getTracking(habitEntity.getHabitId(), currentTrackingDate);
+        TrackingEntity todayTracking = Database.getTrackingDb().getTracking(habitEntity.getHabitId(), currentDate);
         db.close();
 
         curTrackingCount = 0;
@@ -287,10 +293,17 @@ public class ReportDetailsActivity extends AppCompatActivity {
             curTrackingCount = Integer.parseInt(todayTracking.getCount());
         }
 
-        ArrayList<BarEntry> values = loadData(currentTrackingDate);
-        if ((currentTrackingDate.compareTo(startReportDate) < 0 || currentTrackingDate.compareTo(endReportDate) > 0)
-                && currentTrackingDate.compareTo(habitStartDate) >= 0 && currentTrackingDate.compareTo(habitEndDate) <= 0) {
+        ArrayList<BarEntry> values = loadData(currentDate);
+//        if (
+//                (currentDate.compareTo(curStartReportDate) < 0 || currentDate.compareTo(curEndReportDate) > 0)
+//                        && currentDate.compareTo(habitStartDate) >= 0 && currentDate.compareTo(habitEndDate) <= 0)
+//        {
+//            chartHelper.setData(values, mode);
+//        }
+        if (currentDate.compareTo(chartStartReportDate) < 0 || currentDate.compareTo(chartEndReportDate) > 0) {
             chartHelper.setData(values, mode);
+            chartStartReportDate = curStartReportDate;
+            chartEndReportDate = curEndReportDate;
         }
 
         updateUI();
@@ -298,13 +311,10 @@ public class ReportDetailsActivity extends AppCompatActivity {
 
     @OnClick({R.id.minusCount, R.id.addCount})
     public void onCountChanged(View v) {
-        if (timeLine > 0 || currentTrackingDate.compareTo(habitEntity.getStartDate()) < 0
-                || !AppGenerator.isValidTrackingDay(currentTrackingDate, availDaysInWeek)) {
+        if (timeLine > 0 || currentDate.compareTo(habitEntity.getStartDate()) < 0
+                || !AppGenerator.isValidTrackingDay(currentDate, availDaysInWeek)) {
             return;
         }
-
-        int goalNumber = Integer.parseInt(habitEntity.getMonitorNumber());
-        boolean above = curTrackingCount >= goalNumber;
 
         switch (v.getId()) {
             case R.id.minusCount:
@@ -321,18 +331,18 @@ public class ReportDetailsActivity extends AppCompatActivity {
         Database db = Database.getInstance(this);
         db.open();
         TrackingEntity record =
-                Database.trackingImpl.getTracking(this.habitEntity.getHabitId(), this.currentTrackingDate);
+                Database.trackingImpl.getTracking(this.habitEntity.getHabitId(), this.currentDate);
         if (record == null) {
             record = new TrackingEntity();
             record.setTrackingId(AppGenerator.getNewId());
             record.setHabitId(this.habitEntity.getHabitId());
-            record.setCurrentDate(this.currentTrackingDate);
+            record.setCurrentDate(this.currentDate);
         }
         record.setCount(String.valueOf(curTrackingCount));
         Database.trackingImpl.saveTracking(record);
         db.close();
 
-        ArrayList<BarEntry> values = loadData(currentTrackingDate);
+        ArrayList<BarEntry> values = loadData(currentDate);
 //        if ((!above && curTrackingCount == goalNumber)
 //                || (above && goalNumber - curTrackingCount == 1)) {
 //            chartHelper.setData(values, mode);
@@ -345,7 +355,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
         Tracking tracking = new Tracking();
         tracking.setTrackingId(record.getTrackingId());
         tracking.setHabitId(record.getHabitId());
-        tracking.setCurrentDate(currentTrackingDate);
+        tracking.setCurrentDate(currentDate);
         tracking.setCount(String.valueOf(record.getCount()));
         trackingData.getTrackingList().add(tracking);
         VnHabitApiService service = VnHabitApiUtils.getApiService();
@@ -381,12 +391,12 @@ public class ReportDetailsActivity extends AppCompatActivity {
 
     public ArrayList<BarEntry> loadWeekData(String currentDate) {
         String[] daysInWeek = AppGenerator.getDatesInWeek(currentDate);
-        startReportDate = daysInWeek[0];
-        endReportDate = daysInWeek[6];
+        curStartReportDate = daysInWeek[0];
+        curEndReportDate = daysInWeek[6];
 
         Database db = Database.getInstance(this);
         db.open();
-        HabitTracking habitTracking = Database.getTrackingDb().getHabitTrackingBetween(habitEntity.getHabitId(), startReportDate, currentDate);
+        HabitTracking habitTracking = Database.getTrackingDb().getHabitTrackingBetween(habitEntity.getHabitId(), curStartReportDate, curEndReportDate);
         db.close();
 
         if (habitTracking != null && habitTracking.getHabit() != null) {
@@ -400,12 +410,12 @@ public class ReportDetailsActivity extends AppCompatActivity {
 
     public ArrayList<BarEntry> loadMonthData(String currentDate) {
         String[] daysInMonth = AppGenerator.getDatesInMonth(currentDate, false);
-        startReportDate = daysInMonth[0];
-        endReportDate = daysInMonth[daysInMonth.length - 1];
+        curStartReportDate = daysInMonth[0];
+        curEndReportDate = daysInMonth[daysInMonth.length - 1];
 
         Database db = Database.getInstance(this);
         db.open();
-        HabitTracking habitTracking = Database.trackingImpl.getHabitTrackingBetween(habitEntity.getHabitId(), startReportDate, currentDate);
+        HabitTracking habitTracking = Database.trackingImpl.getHabitTrackingBetween(habitEntity.getHabitId(), curStartReportDate, currentDate);
         db.close();
 
         if (habitTracking != null && habitTracking.getHabit() != null) {
@@ -421,8 +431,8 @@ public class ReportDetailsActivity extends AppCompatActivity {
         String[] arrDate = currentDate.split("-");
 
         int year = Integer.parseInt(arrDate[0]);
-        startReportDate = year + "-" + "01-01";
-        endReportDate = year + "-01-" + AppGenerator.getMaxDayInMonth(year, 12);
+        curStartReportDate = year + "-" + "01-01";
+        curEndReportDate = year + "-12-" + AppGenerator.getMaxDayInMonth(year, 12);
 
         Database db = new Database(this);
         db.open();
@@ -431,21 +441,21 @@ public class ReportDetailsActivity extends AppCompatActivity {
 
         HabitTracking habitTracking;
         HabitEntity hb = null;
-        String start;
-
+        String startMonth, endMonth, date;
         for (int m = 0; m < 12; m++) {
-            start = year + "-" + (m + 1) + "-" + 1;
-            start = AppGenerator.format(start, AppGenerator.YMD_SHORT, AppGenerator.YMD_SHORT);
+            date = year + "-" + (m + 1) + "-01";
+            startMonth = AppGenerator.format(date, AppGenerator.YMD_SHORT, AppGenerator.YMD_SHORT);
+            date = year + "-" + (m + 1) + "-" + AppGenerator.getMaxDayInMonth(year, m);
+            endMonth = AppGenerator.format(date, AppGenerator.YMD_SHORT, AppGenerator.YMD_SHORT);
 
-            // noteItems per month
-            habitTracking = Database.trackingImpl.getHabitTrackingBetween(this.habitEntity.getHabitId(), start, currentDate);
+            habitTracking = Database.trackingImpl.getHabitTrackingBetween(this.habitEntity.getHabitId(), startMonth, endMonth);
 
             if (habitTracking != null) {
                 if (hb == null) {
                     hb = habitTracking.getHabit();
                 }
                 int count;
-                // noteItems per day in month
+                // mData per day in month
                 for (TrackingEntity track : habitTracking.getTrackingList()) {
                     count = Integer.parseInt(track.getCount());
                     completedPerMonth[m] += count;
@@ -474,12 +484,13 @@ public class ReportDetailsActivity extends AppCompatActivity {
             mapDayInMonth.put(d, 0);
         }
 
+        curSumCount = 0;
         if (habitTracking != null) {
             int count;
             HabitEntity habit = habitTracking.getHabit();
-            List<TrackingEntity> trackList = habitTracking.getTrackingList();
-            for (TrackingEntity track : trackList) {
+            for (TrackingEntity track : habitTracking.getTrackingList()) {
                 count = Integer.parseInt(track.getCount());
+                curSumCount += count;
 //                if (count >= Integer.parseInt(habit.getMonitorNumber())) {
                 mapDayInMonth.put(track.getCurrentDate(),
                         mapDayInMonth.get(track.getCurrentDate()) + count);
@@ -499,9 +510,11 @@ public class ReportDetailsActivity extends AppCompatActivity {
             tvCurrentTime.setText("Hôm nay");
         } else if (timeLine == -1) {
             tvCurrentTime.setText("Hôm qua");
+        } else if (timeLine == 1) {
+            tvCurrentTime.setText("Ngày mai");
         } else {
             tvCurrentTime.setText(
-                    AppGenerator.format(currentTrackingDate, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT));
+                    AppGenerator.format(currentDate, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT));
         }
 
 //        if (timeLine == 0) {
@@ -510,34 +523,32 @@ public class ReportDetailsActivity extends AppCompatActivity {
 //            btnNextDate.setVisibility(View.VISIBLE);
 //        }
 //
-//        if (currentTrackingDate.compareTo(habitStartDate) <= 0) {
+//        if (currentDate.compareTo(habitStartDate) <= 0) {
 //            btnPreDate.setVisibility(View.INVISIBLE);
 //        } else {
 //            btnPreDate.setVisibility(View.VISIBLE);
 //        }
 
-        tvSumCount.setText(curSumCount + " " + habitEntity.getMonitorUnit());
-
-        if (timeLine > 0 || currentTrackingDate.compareTo(habitEntity.getStartDate()) < 0
-                || !AppGenerator.isValidTrackingDay(currentTrackingDate, availDaysInWeek)) {
+        if (timeLine > 0 || currentDate.compareTo(habitEntity.getStartDate()) < 0
+                || !AppGenerator.isValidTrackingDay(currentDate, availDaysInWeek)) {
             tvTrackCount.setText("--");
         } else {
             tvTrackCount.setText(String.valueOf(curTrackingCount) + " " + habitEntity.getMonitorUnit());
         }
 
-        tvGoal.setText(habitEntity.getMonitorNumber() + " " + habitEntity.getMonitorUnit());
+        tvSumCount.setText(curSumCount + " " + habitEntity.getMonitorUnit());
 
         String des = null;
         switch (mode) {
             case ChartHelper.MODE_WEEK:
-                des = "Tuần này " + AppGenerator.format(startReportDate, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT)
-                        + " - " + AppGenerator.format(endReportDate, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT);
+                des = "Tuần này " + AppGenerator.format(chartStartReportDate, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT)
+                        + " - " + AppGenerator.format(chartEndReportDate, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT);
                 break;
             case ChartHelper.MODE_MONTH:
-                des = "Tháng " + currentTrackingDate.split("-")[1] + "/ " + currentTrackingDate.split("-")[0];
+                des = "Tháng " + currentDate.split("-")[1] + "/ " + currentDate.split("-")[0];
                 break;
             case ChartHelper.MODE_YEAR:
-                des = "Năm " + currentTrackingDate.split("-")[0];
+                des = "Năm " + currentDate.split("-")[0];
                 break;
         }
         tvDescription.setText(des);

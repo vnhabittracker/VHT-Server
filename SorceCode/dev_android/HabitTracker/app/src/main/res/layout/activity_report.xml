@@ -94,14 +94,26 @@
                 android:src="@drawable/arrow_right"/>
         </LinearLayout>
 
-        <com.github.mikephil.charting.charts.BarChart
-            android:id="@+id/chart"
-            android:layout_below="@id/control"
+        <LinearLayout
+            android:id="@+id/chartContainer"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/control"
             android:layout_above="@+id/total"
             android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp"/>
+            android:layout_marginBottom="20dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            >
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/chart"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/total"
@@ -122,9 +134,9 @@
             android:layout_alignBottom="@+id/total"
             android:layout_toStartOf="@+id/total"
             android:gravity="center_vertical"
-            android:textSize="14sp"
+            android:textSize="13sp"
             android:textColor="#2d2d2d"
-            android:text="Tổng số thói quen"/>
+            android:text="Tổng số thói quen (của tuần/tháng/năm: đang hiển thị)"/>
 
         <TextView
             android:id="@+id/totalDone"
@@ -146,9 +158,9 @@
             android:layout_alignBottom="@+id/totalDone"
             android:layout_toStartOf="@+id/totalDone"
             android:gravity="center_vertical"
-            android:textSize="14sp"
+            android:textSize="13sp"
             android:textColor="#2d2d2d"
-            android:text="Tỗng Số lượt  hoàn thành"/>
+            android:text="Tổng số lượt  hoàn thành (của tuần/tháng/năm: đang hiển thị)"/>
 
     </RelativeLayout>
 

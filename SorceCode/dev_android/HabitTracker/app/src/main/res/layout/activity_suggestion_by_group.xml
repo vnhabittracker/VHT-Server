@@ -8,10 +8,23 @@
     android:orientation="vertical"
     tools:context=".SuggestionByGroupActivity">
 
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:textColor="#2837ba"
+        android:background="@drawable/border_bottom"
+        android:text="Đề xuất"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rvSuggestion"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="11"
+        android:paddingTop="10dp"
         android:paddingStart="20dp"
         />
 </LinearLayout>

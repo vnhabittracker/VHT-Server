@@ -24,7 +24,7 @@ public interface VnHabitApiService {
     Call<UserResponse> getUser(@Query("username") String username, @Query("password") String password);
 
     @POST("user/create.php")
-    Call<UserResult> addUser(@Body User user);
+    Call<UserResult> registerUser(@Body User user);
 
     @POST("habit/create.php")
     Call<ResponseBody> addHabit(@Body Habit habit);

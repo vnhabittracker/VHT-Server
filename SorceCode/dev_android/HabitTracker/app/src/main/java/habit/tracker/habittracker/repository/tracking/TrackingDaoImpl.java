@@ -105,11 +105,14 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
         return count;
     }
 
-    public int sumCountByHabit(String habitId) {
+    public int sumCountByHabit(String habitId, String start, String end) {
         int count = 0;
 
-        final String sql = "SELECT SUM(" + COUNT + ") as sumTracking FROM " + TRACKING_TABLE
-                + " WHERE " + HABIT_ID + " = '" + habitId + "'";
+        final String sql = "SELECT SUM(" + COUNT + ") AS sumTracking FROM " + TRACKING_TABLE
+                + " WHERE " + HABIT_ID + " = '" + habitId + "'"
+                + " AND " + CURRENT_DATE + " >= '" + start + "'"
+                + " AND " + CURRENT_DATE + " <= '" + end + "'";
+
         cursor = super.rawQuery(sql, null);
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();

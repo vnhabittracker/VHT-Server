@@ -23,6 +23,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:textSize="20sp"
+            android:textStyle="bold"
             android:text="Chạy bộ"/>
 
         <TextView

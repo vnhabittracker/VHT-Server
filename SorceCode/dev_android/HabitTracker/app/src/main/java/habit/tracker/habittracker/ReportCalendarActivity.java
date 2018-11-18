@@ -264,7 +264,7 @@ public class ReportCalendarActivity extends AppCompatActivity implements Trackin
         trackingCalendarItemList.add(new TrackingCalendarItem("Bảy", null, false, false, true));
         trackingCalendarItemList.add(new TrackingCalendarItem("CN", null, false, false, true));
 
-        // add pre month item
+        // add imgPreDate month item
         trackingCalendarItemList.addAll(head);
 
         Map<String, TrackingEntity> mapValues = loadData(currentTrackingDate);
@@ -285,7 +285,7 @@ public class ReportCalendarActivity extends AppCompatActivity implements Trackin
             }
         }
 
-        // add next month item
+        // add imgNextDate month item
         trackingCalendarItemList.addAll(tail);
         calendarAdapter.notifyDataSetChanged();
     }

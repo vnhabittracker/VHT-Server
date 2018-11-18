@@ -1,9 +1,15 @@
 package habit.tracker.habittracker;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -35,12 +41,13 @@ import habit.tracker.habittracker.repository.tracking.TrackingEntity;
 
 
 public class ReportActivity extends AppCompatActivity implements OnChartValueSelectedListener {
+    private static final String DEBUG_TAG = "vnhb_debug";
     @BindView(R.id.pre)
-    View pre;
+    View imgPreDate;
     @BindView(R.id.next)
-    View next;
+    View imgNextDate;
     @BindView(R.id.displayTime)
-    TextView time;
+    TextView tvDisplayTime;
     @BindView(R.id.total)
     TextView tvTotal;
     @BindView(R.id.totalDone)
@@ -57,6 +64,9 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
     BarChart chart;
     ChartHelper chartHelper;
 
+    @BindView(R.id.chartContainer)
+    View chartContainer;
+
     public static final int MODE_WEEK = 0;
     public static final int MODE_MONTH = 1;
     public static final int MODE_YEAR = 2;
@@ -64,9 +74,7 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
     String currentDate;
     String firstCurrentDate;
 
-    public int getMode() {
-        return mode;
-    }
+    private GestureDetectorCompat gestureDetectorCompat = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +110,62 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         initializeScreen();
     }
 
+    float touchX = 0;
+    float touchY = 0;
+    float boundTop = 0;
+    float boundBottom = 0;
+    float touchThresh = 100;
+    long lastTouchTime = 0;
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        int[] outLocation = new int[2];
+        chartContainer.getLocationOnScreen(outLocation);
+        boundTop = outLocation[0];
+        boundBottom = outLocation[0] + chartContainer.getHeight();
+        super.onWindowFocusChanged(hasFocus);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        int action = ev.getActionMasked();
+        switch (action) {
+            case (MotionEvent.ACTION_DOWN):
+                touchX = ev.getX();
+                touchY = ev.getY();
+                Log.d(DEBUG_TAG, "Action was DOWN");
+                return true;
+            case (MotionEvent.ACTION_MOVE):
+                if (ev.getY() > boundTop && ev.getY() < boundBottom) {
+
+                    if (System.currentTimeMillis() - lastTouchTime > 100) {
+
+                        if (ev.getX() - touchX > touchThresh && Math.abs(ev.getY() - touchY) < touchThresh) {
+                            moveToPre(imgPreDate);
+                            Log.d(DEBUG_TAG, "Action was MOVE: right");
+                        } else if (touchX - ev.getX() > touchThresh && Math.abs(ev.getY() - touchY) < touchThresh) {
+                            moveToNext(imgNextDate);
+                            Log.d(DEBUG_TAG, "Action was MOVE: left");
+                        }
+                        lastTouchTime = System.currentTimeMillis();
+                    }
+                }
+                Log.d(DEBUG_TAG, "Action was MOVE");
+                return true;
+            case (MotionEvent.ACTION_UP):
+                Log.d(DEBUG_TAG, "Action was UP");
+                return true;
+            case (MotionEvent.ACTION_CANCEL):
+                Log.d(DEBUG_TAG, "Action was CANCEL");
+                return true;
+            case (MotionEvent.ACTION_OUTSIDE):
+                Log.d(DEBUG_TAG, "Movement occurred outside bounds " +
+                        "of current screen element");
+                return true;
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+
     private void initializeScreen() {
         try {
             currentDate = AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT);
@@ -127,34 +191,53 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         }
     }
 
+    @SuppressLint("ResourceType")
     @OnClick({R.id.tabWeek, R.id.tabMonth, R.id.tabYear})
     public void loadReportByMode(View v) {
-        unselect(selectedTab);
+        unSelect(selectedTab);
+
+        int startColor = Color.parseColor(getString(R.color.red1));
+        int endColor = Color.parseColor(getString(R.color.red2));
+
         switch (v.getId()) {
             case R.id.tabWeek:
                 mode = MODE_WEEK;
                 select(tabWeek);
                 selectedTab = tabWeek;
                 break;
+
             case R.id.tabMonth:
                 mode = MODE_MONTH;
                 select(tabMonth);
                 selectedTab = tabMonth;
+
+                startColor = Color.parseColor(getString(R.color.purple1));
+                endColor = Color.parseColor(getString(R.color.purple2));
                 break;
+
             case R.id.tabYear:
                 mode = MODE_YEAR;
                 select(tabYear);
                 selectedTab = tabYear;
+
+                startColor = Color.parseColor(getString(R.color.blue1));
+                endColor = Color.parseColor(getString(R.color.blue2));
                 break;
         }
+        currentDate = firstCurrentDate;
         ArrayList<BarEntry> values = loadData(currentDate);
         if (values != null && values.size() > 0) {
+
+            GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[]{startColor, endColor});
+            gd.setCornerRadius(0f);
+            chartHelper.setChartColor(startColor, endColor);
+
             chartHelper.setData(values, mode);
         }
     }
 
     @OnClick(R.id.pre)
-    public void pre(View v) {
+    public void moveToPre(View v) {
         switch (mode) {
             case MODE_WEEK:
                 currentDate = AppGenerator.getDayPreWeek(currentDate);
@@ -171,7 +254,7 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
     }
 
     @OnClick(R.id.next)
-    public void next(View v) {
+    public void moveToNext(View v) {
         switch (mode) {
             case MODE_WEEK:
                 currentDate = AppGenerator.getDayNextWeek(currentDate);
@@ -187,17 +270,17 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         chartHelper.setData(values, mode);
     }
 
-    private ArrayList<BarEntry> loadData(String currentTime) {
+    private ArrayList<BarEntry> loadData(String currentDate) {
         ArrayList<BarEntry> values = null;
         switch (mode) {
             case MODE_WEEK:
-                values = loadWeekData(currentTime);
+                values = loadWeekData(currentDate);
                 break;
             case MODE_MONTH:
-                values = loadMonthData(currentTime);
+                values = loadMonthData(currentDate);
                 break;
             case MODE_YEAR:
-                values = loadYearData(currentTime);
+                values = loadYearData(currentDate);
                 break;
             default:
                 break;
@@ -210,14 +293,15 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         String[] daysInWeek = AppGenerator.getDatesInWeek(currentDate);
         String startDate = AppGenerator.format(daysInWeek[0], AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT);
         String endDate = AppGenerator.format(daysInWeek[6], AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT);
-        time.setText(startDate + " - " + endDate);
+        tvDisplayTime.setText(startDate + " - " + endDate);
 
         Database db = new Database(this);
         db.open();
-        List<HabitTracking> weekData = Database.getHabitDb().getHabitTrackingBetween(daysInWeek[0], daysInWeek[6]);
+        List<HabitTracking> weekData = Database.getHabitDb().getHabitTrackingBetween(MySharedPreference.getUserId(this));
         db.close();
 
-        List<TrackingEntity> meetGoalTrackingList = getMeetGoalTrackingList(weekData);
+        List<TrackingEntity> meetGoalTrackingList = getMeetGoalDateList(weekData, currentDate, daysInWeek[0], daysInWeek[6]);
+
         int[] count = new int[7];
         for (int i = 0; i < meetGoalTrackingList.size(); i++) {
             String date = meetGoalTrackingList.get(i).getCurrentDate();
@@ -253,14 +337,15 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
 
         String startDate = AppGenerator.format(daysInMonth[0], AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT);
         String endDate = AppGenerator.format(daysInMonth[daysInMonth.length - 1], AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT);
-        time.setText(startDate + " - " + endDate);
+        tvDisplayTime.setText(startDate + " - " + endDate);
 
         Database db = new Database(this);
         db.open();
 
-        List<HabitTracking> monthData = Database.getHabitDb().getHabitTrackingBetween(daysInMonth[0], daysInMonth[daysInMonth.length - 1]);
+        List<HabitTracking> monthData = Database.getHabitDb().getHabitTrackingBetween(MySharedPreference.getUserId(this));
 
-        List<TrackingEntity> meetGoalTrackingList = getMeetGoalTrackingList(monthData);
+        List<TrackingEntity> meetGoalTrackingList = getMeetGoalDateList(monthData, currentDate, daysInMonth[0], daysInMonth[daysInMonth.length - 1]);
+
         int[] count = new int[daysInMonth.length];
         for (TrackingEntity item : meetGoalTrackingList) {
             for (int i = 0; i < daysInMonth.length; i++) {
@@ -276,6 +361,7 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
 
         tvTotal.setText(String.valueOf(monthData.size()));
         tvTotalDone.setText(String.valueOf(meetGoalTrackingList.size()));
+
         return values;
     }
 
@@ -283,17 +369,20 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         ArrayList<BarEntry> values = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(AppGenerator.getDate(currentDate.split("-")[0] + "-12-01", AppGenerator.YMD_SHORT));
-        time.setText("Năm " + calendar.get(Calendar.YEAR));
+        tvDisplayTime.setText("Năm " + calendar.get(Calendar.YEAR));
 
         Database db = new Database(this);
         db.open();
 
-        List<HabitTracking> yearData = Database.getHabitDb().getHabitTrackingBetween(
-                calendar.get(Calendar.YEAR) + "-01-01", calendar.get(Calendar.YEAR) + "-12-" + calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        String start = calendar.get(Calendar.YEAR) + "-01-01";
+        String end = calendar.get(Calendar.YEAR) + "-12-" + calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+        List<HabitTracking> yearData = Database.getHabitDb().getHabitTrackingBetween(MySharedPreference.getUserId(this));
+
+        List<TrackingEntity> meetGoalTrackingList = getMeetGoalDateList(yearData, currentDate, start, end);
 
         String[] months = new String[]{"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
         int[] count = new int[12];
-        List<TrackingEntity> meetGoalTrackingList = getMeetGoalTrackingList(yearData);
         for (TrackingEntity item : meetGoalTrackingList) {
             for (int i = 0; i < months.length; i++) {
                 if (item.getCurrentDate().split("-")[1].equals(months[i])) {
@@ -308,20 +397,35 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
 
         tvTotal.setText(String.valueOf(yearData.size()));
         tvTotalDone.setText(String.valueOf(meetGoalTrackingList.size()));
+
         return values;
     }
 
-    private List<TrackingEntity> getMeetGoalTrackingList(List<HabitTracking> data) {
-        HabitEntity habitEntity;
+    private List<TrackingEntity> getMeetGoalDateList(List<HabitTracking> data, String currentDate, String start, String end) {
         List<TrackingEntity> meetGoalTrackingList = new ArrayList<>();
+        HabitEntity habitEntity;
+        TrackingEntity trackingEntity = null;
+        int total = 0;
+        int goal;
         for (HabitTracking item : data) {
             habitEntity = item.getHabit();
-            for (TrackingEntity trackingEntity : item.getTrackingList()) {
-                if (habitEntity.getMonitorNumber() != null && trackingEntity.getCount() != null
-                        && Integer.parseInt(trackingEntity.getCount()) >= Integer.parseInt(habitEntity.getMonitorNumber())) {
+            goal = Integer.parseInt(habitEntity.getMonitorNumber());
+            for (TrackingEntity tr : item.getTrackingList()) {
+                if (tr.getCurrentDate().compareTo(start) >= 0 && tr.getCurrentDate().compareTo(end) <= 0) {
+                    total += Integer.parseInt(tr.getCount());
+                    trackingEntity = tr;
+                    if (total >= goal) {
+                        break;
+                    }
+                }
+            }
+            if (total >= goal) {
+                if (trackingEntity != null) {
                     meetGoalTrackingList.add(trackingEntity);
                 }
             }
+            total = 0;
+            trackingEntity= null;
         }
         return meetGoalTrackingList;
     }
@@ -342,7 +446,7 @@ public class ReportActivity extends AppCompatActivity implements OnChartValueSel
         }
     }
 
-    public void unselect(View v) {
+    public void unSelect(View v) {
         v.setBackground(ContextCompat.getDrawable(this, android.R.color.transparent));
     }
 

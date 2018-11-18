@@ -12,28 +12,15 @@
         android:padding="10dp"
         android:orientation="vertical">
 
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="25dp"
-            >
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="9"
-                android:layout_height="wrap_content"
-                android:textSize="25sp"
-                android:textColor="#434343"
-                android:text="Lọc thói quen"
-                />
-            <ImageView
-                android:id="@+id/imgCancel"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:src="@drawable/cancel"
-                android:alpha="0.3"
-                />
-        </LinearLayout>
+            android:gravity="center"
+            android:textSize="20sp"
+            android:textColor="#2837ba"
+            android:text="Lọc thói quen"
+            />
 
         <TextView
             android:layout_width="wrap_content"
@@ -184,17 +171,32 @@
             android:layout_marginBottom="20dp"
             />
 
-        <Button
-            android:id="@+id/btnApply"
+        <LinearLayout
+            android:id="@+id/ll_control"
+            android:layout_below="@+id/edit_habitDes"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:paddingBottom="2dp"
-            android:layout_marginStart="35dp"
-            android:layout_marginEnd="35dp"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/button_green2"
-            android:textSize="16sp"
-            android:text="Áp dụng"/>
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/imgCancel"
+                android:onClick="cancel"
+                android:layout_width="100dp"
+                android:layout_height="25dp"
+                android:textSize="12sp"
+                android:background="@drawable/bg_button_white"
+                android:textColor="#363636"
+                android:text="Hủy bỏ"/>
+            <Button
+                android:id="@+id/btnApply"
+                android:layout_width="100dp"
+                android:layout_height="25dp"
+                android:layout_marginStart="20dp"
+                android:textSize="12sp"
+                android:background="@drawable/button_green2"
+                android:text="Áp dụng"/>
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>

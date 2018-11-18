@@ -9,20 +9,24 @@ public class TrackingItem {
     private int habitType;
     private String habitTypeName;
     private int monitorType;
-    private String group;
+    private String groupId;
     private String number;
     private int count;
+    private int totalCount;
     private String unit;
     private String color;
     private float comp = 0f;
 
     public TrackingItem() {}
 
-    public TrackingItem(String trackId, String habitId, String target, String group, String name, String description, String habitType, int monitorType, String number, int count, String unit, String color) {
+    public TrackingItem(String trackId, String habitId, String target, String groupId,
+                        String name, String description,
+                        String habitType, int monitorType,
+                        String number, int count, String unit, String color, int totalCount) {
         this.trackId = trackId;
         this.habitId = habitId;
         this.target = target;
-        this.group = group;
+        this.groupId = groupId;
         this.name = name;
         this.description = description;
         this.habitType = Integer.parseInt(habitType);
@@ -45,6 +49,7 @@ public class TrackingItem {
         this.count = count;
         this.unit = unit;
         this.color = color;
+        this.totalCount = totalCount;
     }
 
     public String getTrackId() {
@@ -99,8 +104,12 @@ public class TrackingItem {
         return habitType;
     }
 
-    public String getGroup() {
-        return group;
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public int getTotalCount() {
+        return totalCount;
     }
 
     public void setTrackId(String trackId) {
@@ -155,7 +164,11 @@ public class TrackingItem {
         this.habitType = habitType;
     }
 
-    public void setGroup(String group) {
-        this.group = group;
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+
+    public void setTotalCount(int totalCount) {
+        this.totalCount = totalCount;
     }
 }
