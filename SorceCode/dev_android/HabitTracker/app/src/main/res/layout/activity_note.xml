@@ -7,40 +7,86 @@
     android:orientation="vertical"
     tools:context=".NoteActivity">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/llHeader"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2.5"
-        android:background="#6ecee4"
-        android:paddingTop="15dp"
-        android:paddingStart="30dp"
-        android:orientation="vertical"
-        >
-
+        android:layout_weight="3"
+        android:gravity="center"
+        android:layout_marginBottom="15dp">
         <TextView
+            android:id="@+id/tvHabitName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:textColor="#313030"
-            android:textSize="25sp"
-            android:text="Nhật ký"
-            />
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:text="Nhật ký"/>
 
         <TextView
-            android:id="@+id/tvGroup"
+            android:id="@+id/tvCurrentTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#ffffff"
-            android:textSize="16sp"
-            android:text="Sức khỏe"
-            />
-    </LinearLayout>
+            android:layout_below="@+id/tvHabitName"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="20sp"
+            android:text="Hôm nay"/>
+
+        <ImageView
+            android:id="@+id/pre"
+            android:layout_width="15dp"
+            android:layout_height="0dp"
+            android:layout_toStartOf="@+id/tvCurrentTime"
+            android:layout_alignTop="@+id/tvCurrentTime"
+            android:layout_alignBottom="@+id/tvCurrentTime"
+            android:src="@drawable/arrow_left"/>
+
+        <ImageView
+            android:id="@+id/next"
+            android:layout_width="15dp"
+            android:layout_height="0dp"
+            android:layout_toEndOf="@+id/tvCurrentTime"
+            android:layout_alignTop="@+id/tvCurrentTime"
+            android:layout_alignBottom="@+id/tvCurrentTime"
+            android:src="@drawable/arrow_right"/>
+        <TextView
+            android:id="@+id/tvTrackCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/tvCurrentTime"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="25dp"
+            android:textSize="20sp"
+            android:text="04"/>
+        <ImageView
+            android:id="@+id/minusCount"
+            android:layout_width="20dp"
+            android:layout_height="0dp"
+            android:layout_toStartOf="@+id/tvTrackCount"
+            android:layout_alignTop="@+id/tvTrackCount"
+            android:layout_alignBottom="@+id/tvTrackCount"
+            android:src="@drawable/minus_purple"/>
+
+        <ImageView
+            android:id="@+id/addCount"
+            android:layout_width="20dp"
+            android:layout_height="0dp"
+            android:layout_toEndOf="@+id/tvTrackCount"
+            android:layout_alignTop="@+id/tvTrackCount"
+            android:layout_alignBottom="@+id/tvTrackCount"
+            android:src="@drawable/plus_purple"/>
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="7.5"
+        android:layout_weight="9"
         android:padding="20dp"
         >
 

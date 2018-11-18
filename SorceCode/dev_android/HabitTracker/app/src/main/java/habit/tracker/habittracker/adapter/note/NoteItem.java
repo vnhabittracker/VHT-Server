@@ -13,7 +13,7 @@ public class NoteItem {
         this.note = note;
     }
 
-    public String getTrackId() {
+    public String getTrackingId() {
         return trackId;
     }
 

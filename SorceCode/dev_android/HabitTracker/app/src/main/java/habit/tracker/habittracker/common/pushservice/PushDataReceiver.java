@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import habit.tracker.habittracker.api.VnHabitApiUtils;
@@ -13,6 +15,7 @@ import habit.tracker.habittracker.api.service.VnHabitApiService;
 import habit.tracker.habittracker.common.util.AppGenerator;
 import habit.tracker.habittracker.repository.Database;
 import habit.tracker.habittracker.repository.habit.HabitEntity;
+import habit.tracker.habittracker.repository.habit.HabitTracking;
 import habit.tracker.habittracker.repository.tracking.TrackingEntity;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -38,18 +41,24 @@ class PushDataReceiver extends BroadcastReceiver {
 
             if (habitList != null && habitList.size() > 0) {
                 int distance = 0;
+                int totalCount = 0;
                 int successCount = 0;
-                String lastSynDate = null;
-                TrackingEntity track;
+                int goalNumber = 0;
+                String lastSynDate;
                 for (HabitEntity habit : habitList) {
+                    goalNumber = Integer.parseInt(habit.getMonitorNumber());
+                    if (!TextUtils.isEmpty(habit.getLastDateSyn())) {
+                        lastSynDate = habit.getLastDateSyn();
+                    } else {
+                        lastSynDate = habit.getStartDate();
+                    }
+
+                    // number of days between last syn date and current date
+                    distance = AppGenerator.countDayBetween(lastSynDate, currentDate);
+
                     switch (habit.getHabitType()) {
                         case TYPE_DAILY:
-                            if (!TextUtils.isEmpty(habit.getLastDateSyn())) {
-                                lastSynDate = habit.getLastDateSyn();
-                            } else {
-                                lastSynDate = habit.getStartDate();
-                            }
-                            distance = AppGenerator.countDayBetween(lastSynDate, currentDate);
+                            TrackingEntity track;
                             for (int i = 0; i < distance; i++) {
                                 track = Database.getTrackingDb().getTracking(habit.getHabitId(), lastSynDate);
                                 if (Integer.parseInt(track.getCount()) >= Integer.parseInt(habit.getMonitorNumber())) {
@@ -57,11 +66,46 @@ class PushDataReceiver extends BroadcastReceiver {
                                 }
                                 lastSynDate = AppGenerator.getNextDate(lastSynDate, AppGenerator.YMD_SHORT);
                             }
+                            totalCount = distance;
                             break;
+
                         case TYPE_WEEKLY:
+                            Calendar ca = Calendar.getInstance();
+                            Date d;
+                            String pre = lastSynDate;
+                            String[] diw;
+                            int sumPerWeek = 0;
+                            HabitTracking weekData;
+                            for (int i = 0; i < distance; i++) {
+                                lastSynDate = AppGenerator.getNextDate(lastSynDate, AppGenerator.YMD_SHORT);
+                                d = AppGenerator.getDate(lastSynDate, AppGenerator.YMD_SHORT);
+                                ca.setTime(d);
+
+                                // on monday we will check moveToPre week data
+                                if (ca.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY) {
+                                    // one track per week
+                                    totalCount++;
+                                    diw = AppGenerator.getDatesInWeek(pre);
+                                    // get data from moveToPre week
+                                    weekData = Database.getTrackingDb().getHabitTrackingBetween(habit.getHabitId(), diw[0], diw[6]);
+                                    for (TrackingEntity entity : weekData.getTrackingList()) {
+                                        sumPerWeek += entity.getIntCount();
+                                    }
+                                    if (sumPerWeek >= goalNumber) {
+                                        successCount++;
+                                    }
+                                }
+                                sumPerWeek = 0;
+                                pre = lastSynDate;
+                            }
                             break;
+
                         case TYPE_MONTHLY:
+                            for (int i = 0; i < distance; i++) {
+
+                            }
                             break;
+
                         case TYPE_YEARLY:
                             break;
                     }
@@ -69,7 +113,7 @@ class PushDataReceiver extends BroadcastReceiver {
                     Database.getHabitDb().saveUpdateHabit(habit);
                     HabitSuggestion habitSuggestion = new HabitSuggestion();
                     habitSuggestion.setHabitSearchNameId(habit.getHabitId());
-                    habitSuggestion.setTotalTrack(distance);
+                    habitSuggestion.setTotalTrack(totalCount);
                     habitSuggestion.setSuccessTrack(successCount);
                     mService.updateTrackNameStatus(habitSuggestion).enqueue(new Callback<ResponseBody>() {
                         @Override
@@ -80,6 +124,9 @@ class PushDataReceiver extends BroadcastReceiver {
                         public void onFailure(Call<ResponseBody> call, Throwable t) {
                         }
                     });
+
+                    totalCount = 0;
+                    successCount = 0;
                 }
             }
             db.close();

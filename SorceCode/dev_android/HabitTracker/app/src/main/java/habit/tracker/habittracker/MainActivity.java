@@ -27,6 +27,7 @@ import habit.tracker.habittracker.api.model.habit.HabitResponse;
 import habit.tracker.habittracker.api.model.tracking.Tracking;
 import habit.tracker.habittracker.api.model.tracking.TrackingList;
 import habit.tracker.habittracker.api.service.VnHabitApiService;
+import habit.tracker.habittracker.common.AppConstant;
 import habit.tracker.habittracker.common.util.AppGenerator;
 import habit.tracker.habittracker.repository.habit.Schedule;
 import habit.tracker.habittracker.repository.habit.TrackingDateInWeek;
@@ -58,10 +59,8 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
 
     @BindView(R.id.rvMenu)
     RecyclerView recyclerView;
-
     @BindView(R.id.imgFilter)
     ImageView imgFilter;
-
     @BindView(R.id.tvDate)
     TextView tvDate;
     @BindView(R.id.imgNext)
@@ -69,9 +68,9 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
     @BindView(R.id.imgBack)
     ImageView imgBack;
     @BindView(R.id.report)
-    View btnReport;
+    ImageView btnReport;
     @BindView(R.id.tabSuggestion)
-    View tabSuggestion;
+    ImageView tabSuggestion;
 
     boolean isReStart = false;
 
@@ -119,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
                 for (int i = 0; i < trackingItemList.size(); i++) {
                     if ((target.equals("-1") || target.equals(trackingItemList.get(i).getTarget()))
                             && (type.equals("-1") || type.equals(String.valueOf(trackingItemList.get(i).getHabitType())))
-                            && (group.equals("-1") || group.equals(trackingItemList.get(i).getGroup()))
+                            && (group.equals("-1") || group.equals(trackingItemList.get(i).getGroupId()))
                             ) {
                         filteredList.add(trackingItemList.get(i));
                     }
@@ -128,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
                 trackingAdapter.notifyDataSetChanged();
 
             }
+
         } else if (requestCode == REPORT) {
             initTrackingList();
         }
@@ -141,26 +141,33 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
         mService.getHabit(userId).enqueue(new Callback<HabitResponse>() {
             @Override
             public void onResponse(Call<HabitResponse> call, Response<HabitResponse> response) {
-                if (response.body().getResult().equals("1")) {
-
+                if (response.body().getResult().equals(AppConstant.RES_OK)) {
+                    int year, month, date, totalCount;
                     Database db = Database.getInstance(MainActivity.this);
                     db.open();
 
                     List<Habit> habitList = response.body().getHabit();
                     for (Habit habit : habitList) {
+
                         Calendar ca = Calendar.getInstance();
                         ca.setTimeInMillis(System.currentTimeMillis());
-                        int year = ca.get(Calendar.YEAR);
-                        int month = ca.get(Calendar.MONTH) + 1;
-                        int date = ca.get(Calendar.DATE);
+                        year = ca.get(Calendar.YEAR);
+                        month = ca.get(Calendar.MONTH) + 1;
+                        date = ca.get(Calendar.DATE);
                         if (isTodayHabit(year, month - 1, date, habit)) {
-                            // update tracking noteItems from server
+
+                            // update tracking mData from server
                             for (Tracking track : habit.getTracksList()) {
                                 Database.getTrackingDb().saveTracking(Database.trackingImpl.convert(track));
                             }
                             // create today tracking record list
-                            if (TextUtils.isEmpty(habit.getEndDate()) || currentDate.compareTo(habit.getEndDate()) <= 0) {
+                            if (currentDate.compareTo(habit.getStartDate()) >= 0 && (TextUtils.isEmpty(habit.getEndDate()) || currentDate.compareTo(habit.getEndDate()) <= 0)) {
+
                                 TrackingEntity todayTracking = getTodayTracking(habit.getHabitId(), currentDate, 0);
+
+                                totalCount = getSumTrackValueByHabit(habit.getHabitId(), Integer.parseInt(habit.getHabitType()), Integer.parseInt(todayTracking.getCount())
+                                );
+
                                 trackingItemList.add(new TrackingItem(
                                         todayTracking.getTrackingId(),
                                         habit.getHabitId(),
@@ -173,7 +180,8 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
                                         habit.getMonitorNumber(),
                                         Integer.parseInt(todayTracking.getCount()),
                                         habit.getMonitorUnit(),
-                                        habit.getHabitColor())
+                                        habit.getHabitColor(),
+                                        totalCount)
                                 );
                             }
                         }
@@ -188,15 +196,45 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
 
             @Override
             public void onFailure(Call<HabitResponse> call, Throwable t) {
-                loadTrackingByCurrentDate();
+                updateByCurrentDate();
             }
         });
     }
 
+    private int getSumTrackValueByHabit(String habitId, int habitType, int count) {
+        String[] arr = currentDate.split("-");
+        int year = Integer.parseInt(arr[0]);
+        int month = Integer.parseInt(arr[1]);
+        String start = null, end = null;
+        switch (habitType) {
+            case 0:
+                return count;
+            case 1:
+                String[] dates = AppGenerator.getDatesInWeek(currentDate);
+                start = dates[0];
+                end = dates[6];
+                break;
+            case 2:
+                start = year + "-" + String.format("%02d", month) + "-01";
+                end = year + "-" + String.format("%02d", month) + "-" + AppGenerator.getMaxDayInMonth(year, month - 1);
+                break;
+            case 3:
+                start = year + "-01-01";
+                end = year + "-12-" + AppGenerator.getMaxDayInMonth(year, month - 1);
+                break;
+        }
+        if (start != null && end != null) {
+            return Database.getTrackingDb().sumCountByHabit(habitId, start, end);
+        }
+        return 0;
+    }
+
     @Override
-    public void onTrackingValueChanged(View view, int type, int position, int count) {
+    public void onTrackingValueChanged(View view, int type, int position, int totalCount, int count) {
         TrackingItem item = trackingItemList.get(position);
         item.setCount(count);
+        item.setTotalCount(totalCount);
+
         // save to db local
         Database db = Database.getInstance(this);
         db.open();
@@ -206,7 +244,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
         tracking.setHabitId(item.getHabitId());
         tracking.setCount(String.valueOf(item.getCount()));
         tracking.setCurrentDate(currentDate);
-        tracking.setDescription(item.getDescription());
+//        tracking.setDescription(item.getDescription());
         trackingData.getTrackingList().add(tracking);
         if (!Database.getTrackingDb().updateTracking(Database.getTrackingDb().convert(tracking))) {
             return;
@@ -238,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
         }
     }
 
-    public void loadTrackingByCurrentDate() {
+    public void updateByCurrentDate() {
         trackingItemList.clear();
         String[] arr = currentDate.split("-");
         int year = Integer.parseInt(arr[0]);
@@ -248,13 +286,15 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
         Database db = Database.getInstance(this);
         db.open();
         List<HabitEntity> habitEntities = Database.getHabitDb().getTodayHabit(schedule, currentDate);
-
+        int totalCount = 0;
         for (HabitEntity habit : habitEntities) {
             // get tracking records on current date
             TrackingEntity record = Database.getTrackingDb().getTracking(habit.getHabitId(), currentDate);
             if (record == null) {
                 record = getTodayTracking(habit.getHabitId(), currentDate, 0);
             }
+
+            totalCount = getSumTrackValueByHabit(habit.getHabitId(), Integer.parseInt(habit.getHabitType()), Integer.parseInt(record.getCount()));
             trackingItemList.add(new TrackingItem(
                     record.getTrackingId(),
                     habit.getHabitId(),
@@ -267,7 +307,8 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
                     habit.getMonitorNumber(),
                     Integer.parseInt(record.getCount()),
                     habit.getMonitorUnit(),
-                    habit.getHabitColor())
+                    habit.getHabitColor(),
+                    totalCount)
             );
         }
         db.close();
@@ -297,7 +338,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
             updateTitle(nextDate);
             currentDate = nextDate;
             trackingItemList.clear();
-            loadTrackingByCurrentDate();
+            updateByCurrentDate();
         }
     }
 
@@ -309,7 +350,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
             updateTitle(preDate);
             currentDate = preDate;
             trackingItemList.clear();
-            loadTrackingByCurrentDate();
+            updateByCurrentDate();
         }
     }
 
@@ -318,7 +359,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
         updateTitle(firstCurrentDate);
         currentDate = firstCurrentDate;
         trackingItemList.clear();
-        loadTrackingByCurrentDate();
+        updateByCurrentDate();
     }
 
     @OnClick(R.id.report)

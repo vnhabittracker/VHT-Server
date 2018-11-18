@@ -13,7 +13,7 @@
         android:layout_weight="8"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:text="group"
+        android:text="groupId"
         />
 
     <TextView

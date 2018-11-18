@@ -53,7 +53,7 @@ public class SuggestionByLevelActivity extends AppCompatActivity implements Recy
                     // 0: low, 1: med, 2: hig
                     List<List<HabitSuggestion>> data = response.body().getData();
                     List<HabitSuggestion> curLevl;
-                    String[] level = new String[]{"Thói quen mức dễ", "Thói quen mức trung bình", "Thói quen mức khó"};
+                    String[] level = new String[]{"Thói quen dễ được nhiều người chọn", "Thói quen trung bình được nhiều người chọn", "Thói quen khó được nhiều người chọn"};
 
                     Database db = Database.getInstance(SuggestionByLevelActivity.this);
                     db.open();
@@ -61,9 +61,9 @@ public class SuggestionByLevelActivity extends AppCompatActivity implements Recy
                     db.close();
                     int pendDate = AppGenerator.countDayBetween(userEntity.getCreatedDate(), AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT));
                     if (pendDate >= 30) {
-                        level[2] = "Thói quen mức khó (khuyên chọn)";
+                        level[2] = "Thói quen khó được nhiều người chọn (khuyên chọn)";
                     } else {
-                        level[0] = "Thói quen mức dễ (khuyên chọn)";
+                        level[0] = "Thói quen dễ được nhiều người chọn (khuyên chọn)";
                     }
 
                     for (int i = 0; i < data.size(); i++) {

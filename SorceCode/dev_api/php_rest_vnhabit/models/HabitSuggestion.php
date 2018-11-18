@@ -38,9 +38,9 @@ class HabitSuggestion extends Model {
     }
 
     public function create() {
-        $query = 'INSERT INTO ' . $this->table . ' SET ' . $this->get_query_param(array('habit_name_id'));
+        $query = 'INSERT INTO ' . $this->table . ' SET ' . $this->get_query_param(NULL);
         $stmt = $this->conn->prepare($query);
-        $stmt = $this->bind_param_exc($stmt, array('habit_name_id'));
+        $stmt = $this->bind_param_exc($stmt, NULL);
         if ($stmt->execute()) {
             return true;
         }
