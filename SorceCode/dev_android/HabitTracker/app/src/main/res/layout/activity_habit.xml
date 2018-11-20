@@ -20,16 +20,14 @@
             android:layout_weight="1"
             android:layout_width="0dp"
             android:paddingStart="13dp"
-            android:paddingEnd="10dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
+            android:paddingEnd="13dp"
             android:layout_height="match_parent" />
         <TextView
             android:layout_width="0dp"
             android:layout_weight="8"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:textColor="#333"
+            android:textColor="#333333"
             android:textSize="20sp"
             android:text="Tạo thói quen"
             />
@@ -587,40 +585,40 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center"
-                android:layout_marginBottom="10dp">
+                android:layout_marginBottom="5dp">
                 <View
                     android:id="@+id/color1"
                     android:tag="0"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_marginEnd="10dp"
                     android:background="@drawable/bg_circle"/>
                 <View
                     android:id="@+id/color2"
                     android:tag="1"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_marginEnd="10dp"
                     android:background="@drawable/bg_circle"/>
                 <View
                     android:id="@+id/color3"
                     android:tag="2"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_marginEnd="10dp"
                     android:background="@drawable/bg_circle"/>
                 <View
                     android:id="@+id/color4"
                     android:tag="3"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_marginEnd="10dp"
                     android:background="@drawable/bg_circle"/>
                 <View
                     android:id="@+id/color5"
                     android:tag="4"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_marginEnd="10dp"
                     android:background="@drawable/bg_circle"/>
             </LinearLayout>
@@ -635,36 +633,36 @@
                 <View
                     android:id="@+id/color6"
                     android:tag="5"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_marginEnd="10dp"
                     android:background="@drawable/bg_circle"/>
                 <View
                     android:id="@+id/color7"
                     android:tag="6"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_marginEnd="10dp"
                     android:background="@drawable/bg_circle"/>
                 <View
                     android:id="@+id/color8"
                     android:tag="7"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_marginEnd="10dp"
                     android:background="@drawable/bg_circle"/>
                 <View
                     android:id="@+id/color9"
                     android:tag="8"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_marginEnd="10dp"
                     android:background="@drawable/bg_circle"/>
                 <View
                     android:id="@+id/color10"
                     android:tag="9"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_marginEnd="10dp"
                     android:background="@drawable/bg_circle"/>
             </LinearLayout>
@@ -778,7 +776,8 @@
                 android:layout_below="@+id/edit_habitName"
                 android:layout_alignEnd="@+id/edit_habitName"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
                 android:layout_marginStart="10dp"
                 android:paddingStart="7dp"
                 android:background="@drawable/bg_border1"

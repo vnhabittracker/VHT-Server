@@ -8,6 +8,7 @@ import habit.tracker.habittracker.api.model.search.SearchResponse;
 import habit.tracker.habittracker.api.model.suggestion.HabitSuggestion;
 import habit.tracker.habittracker.api.model.suggestion.SuggestByLevelReponse;
 import habit.tracker.habittracker.api.model.tracking.TrackingList;
+import habit.tracker.habittracker.api.model.user.UpdateScoreRequest;
 import habit.tracker.habittracker.api.model.user.User;
 import habit.tracker.habittracker.api.model.user.UserResponse;
 import habit.tracker.habittracker.api.model.user.UserResult;
@@ -47,15 +48,18 @@ public interface VnHabitApiService {
     @POST("tracking/create_update.php")
     Call<ResponseBody> updateTracking(@Body TrackingList trackingList);
 
-    @GET("search/habit_search.php")
+    @GET("suggest/habit_search.php")
     Call<SearchResponse> searchHabitName(@Query("search") String searchKey);
 
-    @GET("search/read.php")
+    @GET("suggest/read.php")
     Call<SearchResponse> getAllHabitSuggestion();
 
-    @POST("search/update_track_status.php")
+    @POST("suggest/update_track_status.php")
     Call<ResponseBody> updateTrackNameStatus(@Body HabitSuggestion habitSuggestion);
 
-    @GET("search/get_suggest_by_level.php")
+    @GET("suggest/get_suggest_by_level.php")
     Call<SuggestByLevelReponse> getHabitSuggestByLevel();
+
+    @POST("user/update_score.php")
+    Call<ResponseBody> updateUserScore(@Body UpdateScoreRequest updateScoreRequest);
 }

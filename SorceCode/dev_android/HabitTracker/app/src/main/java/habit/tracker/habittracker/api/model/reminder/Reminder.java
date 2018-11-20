@@ -7,7 +7,7 @@ public class Reminder {
     @SerializedName("reminder_id")
     @Expose
     private String reminderId;
-    @SerializedName("remind_text")
+    @SerializedName("reminder_description")
     @Expose
     private String remindText;
     @SerializedName("reminder_time")
@@ -22,9 +22,7 @@ public class Reminder {
     @SerializedName("server_id")
     @Expose
     private String serverId;
-
     private String habitName;
-
     private String endDate;
 
     public String getReminderId() {
@@ -80,8 +78,8 @@ public class Reminder {
         this.habitId = habitId;
     }
 
-    public void setServerId(String serverId) {
-        this.serverId = serverId;
+    public void setServerId(String reminderIdApp) {
+        this.serverId = reminderIdApp;
     }
 
     public void setHabitName(String habitName) {

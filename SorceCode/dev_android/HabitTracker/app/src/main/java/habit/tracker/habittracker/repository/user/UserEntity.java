@@ -12,8 +12,15 @@ public class UserEntity {
     private String avatar;
     private String userDescription;
     private String createdDate;
+    private String lastLoginTime;
+    private String continueUsingCount;
+    private String currentContinueUsingCount;
+    private String bestContinueUsingCount;
+    private String userScore;
 
-    public UserEntity(String userId, String username, String email, String phone, String gender, String dateOfBirth, String password, String userIcon, String avatar, String userDescription) {
+    public UserEntity(String userId, String username, String email, String phone, String gender, String dateOfBirth,
+                      String password, String userIcon, String avatar, String userDescription,
+                      String lastLoginTime, String continueUsingDate, String currentContinueUsingCount, String bestContinueUsingCount, String userScore) {
         this.userId = userId;
         this.username = username;
         this.email = email;
@@ -24,10 +31,14 @@ public class UserEntity {
         this.userIcon = userIcon;
         this.avatar = avatar;
         this.userDescription = userDescription;
+        this.lastLoginTime = lastLoginTime;
+        this.continueUsingCount = continueUsingDate;
+        this.currentContinueUsingCount = currentContinueUsingCount;
+        this.bestContinueUsingCount = bestContinueUsingCount;
+        this.userScore = userScore;
     }
 
     public UserEntity(){
-
     }
 
     public String getUserId() {
@@ -74,6 +85,26 @@ public class UserEntity {
         return createdDate;
     }
 
+    public String getLastLoginTime() {
+        return lastLoginTime;
+    }
+
+    public String getUserScore() {
+        return userScore;
+    }
+
+    public String getContinueUsingCount() {
+        return continueUsingCount;
+    }
+
+    public String getCurrentContinueUsingCount() {
+        return currentContinueUsingCount;
+    }
+
+    public String getBestContinueUsingCount() {
+        return bestContinueUsingCount;
+    }
+
     public void setUserId(String userId) {
         this.userId = userId;
     }
@@ -116,5 +147,25 @@ public class UserEntity {
 
     public void setCreatedDate(String createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public void setLastLoginTime(String lastLoginTime) {
+        this.lastLoginTime = lastLoginTime;
+    }
+
+    public void setUserScore(String userScore) {
+        this.userScore = userScore;
+    }
+
+    public void setContinueUsingCount(String continueUsingCount) {
+        this.continueUsingCount = continueUsingCount;
+    }
+
+    public void setCurrentContinueUsingCount(String currentContinueUsingCount) {
+        this.currentContinueUsingCount = currentContinueUsingCount;
+    }
+
+    public void setBestContinueUsingCount(String bestContinueUsingCount) {
+        this.bestContinueUsingCount = bestContinueUsingCount;
     }
 }

@@ -130,6 +130,7 @@
     </LinearLayout>
 
     <RelativeLayout
+        android:id="@+id/chartContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="7"
@@ -193,14 +194,20 @@
                 android:visibility="invisible" />
         </LinearLayout>
 
-        <com.github.mikephil.charting.charts.BarChart
-            android:id="@+id/chart"
-            android:layout_below="@id/tabHighLine"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginBottom="10dp"
+            android:layout_below="@id/tabHighLine"
             android:layout_above="@+id/tvChartDescription"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            >
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/chart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tvChartDescription"

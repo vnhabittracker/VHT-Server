@@ -21,6 +21,11 @@ include_once '../../models/Model.php';
         public $avatar;
         public $user_description;
         public $created_date;
+        public $last_login_time;
+        public $continue_using_count;
+        public $current_continue_using_count;
+        public $best_continue_using_count;
+        public $user_score;
 
         public function __construct($db) {
             $this->conn = $db;
@@ -41,9 +46,7 @@ include_once '../../models/Model.php';
         // Get Single User
         public function read_single() {
             // Create query
-            $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . 
-                ' WHERE username = :username and password = :password LIMIT 0,1';
-
+            $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . ' WHERE username = :username and password = :password LIMIT 1';
             // Prepare statement
             $stmt = $this->conn->prepare($query);
             // Bind params
@@ -51,13 +54,64 @@ include_once '../../models/Model.php';
             // Execute query
             $stmt->execute();
             // get row count
-            $num = $stmt->rowCount();
-            if ($num == 1) {
-                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                return $row;
+            $rowCount = $stmt->rowCount();
+            if ($rowCount == 1) {
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                $today = new DateTime();
+                $lastLogin = new DateTime($user['last_login_time']);
+                $diff = $lastLogin ->diff($today)->format("%a");
+                if ($diff == 1) {
+                    $user['current_continue_using_count'] += 1;
+                    if ($user['current_continue_using_count'] > $user['best_continue_using_count']) {
+                        $user['best_continue_using_count'] = $user['current_continue_using_count'];
+                    }
+                    $user['last_login_time'] = date('Y-m-d');
+                    $cur_continue = $user['current_continue_using_count'];
+                    if($cur_continue <= 7) {
+                        $user['user_score'] += 2;
+                    } else if ($cur_continue <= 30) {
+                        $user['user_score'] += 4;
+                    } else if ($cur_continue < 90) {
+                        $user['user_score'] += 8;
+                    } else if ($cur_continue < 180) {
+                        $user['user_score'] += 18;
+                    } else if ($cur_continue < 360) {
+                        $user['user_score'] += 32;
+                    }
+                    $user['continue_using_count'] += 1;
+
+                    $this->copy($user);
+                    $this->update();
+                } else if ($diff > 1) {
+                    $user['last_login_time'] = date('Y-m-d');
+                    $user['current_continue_using_count'] = 1;
+                    $this->copy($user);
+                    $this->update();
+                }
+                
+                return $user;
             } else {
                 return NULL;
             }
+        }
+
+        private function copy($user) {
+            $this->user_id = $user['user_id'];
+            $this->username = $user['username'];
+            $this->phone = $user['phone'];
+            $this->password = $user['password'];
+            $this->email = $user['email'];
+            $this->date_of_birth = $user['date_of_birth'];
+            $this->gender = $user['gender'];
+            $this->user_icon = $user['user_icon'];
+            $this->avatar = $user['avatar'];
+            $this->user_description = $user['user_description'];
+            $this->created_date = $user['created_date'];
+            $this->last_login_time = $user['last_login_time'];
+            $this->continue_using_count = $user['continue_using_count'];
+            $this->current_continue_using_count = $user['current_continue_using_count'];
+            $this->best_continue_using_count = $user['best_continue_using_count'];
+            $this->user_score = $user['user_score'];
         }
 
         public function find_by_username() {
@@ -111,6 +165,17 @@ include_once '../../models/Model.php';
                 return true;
             }
             // Print error if something goes wrong
+            printf("Error: %s.\n", $stmt->error);
+            return false;
+        }
+
+        public function updateScore() {
+            $query = 'UPDATE ' . $this->table . ' SET user_score = user_score + :user_score WHERE user_id = :user_id';
+            $stmt = $this->conn->prepare($query);
+            $stmt = $this->bind_param($stmt, array('user_score' => $this->user_score, 'user_id' => $this->user_id));
+            if ($stmt->execute()) {
+                return true;
+            }
             printf("Error: %s.\n", $stmt->error);
             return false;
         }

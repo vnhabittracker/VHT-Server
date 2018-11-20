@@ -14,6 +14,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class AppGenerator {
+    public static final long MILLISECOND_IN_MINUTE = 1000 * 60;
     public static final long MILLISECOND_IN_DAY = 86400000;
     public static final long MILLISECOND_IN_WEEK = 86400000 * 7;
 
@@ -36,18 +37,17 @@ public class AppGenerator {
     }
 
     /**
-     *
      * @param year
      * @param month: 1-12
      * @param date
-     * @param pattern
+     * @param fm
      * @return
      */
-    public static String getDate(int year, int month, int date, String pattern) {
+    public static String getDate(int year, int month, int date, String fm) {
         Calendar calendar = Calendar.getInstance();
         calendar.set(year, month - 1, date);
         Date d = new Date(calendar.getTimeInMillis());
-        DateFormat dateFormat = new SimpleDateFormat(pattern, Locale.getDefault());
+        DateFormat dateFormat = new SimpleDateFormat(fm, Locale.getDefault());
         return dateFormat.format(d);
     }
 
@@ -200,7 +200,7 @@ public class AppGenerator {
     /**
      * @param month start from 0
      */
-    public static int getMaxDayInMonth(int year, int month){
+    public static int getMaxDayInMonth(int year, int month) {
         Calendar ca = Calendar.getInstance();
         ca.set(year, month, 1);
         return ca.getActualMaximum(Calendar.DAY_OF_MONTH);
@@ -315,5 +315,87 @@ public class AppGenerator {
         String temp = Normalizer.normalize(str.toLowerCase().trim(), Normalizer.Form.NFD);
         Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
         return pattern.matcher(temp).replaceAll("").toLowerCase();
+    }
+
+    public static String getFirstDateNextMonth(String currentDate, String fmIn, String fmOut) {
+        Date date = getDate(currentDate, fmIn);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + 1);
+        return getDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH), fmOut);
+    }
+
+    public static String getFirstDateInMonth(String currentDate, String fmIn, String fmOut) {
+        Date date = getDate(currentDate, fmIn);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        return getDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH), fmOut);
+    }
+
+    public static String getFirstDatePreMonth(String currentDate, String fmIn, String fmOut) {
+        Date date = getDate(currentDate, fmIn);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 1);
+        return getDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH), fmOut);
+    }
+
+    public static String getLastDateInMonth(String currentDate, String fmIn, String fmOut) {
+        Date date = getDate(currentDate, fmIn);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return getDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.getActualMaximum(Calendar.DAY_OF_WEEK), fmOut);
+    }
+
+    public static String getLastDateInYear(String currentDate, String fmIn, String fmOut) {
+        Date date = getDate(currentDate, fmIn);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.MONTH, 12);
+        return getDate(calendar.get(Calendar.YEAR), 12, calendar.getActualMaximum(Calendar.DAY_OF_WEEK), fmOut);
+    }
+
+    public static String getFirstDateNextYear(String currentDate, String fmIn, String fmOut) {
+        Date date = getDate(currentDate, fmIn);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return getDate(calendar.get(Calendar.YEAR) + 1, 1, 1, fmOut);
+    }
+
+    public static int getLevel(int score) {
+        if (score < 10) {
+            return 1;
+        }
+        if (score < 20) {
+            return 2;
+        }
+        if (score < 50){
+            return 3;
+        }
+        if (score < 120){
+            return 4;
+        }
+        if (score < 290){
+            return 5;
+        }
+        if (score < 700){
+            return 6;
+        }
+        if (score < 1690){
+            return 7;
+        }
+        if (score < 4080){
+            return 8;
+        }
+        if (score <9850){
+            return 9;
+        }
+        if (score < 23780){
+            return 10;
+        }
+        return 11;
     }
 }

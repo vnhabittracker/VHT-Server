@@ -5,6 +5,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:allowBackup="true"
@@ -40,8 +41,15 @@
 
         <receiver android:name=".common.habitreminder.HabitReminderServiceReceiver" />
 
+        <receiver android:name=".common.pushservice.AppBootReceiver"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+            </intent-filter>
+        </receiver>
+
         <activity android:name=".GuideActivity" />
-        <activity android:name=".ReportActivity" />
+        <activity android:name=".StaticsActivity" />
         <activity android:name=".FilterMainActivity" />
         <activity android:name=".ReportDetailsActivity" />
         <activity android:name=".ReportCalendarActivity" />

@@ -19,6 +19,7 @@ import habit.tracker.habittracker.api.VnHabitApiUtils;
 import habit.tracker.habittracker.api.model.user.User;
 import habit.tracker.habittracker.api.model.user.UserResponse;
 import habit.tracker.habittracker.api.service.VnHabitApiService;
+import habit.tracker.habittracker.common.AppConstant;
 import habit.tracker.habittracker.common.pushservice.PushDataService;
 import habit.tracker.habittracker.common.validator.Validator;
 import habit.tracker.habittracker.common.validator.ValidatorType;
@@ -37,8 +38,6 @@ public class LoginActivity extends BaseActivity {
 
     public static final String USERNAME = "username";
 
-    public static final String PASSWORD = "password";
-
     @BindView(R.id.edit_username)
     EditText edUsername;
     @BindView(R.id.edit_password)
@@ -50,6 +49,7 @@ public class LoginActivity extends BaseActivity {
     private boolean justSignUp = false;
 
     PushDataService pushDataService;
+    VnHabitApiService mService = VnHabitApiUtils.getApiService();
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -71,6 +71,9 @@ public class LoginActivity extends BaseActivity {
     protected void onStart() {
         super.onStart();
         if (!justSignUp && MySharedPreference.getUserId(this) != null) {
+            String[] info = MySharedPreference.getUser(this);
+            updateUser(info[1], info[2]);
+
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish();
@@ -108,7 +111,7 @@ public class LoginActivity extends BaseActivity {
                         || !validator.checkEmpty("Mật khẩu", password)) {
                     return;
                 }
-                login(username, password);
+                updateUser(username, password);
                 break;
             case R.id.btn_fb_login:
                 showEmptyScreen();
@@ -123,12 +126,11 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-    private void login(final String username, final String password) {
-        VnHabitApiService mService = VnHabitApiUtils.getApiService();
+    private void updateUser(final String username, final String password) {
         mService.getUser(username, password).enqueue(new Callback<UserResponse>() {
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
-                if (response.body().getResult().equals("1")) {
+                if (response.body().getResult().equals(AppConstant.RES_OK)) {
                     User user = response.body().getData();
                     Database db = new Database(LoginActivity.this);
                     UserEntity userEntity = new UserEntity();
@@ -145,10 +147,15 @@ public class LoginActivity extends BaseActivity {
                         userEntity.setAvatar(user.getAvatar());
                         userEntity.setUserDescription(user.getCreatedDate());
                         userEntity.setCreatedDate(user.getCreatedDate());
+                        userEntity.setLastLoginTime(user.getLastLoginTime());
+                        userEntity.setContinueUsingCount(user.getContinueUsingCount());
+                        userEntity.setCurrentContinueUsingCount(user.getCurrentContinueUsingCount());
+                        userEntity.setBestContinueUsingCount(user.getBestContinueUsingCount());
+                        userEntity.setUserScore(user.getUserScore());
                         Database.getUserDb().saveUser(userEntity);
                     }
                     db.close();
-                    showMainScreen(user.getUserId(), user.getUsername());
+                    showMainScreen(user.getUserId(), user.getUsername(), user.getPassword());
                 } else {
                     Toast.makeText(LoginActivity.this, "Đăng nhập không thành công!", Toast.LENGTH_SHORT).show();
                 }
@@ -161,7 +168,7 @@ public class LoginActivity extends BaseActivity {
                 UserEntity userEntity = Database.userDaoImpl.getUser(username, password);
                 db.close();
                 if (userEntity.getUserId() != null) {
-                    showMainScreen(userEntity.getUserId(), userEntity.getUsername());
+                    showMainScreen(userEntity.getUserId(), userEntity.getUsername(), userEntity.getPassword());
                 } else {
                     Toast.makeText(LoginActivity.this, "Đăng nhập không thành công!", Toast.LENGTH_SHORT).show();
                 }
@@ -169,14 +176,14 @@ public class LoginActivity extends BaseActivity {
         });
     }
 
-    private void showMainScreen(String userId, String username) {
+    private void showMainScreen(String userId, String username, String password) {
         if (justSignUp || MySharedPreference.getUserId(this) == null) {
-            MySharedPreference.saveUser(this, userId, username);
+            MySharedPreference.saveUser(this, userId, username, password);
             pushDataService = new PushDataService(this, userId);
             pushDataService.start();
             startActivityForResult(new Intent(this, GuideActivity.class), GUIDE);
         } else {
-            MySharedPreference.saveUser(this, userId, username);
+            MySharedPreference.saveUser(this, userId, username, password);
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish();

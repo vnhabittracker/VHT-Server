@@ -26,6 +26,7 @@ $error = true;
 // Get raw posted data
 $data = json_decode(file_get_contents("php://input"));
 
+// get habit info
 $habit->habit_id = $data->habit_id;
 $habit->user_id = $data->user_id; 
 $habit->group_id = $data->group_id;
@@ -41,18 +42,21 @@ $habit->created_date = $data->created_date;
 $habit->habit_color = $data->habit_color;
 $habit->habit_description = $data->habit_description;
 
+// save to habit_name_suggestion
 $habitSuggestion->habit_name_id = $data->habit_name_id;
 $habitSuggestion->habit_name_uni = $data->habit_name;
-$habitSuggestion->habit_name = $data->habit_name_ascii;
+$habitSuggestion->habit_name_ascii = $data->habit_name_ascii;
 $habitSuggestion->habit_name_count = $data->habit_name_count;
 $habitSuggestion->total_track = 0;
 $habitSuggestion->success_track = 0;
-
-$habitSuggestion->updateCount();
-if ($habitSuggestion->find($data->habit_name_ascii)->rowCount() == 0) {
+$found = $habitSuggestion->find($data->habit_name_ascii)->rowCount() == 0;
+if ($found) {
     $habitSuggestion->create();
+} else {
+    $habitSuggestion->updateCount();
 }
 
+// save new habit
 if ($habit->create()) {
     $date->monitor_id = $data->monitor_id;
     $date->habit_id = $data->habit_id;
@@ -63,17 +67,20 @@ if ($habit->create()) {
     $date->fri = $data->fri;
     $date->sat = $data->sat;
     $date->sun = $data->sun;
-
+    // save monitor_dates
     if ($date->create()) {
+
         $habit->monitor_id = $data->monitor_id;
         if ($habit->update()) {
+
+            // save reminders
             $arr_reminder = $data->reminders;
             for($i = 0; $i < count($arr_reminder); $i++) {
                 $item = $arr_reminder[$i];
-                $reminder->reminder_id = $item->reminder_id;
-                $reminder->habit_id = $data->habit_id;
+                $reminder->reminder_id = $item->server_id;
+                $reminder->habit_id = $item->habit_id;
                 $reminder->reminder_time = $item->reminder_time;
-                $reminder->repeat_time = $item->repeat_time;
+                $reminder->reminder_description = $item->reminder_description;
                 if ($reminder->create()) {
                     $error = false;
                 }

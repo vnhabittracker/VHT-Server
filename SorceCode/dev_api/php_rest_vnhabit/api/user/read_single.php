@@ -19,14 +19,14 @@ $user->username = isset($_GET['username']) ? $_GET['username'] : die();
 $user->password = isset($_GET['password']) ? $_GET['password'] : die();
 
 // Get user by username and password
-$result = $user->read_single();
+$foundUser = $user->read_single();
 
 // found one user
-if (isset($result)) {
+if (isset($foundUser)) {
     echo json_encode(
         array(
             'result' => '1',
-            'data' => $result 
+            'data' => $foundUser 
         )
     );
 } else {

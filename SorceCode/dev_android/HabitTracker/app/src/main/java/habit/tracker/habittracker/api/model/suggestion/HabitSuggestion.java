@@ -7,27 +7,21 @@ public class HabitSuggestion {
     @SerializedName("habit_name_id")
     @Expose
     private String habitSearchNameId;
-
     @SerializedName("group_id")
     @Expose
     private String groupId;
-
     @SerializedName("habit_name_uni")
     @Expose
     private String habitNameUni;
-
     @SerializedName("habit_name")
     @Expose
     private String habit_name;
-
     @SerializedName("habit_name_count")
     @Expose
     private String habitNameCount;
-
     @SerializedName("total_track")
     @Expose
     private int totalTrack;
-
     @SerializedName("success_track")
     @Expose
     private int successTrack;

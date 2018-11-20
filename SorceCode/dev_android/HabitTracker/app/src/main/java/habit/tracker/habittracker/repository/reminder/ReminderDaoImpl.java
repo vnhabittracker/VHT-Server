@@ -56,21 +56,21 @@ public class ReminderDaoImpl extends MyDatabaseHelper implements ReminderDao, Re
     }
 
     @Override
-    public int addReminder(ReminderEntity newEntity) {
-        setContentValue(newEntity);
+    public String saveReminder(ReminderEntity reminderEntity) {
+        setContentValue(reminderEntity);
         try {
             boolean isInserted = super.replace(REMINDER_TABLE, getContentValue()) > 0;
             if (isInserted) {
                 cursor = super.rawQuery("SELECT * FROM " + ReminderSchema.REMINDER_TABLE
                         + " WHERE "
-                        + SERVICE_ID + " = '" + newEntity.getServerId() + "'", null);
+                        + SERVICE_ID + " = '" + reminderEntity.getServerId() + "'", null);
                 cursor.moveToFirst();
                 ReminderEntity entity = cursorToEntity(cursor);
-                return Integer.parseInt(entity.getReminderId());
+                return entity.getReminderId();
             }
         } catch (SQLiteConstraintException ex) {
         }
-        return -1;
+        return null;
     }
 
     @Override
@@ -142,7 +142,6 @@ public class ReminderDaoImpl extends MyDatabaseHelper implements ReminderDao, Re
 
     public ReminderEntity convert(Reminder reminder) {
         ReminderEntity entity = new ReminderEntity();
-        entity.setReminderId(reminder.getReminderId());
         entity.setHabitId(reminder.getHabitId());
         entity.setRemindText(reminder.getRemindText());
         entity.setReminderTime(reminder.getReminderTime());

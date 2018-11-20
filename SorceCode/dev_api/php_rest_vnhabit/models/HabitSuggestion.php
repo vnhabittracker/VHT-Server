@@ -12,7 +12,7 @@ class HabitSuggestion extends Model {
     public $habit_name_id;
     public $group_id;
     public $habit_name_uni;
-    public $habit_name;
+    public $habit_name_ascii;
     public $habit_name_count;
     public $total_track;
     public $success_track;
@@ -30,7 +30,7 @@ class HabitSuggestion extends Model {
     }
 
     public function search($searck_key) {
-        $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . ' WHERE habit_name LIKE "%' . $searck_key . '%" LIMIT 5';
+        $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . ' WHERE habit_name_ascii LIKE "%' . $searck_key . '%"';
         // var_dump($query);
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -47,8 +47,8 @@ class HabitSuggestion extends Model {
         return false;
     }
 
-    public function find($searck_key) {
-        $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . ' WHERE habit_name = "' . $searck_key . '"';
+    public function find($habit_name_ascii) {
+        $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . ' WHERE habit_name_ascii = "' . $habit_name_ascii . '"';
         // var_dump($query);
         $stmt = $this->conn->prepare($query);
         $stmt->execute();

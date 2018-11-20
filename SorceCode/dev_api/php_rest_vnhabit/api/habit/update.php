@@ -66,10 +66,10 @@ if (isset($habit->habit_id)) {
     $arr_reminder = $data->reminders;
     for($i = 0; $i < count($arr_reminder); $i++) {
         $item = $arr_reminder[$i];
-        $reminder->reminder_id = $item->reminder_id;
+        $reminder->reminder_id = $item->server_id;
         $reminder->habit_id = $habit->habit_id;
         $reminder->reminder_time = $item->reminder_time;
-        $reminder->repeat_time = $item->repeat_time;
+        $reminder->reminder_description = $item->reminder_description;
         if ($reminder->find($habit->habit_id, $item->reminder_time)) {
             $reminder->updateById($reminder->reminder_id);
         } else {

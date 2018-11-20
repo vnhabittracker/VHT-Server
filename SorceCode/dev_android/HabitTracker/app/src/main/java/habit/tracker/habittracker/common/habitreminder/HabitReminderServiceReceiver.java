@@ -1,6 +1,8 @@
 package habit.tracker.habittracker.common.habitreminder;
 
 import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -8,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,6 +21,8 @@ import habit.tracker.habittracker.R;
 import habit.tracker.habittracker.common.util.AppGenerator;
 
 public class HabitReminderServiceReceiver extends BroadcastReceiver {
+
+    NotificationManager notifManager;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -33,33 +38,48 @@ public class HabitReminderServiceReceiver extends BroadcastReceiver {
                 return;
             }
 
-            if (endTime != null) {
-                try {
-                    SimpleDateFormat fm = new SimpleDateFormat(AppGenerator.YMD, Locale.getDefault());
-                    Date endDate = fm.parse(endTime);
-                    if (endDate.getTime() < System.currentTimeMillis()) {
-                        Intent i = new Intent(context, HabitReminderServiceReceiver.class);
-                        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, Integer.parseInt(remindId), i, 0);
-                        AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-                        if (alarmMgr != null) {
-                            alarmMgr.cancel(alarmIntent);
-                        }
-
-                        return;
+            if (!TextUtils.isEmpty(endTime)) {
+                Date endDate = AppGenerator.getDate(endTime, AppGenerator.YMD);
+                if (endDate != null && endDate.compareTo(new Date()) < 0) {
+                    Intent i = new Intent(context, HabitReminderServiceReceiver.class);
+                    PendingIntent alarmIntent = PendingIntent.getBroadcast(context, Integer.parseInt(remindId), i, 0);
+                    AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                    if (alarmMgr != null) {
+                        alarmMgr.cancel(alarmIntent);
                     }
-                } catch (ParseException e) {
-                    e.printStackTrace();
+
+                    return;
                 }
             }
 
-            NotificationCompat.Builder builder =
-                    new NotificationCompat.Builder(context)
-                            .setSmallIcon(R.drawable.ic_launcher_foreground)
-                            .setContentTitle("VN Habit Tracker: " + habitName)
-                            .setContentText(remindText);
-            NotificationManager notificationManager =
-                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(0, builder.build());
+            if (notifManager == null) {
+                notifManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            }
+
+            String defaultId = "habittracker";
+            Notification notification = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+
+                NotificationChannel mChannel = notifManager.getNotificationChannel(defaultId);
+                if (mChannel == null) {
+                    mChannel = new NotificationChannel(defaultId, habitName, NotificationManager.IMPORTANCE_HIGH);
+//                    mChannel.enableVibration(true);
+//                    mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+                    notifManager.createNotificationChannel(mChannel);
+                }
+
+                notification = new NotificationCompat.Builder(context, defaultId)
+                                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                                .setContentTitle("VN Habit Tracker: " + habitName)
+                                .setContentText(remindText).build();
+            } else {
+                notification = new NotificationCompat.Builder(context, defaultId)
+                        .setSmallIcon(R.drawable.ic_launcher_foreground)
+                        .setContentTitle("VN Habit Tracker: " + habitName)
+                        .setContentText(remindText).build();
+            }
+
+            notifManager.notify(0, notification);
         }
     }
 }

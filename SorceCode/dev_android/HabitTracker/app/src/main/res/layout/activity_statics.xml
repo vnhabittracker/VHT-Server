@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#ffffff"
-    tools:context=".ReportActivity">
+    tools:context=".StaticsActivity">
 
     <TextView
         android:id="@+id/header"

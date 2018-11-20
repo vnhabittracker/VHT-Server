@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -43,15 +44,16 @@ import habit.tracker.habittracker.api.model.reminder.Reminder;
 import habit.tracker.habittracker.api.model.search.HabitSuggestion;
 import habit.tracker.habittracker.api.model.search.SearchResponse;
 import habit.tracker.habittracker.api.service.VnHabitApiService;
-import habit.tracker.habittracker.common.validator.Validator;
-import habit.tracker.habittracker.common.validator.ValidatorType;
+import habit.tracker.habittracker.common.habitreminder.HabitReminderManager;
 import habit.tracker.habittracker.common.util.AppGenerator;
 import habit.tracker.habittracker.common.util.MySharedPreference;
-import habit.tracker.habittracker.common.habitreminder.HabitReminderManager;
+import habit.tracker.habittracker.common.validator.Validator;
+import habit.tracker.habittracker.common.validator.ValidatorType;
 import habit.tracker.habittracker.repository.Database;
 import habit.tracker.habittracker.repository.group.GroupEntity;
 import habit.tracker.habittracker.repository.habit.HabitEntity;
 import habit.tracker.habittracker.repository.reminder.ReminderEntity;
+import habit.tracker.habittracker.repository.user.UserEntity;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -83,10 +85,10 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
     RecyclerView rvHabitSuggestion;
     SearchRecyclerViewAdapter suggestAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    List<HabitSuggestion> habitSuggestList = new ArrayList<>();
+    List<HabitSuggestion> suggestList = new ArrayList<>();
     String initHabitId;
-    String searchHabitId;
-    String searchHabitName;
+    String suggestHabitNameId;
+    String suggestHabitName;
     boolean selectedSuggestion = true;
 
     @BindView(R.id.btn_suggestHabit)
@@ -219,7 +221,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
     @BindView(R.id.rvRemind)
     RecyclerView rvRemind;
     List<Reminder> remindDisplayList = new ArrayList<>();
-    List<Reminder> remindAddNew = new ArrayList<>();
+    List<Reminder> remindAddNewList = new ArrayList<>();
     RemindRecyclerViewAdapter remindAdapter;
 
     @Override
@@ -229,14 +231,14 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         setContentView(R.layout.activity_habit);
         ButterKnife.bind(this);
 
-        suggestAdapter = new SearchRecyclerViewAdapter(this, habitSuggestList, new RecyclerViewItemClickListener() {
+        suggestAdapter = new SearchRecyclerViewAdapter(this, suggestList, new RecyclerViewItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                searchHabitId = habitSuggestList.get(position).getHabitNameId();
-                searchHabitName = habitSuggestList.get(position).getHabitNameUni();
+                suggestHabitNameId = suggestList.get(position).getHabitNameId();
+                suggestHabitName = suggestList.get(position).getHabitNameUni();
                 selectedSuggestion = true;
-                editHabitName.setText(searchHabitName);
-                habitSuggestList.clear();
+                editHabitName.setText(suggestHabitName);
+                suggestList.clear();
                 suggestAdapter.notifyDataSetChanged();
             }
         });
@@ -258,7 +260,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                     return;
                 }
                 if (TextUtils.isEmpty(s.toString())) {
-                    habitSuggestList.clear();
+                    suggestList.clear();
                     suggestAdapter.notifyDataSetChanged();
                     return;
                 }
@@ -266,11 +268,67 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                 mService.searchHabitName(AppGenerator.getSearchKey(s.toString().trim())).enqueue(new Callback<SearchResponse>() {
                     @Override
                     public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
-                        habitSuggestList.clear();
+                        suggestList.clear();
                         if (response.body().getResult().equals(RES_OK)) {
-                            for (HabitSuggestion sg : response.body().getSearchResult()) {
-                                habitSuggestList.add(
-                                        new HabitSuggestion(sg.getHabitNameId(), sg.getGroupId(), sg.getHabitNameUni(), sg.getHabitName(), sg.getHabitNameCount(), false));
+                            List<HabitSuggestion> searchResult = response.body().getSearchResult();
+                            Database db = Database.getInstance(HabitActivity.this);
+                            db.open();
+                            UserEntity userEntity = Database.getUserDb().getUser(MySharedPreference.getUserId(HabitActivity.this));
+                            int userLevel = AppGenerator.getLevel(Integer.parseInt(userEntity.getUserScore()));
+                            db.close();
+
+                            if (searchResult.size() > 0) {
+                                List<HabitSuggestion> lowList = new ArrayList<>();
+                                List<HabitSuggestion> medList = new ArrayList<>();
+                                List<HabitSuggestion> higList = new ArrayList<>();
+                                List<HabitSuggestion> tmpList = new ArrayList<>();
+                                int topLow = -1;
+                                int topMed = -1;
+                                int topHig = -1;
+                                int hbLevel;
+                                int numOfUser;
+                                for (HabitSuggestion sg : searchResult) {
+                                    hbLevel = (int) (((float) sg.getSuccessTrack() / (float) sg.getTotalTrack()) * 100);
+                                    numOfUser = Integer.parseInt(sg.getHabitNameCount());
+                                    if (hbLevel >= 80) {
+                                        if (numOfUser > topLow) {
+                                            lowList.add(0, sg);
+                                            topLow = numOfUser;
+                                        } else {
+                                            lowList.add(sg);
+                                        }
+                                    } else if (hbLevel >= 50) {
+                                        if (numOfUser > topMed) {
+                                            medList.add(0, sg);
+                                            topMed = numOfUser;
+                                        } else {
+                                            medList.add(sg);
+                                        }
+                                    } else {
+                                        if (numOfUser > topHig) {
+                                            higList.add(0, sg);
+                                            topMed = numOfUser;
+                                        } else {
+                                            higList.add(sg);
+                                        }
+                                    }
+                                }
+                                tmpList.addAll(lowList);
+                                tmpList.addAll(medList);
+                                tmpList.addAll(higList);
+                                if (userLevel <= 3) {
+                                    suggestList.addAll(tmpList.size() >= 5 ? tmpList.subList(0, 5) : tmpList);
+                                } else if (userLevel < 6) {
+                                    int size = lowList.size() + medList.size();
+                                    suggestList.addAll(tmpList.subList(size, 0));
+                                    if (suggestList.size() < 5) {
+                                        size = 5 - suggestList.size();
+                                        suggestList.addAll(higList.size() >= size ? higList.subList(0, size) : higList);
+                                    }
+                                } else {
+                                    Collections.reverse(tmpList);
+                                    suggestList.addAll(tmpList.size() >= 5 ? tmpList.subList(0, 5) : tmpList);
+                                }
                             }
                         }
                         suggestAdapter.notifyDataSetChanged();
@@ -354,16 +412,16 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         Bundle data = getIntent().getExtras();
         if (data != null) {
             initHabitId = data.getString(MainActivity.HABIT_ID, null);
-            searchHabitId = data.getString(SuggestionByLevelActivity.SUGGEST_NAME_ID, null);
-            searchHabitName = data.getString(SuggestionByLevelActivity.SUGGEST_NAME, null);
-            editHabitName.setText(searchHabitName);
+            suggestHabitNameId = data.getString(SuggestionByLevelActivity.SUGGEST_NAME_ID, null);
+            suggestHabitName = data.getString(SuggestionByLevelActivity.SUGGEST_NAME, null);
+            editHabitName.setText(suggestHabitName);
             selectedSuggestion = true;
         }
         if (!TextUtils.isEmpty(initHabitId)) {
             if (initHabitId != null) {
                 // mode UPDATE
                 createMode = MODE_UPDATE;
-                initFromSavedHabit(initHabitId);
+                initializeBySavedHabit(initHabitId);
             }
         } else {
             // init monitor date
@@ -382,6 +440,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
     }
 
     @Override
+    @SuppressLint("DefaultLocale")
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == SELECT_GROUP) {
             if (resultCode == RESULT_OK) {
@@ -393,8 +452,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         } else if (requestCode == ADD_REMINDER) {
             if (resultCode == RESULT_OK) {
                 if (data != null && data.getExtras() != null) {
-                    String remindType = String.valueOf(
-                            data.getIntExtra(ReminderCreateActivity.REMIND_TYPE, -1));
+                    String remindType = String.valueOf(data.getIntExtra(ReminderCreateActivity.REMIND_TYPE, -1));
                     String remindText = data.getStringExtra(ReminderCreateActivity.REMIND_TEXT);
                     String date = data.getStringExtra(ReminderCreateActivity.REMIND_DATE);
                     String format = "%02d";
@@ -407,23 +465,23 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                     reminder.setReminderTime(date + " " + hour + ":" + minute);
                     reminder.setRepeatType(remindType);
                     remindDisplayList.add(reminder);
-                    remindAddNew.add(reminder);
+                    remindAddNewList.add(reminder);
                     remindAdapter.notifyDataSetChanged();
                 }
             }
         } else if (requestCode == GET_SUGGEST) {
             if (resultCode == RESULT_OK) {
                 if (data != null) {
-                    searchHabitId = data.getStringExtra(SuggestionByGroupActivity.SUGGEST_HABIT_ID);
-                    searchHabitName = data.getStringExtra(SuggestionByGroupActivity.SUGGEST_HABIT_NAME_UNI);
+                    suggestHabitNameId = data.getStringExtra(SuggestionByGroupActivity.SUGGEST_HABIT_ID);
+                    suggestHabitName = data.getStringExtra(SuggestionByGroupActivity.SUGGEST_HABIT_NAME_UNI);
                     selectedSuggestion = true;
-                    editHabitName.setText(searchHabitName);
+                    editHabitName.setText(suggestHabitName);
                 }
             }
         }
     }
 
-    private void initFromSavedHabit(String habitId) {
+    private void initializeBySavedHabit(String habitId) {
         if (habitId != null) {
             // change UI for update and delete
             btnSave.setText("Cập nhật");
@@ -638,22 +696,21 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         }
 
         // collect user input
-        Calendar ca = Calendar.getInstance();
         final Habit habit = new Habit();
         if (createMode == MODE_CREATE) {
             habit.setHabitId(AppGenerator.getNewId());
             habit.setMonitorId(AppGenerator.getNewId());
         } else if (createMode == MODE_UPDATE) {
-            habit.setHabitId(this.initHabitId);
-            habit.setMonitorId(this.savedMonitorDateId);
+            habit.setHabitId(initHabitId);
+            habit.setMonitorId(savedMonitorDateId);
         }
         habit.setUserId(savedUserId);
-        habit.setGroupId(this.savedGroupId);
+        habit.setGroupId(savedGroupId);
 
         habit.setHabitName(habitName);
-        habit.setHabitTarget(String.valueOf(this.habitTarget));
-        habit.setHabitType(String.valueOf(this.habitType));
-        habit.setMonitorType(String.valueOf(this.monitorType));
+        habit.setHabitTarget(String.valueOf(habitTarget));
+        habit.setHabitType(String.valueOf(habitType));
+        habit.setMonitorType(String.valueOf(monitorType));
         habit.setMonitorUnit(monitorUnit);
         habit.setMonitorNumber(monitorNumber);
 
@@ -662,47 +719,46 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         habit.setCreatedDate(AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT));
 
         habit.setHabitColor(habitColorCode);
-        habit.setHabitDescription(this.editDescription.getText().toString());
+        habit.setHabitDescription(editDescription.getText().toString());
 
-        habit.setMon(String.valueOf(this.monitorDate[0] ? 1 : 0));
-        habit.setTue(String.valueOf(this.monitorDate[1] ? 1 : 0));
-        habit.setWed(String.valueOf(this.monitorDate[2] ? 1 : 0));
-        habit.setThu(String.valueOf(this.monitorDate[3] ? 1 : 0));
-        habit.setFri(String.valueOf(this.monitorDate[4] ? 1 : 0));
-        habit.setSat(String.valueOf(this.monitorDate[5] ? 1 : 0));
-        habit.setSun(String.valueOf(this.monitorDate[6] ? 1 : 0));
+        // monitor_date
+        habit.setMon(String.valueOf(monitorDate[0] ? 1 : 0));
+        habit.setTue(String.valueOf(monitorDate[1] ? 1 : 0));
+        habit.setWed(String.valueOf(monitorDate[2] ? 1 : 0));
+        habit.setThu(String.valueOf(monitorDate[3] ? 1 : 0));
+        habit.setFri(String.valueOf(monitorDate[4] ? 1 : 0));
+        habit.setSat(String.valueOf(monitorDate[5] ? 1 : 0));
+        habit.setSun(String.valueOf(monitorDate[6] ? 1 : 0));
 
-        for (Reminder reminder : remindDisplayList) {
-            reminder.setHabitId(habit.getHabitId());
-            reminder.setHabitName(habit.getHabitName());
-            if (TextUtils.isEmpty(habit.getEndDate())) {
-                reminder.setEndDate(habit.getEndDate());
-            }
-        }
-        habit.setReminderList(remindDisplayList);
-
+        // suggestions
         habit.setHabitNameAscii(AppGenerator.getSearchKey(habit.getHabitName()));
-        if (TextUtils.isEmpty(searchHabitName) || !searchHabitName.equals(habit.getHabitName())) {
+        // user did'nt chose any suggestion habit
+        if (TextUtils.isEmpty(suggestHabitName) || !suggestHabitName.equals(habit.getHabitName())) {
             habit.setHabitSearchNameId(AppGenerator.getNewId());
             habit.setGroupId(habit.getGroupId());
             habit.setHabitNameCount(1);
         } else {
-            habit.setHabitSearchNameId(searchHabitId);
+            habit.setHabitSearchNameId(suggestHabitNameId);
         }
 
-        // save habit
+        // set reminder list
+        for (Reminder reminder : remindAddNewList) {
+            reminder.setHabitId(habit.getHabitId());
+            reminder.setHabitName(habit.getHabitName());
+            if (!TextUtils.isEmpty(habit.getEndDate())) {
+                reminder.setEndDate(habit.getEndDate());
+            }
+        }
+        habit.setReminderList(remindAddNewList);
+
+        // SAVE HABIT
         Database db = new Database(HabitActivity.this);
         db.open();
         if (Database.getHabitDb().saveUpdateHabit(Database.getHabitDb().convert(habit))) {
-            // save reminder list
-            for (Reminder reminder : remindAddNew) {
-                reminder.setHabitId(habit.getHabitId());
-                int remindId = Database.reminderImpl.addReminder(
-                        Database.reminderImpl.convert(reminder));
-                reminder.setReminderId(String.valueOf(remindId));
+            for (Reminder reminder : habit.getReminderList()) {
+                reminder.setReminderId(Database.getReminderDb().saveReminder(Database.getReminderDb().convert(reminder)));
             }
         }
-        db.close();
 
         VnHabitApiService mService = VnHabitApiUtils.getApiService();
         // CREATE new habit
@@ -712,7 +768,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     Toast.makeText(HabitActivity.this, "Tạo thói quen thành công", Toast.LENGTH_LONG).show();
                     HabitActivity.this.setResult(HabitActivity.RESULT_OK);
-                    HabitReminderManager habitReminderManager = new HabitReminderManager(HabitActivity.this, remindDisplayList);
+                    HabitReminderManager habitReminderManager = new HabitReminderManager(HabitActivity.this, habit.getReminderList());
                     habitReminderManager.start();
                     finish();
                 }
@@ -729,7 +785,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     HabitActivity.this.setResult(HabitActivity.RESULT_OK);
-                    HabitReminderManager habitReminderManager = new HabitReminderManager(HabitActivity.this, remindDisplayList);
+                    HabitReminderManager habitReminderManager = new HabitReminderManager(HabitActivity.this, habit.getReminderList());
                     habitReminderManager.start();
                     finish();
                 }
@@ -740,6 +796,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                 }
             });
         }
+        db.close();
     }
 
     @OnClick(R.id.btn_suggestHabit)
@@ -944,10 +1001,10 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
             R.id.color9,
             R.id.color10})
     public void setHabitColor(View v) {
-        int idx = 0;
+        int idx;
         if (habitColor != null) {
             idx = Integer.parseInt(habitColor.getTag().toString());
-            unpickColor(habitColor, colorsList.get(idx));
+            unPickColor(habitColor, colorsList.get(idx));
         }
         idx = Integer.parseInt(v.getTag().toString());
         pickColor(v, colors[idx]);
@@ -991,7 +1048,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         v.setBackground(getCircleCheckBackground(color));
     }
 
-    public void unpickColor(View v, String colorCode) {
+    public void unPickColor(View v, String colorCode) {
         v.setBackground(getCircleBackground(colorCode));
     }
 

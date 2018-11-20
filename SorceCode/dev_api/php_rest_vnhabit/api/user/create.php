@@ -30,7 +30,11 @@ $user->user_icon = $data->user_icon;
 $user->avatar = $data->avatar;
 $user->user_description = $data->user_description;
 $user->created_date = $data->created_date;
-
+$user->last_login_time = $data->last_login_time;
+$user->continue_using_count = $data->continue_using_count;
+$user->current_continue_using_count = $data->current_continue_using_count;
+$user->best_continue_using_count = $data->best_continue_using_count;
+$user->user_score = $data->user_score;
 
 if ($user->find_by_username()) {
     echo json_encode(

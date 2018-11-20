@@ -12,7 +12,6 @@ include_once '../../models/Model.php';
         public $reminder_id;
         public $habit_id;
         public $reminder_time;
-        public $repeat_time;
         public $reminder_description;
 
         public function __construct($db) {

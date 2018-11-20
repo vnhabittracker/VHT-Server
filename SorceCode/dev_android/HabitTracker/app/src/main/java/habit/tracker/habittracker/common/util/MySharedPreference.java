@@ -8,13 +8,15 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class MySharedPreference {
     public final static  String MY_PREFS = "vnhabit_pref";
-    public static final String USER_ID = "USER_ID";
-    public static final String USERNAME = "USERNAME";
+    public static final String USER_ID = "user_id";
+    public static final String USERNAME = "username";
+    public static final String PASSWORD = "password";
 
-    public static void saveUser(Context context, String userId, String username){
+    public static void saveUser(Context context, String userId, String username, String password){
         SharedPreferences.Editor editor = context.getSharedPreferences(MY_PREFS, MODE_PRIVATE).edit();
         editor.putString(USER_ID, userId);
         editor.putString(USERNAME, username);
+        editor.putString(PASSWORD, password);
         editor.apply();
     }
 
@@ -27,13 +29,13 @@ public class MySharedPreference {
         return null;
     }
 
-    public static String getUsername(Context context) {
+    public static String[] getUser(Context context) {
+        String[] user = new String[3];
         SharedPreferences prefs = context.getSharedPreferences(MY_PREFS, MODE_PRIVATE);
-        String username = prefs.getString(USERNAME, null);
-        if (!TextUtils.isEmpty(username)) {
-            return username;
-        }
-        return null;
+        user[0] = prefs.getString(USER_ID, null);
+        user[1] = prefs.getString(USERNAME, null);
+        user[2] = prefs.getString(PASSWORD, null);
+        return user;
     }
 
     public static void save(Context context, String key, String tail, String val) {
