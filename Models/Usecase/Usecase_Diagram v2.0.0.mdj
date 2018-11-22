@@ -1319,7 +1319,7 @@
 											"top": 314,
 											"width": -10,
 											"height": 13,
-											"text": "Set Reminder"
+											"text": "User Reminder"
 										},
 										{
 											"_type": "LabelView",
@@ -1352,7 +1352,7 @@
 									"font": "Arial;13;0",
 									"left": 456,
 									"top": 307,
-									"width": 93.8017578125,
+									"width": 102.47900390625,
 									"height": 25,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAFl4K7KfBirwZw="
@@ -11516,7 +11516,7 @@
 											"top": 1155.5,
 											"width": 80,
 											"height": 13,
-											"text": "Manage User"
+											"text": "Manage Users"
 										},
 										{
 											"_type": "LabelView",
@@ -11549,7 +11549,7 @@
 									"font": "Arial;13;0",
 									"left": 267,
 									"top": 1148.5,
-									"width": 90.919921875,
+									"width": 98.14990234375,
 									"height": 25,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAFl7STQfYbdUi8="
@@ -12279,7 +12279,7 @@
 											"top": 1091.5,
 											"width": 96,
 											"height": 13,
-											"text": "ResetPassword"
+											"text": "Reset Password"
 										},
 										{
 											"_type": "LabelView",
@@ -12312,7 +12312,7 @@
 									"font": "Arial;13;0",
 									"left": 422.5,
 									"top": 1084.5,
-									"width": 106.82080078125,
+									"width": 110.4326171875,
 									"height": 25,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAFl7ShRlY1bNe0="
@@ -15476,7 +15476,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFl4Koj0xWe7bM="
 					},
-					"name": "Set Reminder User",
+					"name": "Set User Reminder",
 					"ownedElements": [
 						{
 							"_type": "UMLGeneralization",
@@ -17723,7 +17723,7 @@
 											"top": 483.5,
 											"width": 115,
 											"height": 13,
-											"text": "Set Reminder User"
+											"text": "Set User Reminder"
 										},
 										{
 											"_type": "LabelView",
@@ -18594,7 +18594,7 @@
 											"font": "Arial;17;1",
 											"left": 197,
 											"top": 263,
-											"width": 1023,
+											"width": 1079,
 											"height": 17,
 											"text": "VN habit tracker"
 										},
@@ -18629,7 +18629,7 @@
 									"font": "Arial;17;0",
 									"left": 192,
 									"top": 256,
-									"width": 1033,
+									"width": 1089,
 									"height": 29,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAFl8StPdJw9mC0="
@@ -18649,7 +18649,7 @@
 							"showShadow": false,
 							"left": 192,
 							"top": 256,
-							"width": 1033,
+							"width": 1089,
 							"height": 1041,
 							"nameCompartment": {
 								"$ref": "AAAAAAFl8StPdJw8GJQ="
@@ -25866,7 +25866,7 @@
 											"top": 499.5,
 											"width": 119,
 											"height": 13,
-											"text": "Set Reminder Habit"
+											"text": "Set Habit Reminder"
 										},
 										{
 											"_type": "LabelView",
@@ -26739,12 +26739,12 @@
 										"$ref": "AAAAAAFmcIl0TIUb2BA="
 									},
 									"font": "Arial;13;0",
-									"left": 506,
-									"top": 427,
+									"left": 512,
+									"top": 424,
 									"width": 53.49169921875,
 									"height": 13,
-									"alpha": 2.5482422630807497,
-									"distance": 36.6742416417845,
+									"alpha": 2.58526229947951,
+									"distance": 42.720018726587654,
 									"hostEdge": {
 										"$ref": "AAAAAAFmcIl0TYUdn/c="
 									},
@@ -32020,7 +32020,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFl8SrMHXeBE6A="
 					},
-					"name": "Set Reminder Habit",
+					"name": "Set Habit Reminder",
 					"ownedElements": [
 						{
 							"_type": "UMLExtend",
