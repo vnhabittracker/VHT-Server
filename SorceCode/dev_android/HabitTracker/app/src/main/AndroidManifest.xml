@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -24,6 +25,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".BaseActivity"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".MainActivity"
             android:theme="@style/AppTheme" />
@@ -55,7 +59,7 @@
         <activity android:name=".ReportCalendarActivity" />
         <activity android:name=".NoteActivity" />
         <activity android:name=".SuggestionByGroupActivity" />
-        <activity android:name=".SuggestionByLevelActivity"></activity>
+        <activity android:name=".ProfileActivity" />
     </application>
 
 </manifest>

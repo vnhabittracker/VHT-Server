@@ -42,7 +42,7 @@ import retrofit2.Response;
 
 import static habit.tracker.habittracker.adapter.habit.HabitRecyclerViewAdapter.TYPE_ADD;
 
-public class MainActivity extends AppCompatActivity implements HabitRecyclerViewAdapter.ItemClickListener {
+public class MainActivity extends BaseActivity implements HabitRecyclerViewAdapter.ItemClickListener {
     public static final int CREATE_NEW_HABIT = 0;
     public static final int UPDATE_HABIT = 1;
     public static final int USE_FILTER = 2;
@@ -156,17 +156,16 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
                         date = ca.get(Calendar.DATE);
                         if (isTodayHabit(year, month - 1, date, habit)) {
 
-                            // update tracking mData from server
+                            // update tracking displayItemList from server
                             for (Tracking track : habit.getTracksList()) {
-                                Database.getTrackingDb().saveTracking(Database.trackingImpl.convert(track));
+                                Database.getTrackingDb().saveTracking(Database.getTrackingDb().convert(track));
                             }
                             // create today tracking record list
                             if (currentDate.compareTo(habit.getStartDate()) >= 0 && (TextUtils.isEmpty(habit.getEndDate()) || currentDate.compareTo(habit.getEndDate()) <= 0)) {
 
                                 TrackingEntity todayTracking = getTodayTracking(habit.getHabitId(), currentDate, 0);
 
-                                totalCount = getSumTrackValueByHabit(habit.getHabitId(), Integer.parseInt(habit.getHabitType()), Integer.parseInt(todayTracking.getCount())
-                                );
+                                totalCount = getSumTrackValueByHabit(habit.getHabitId(), Integer.parseInt(habit.getHabitType()), Integer.parseInt(todayTracking.getCount()));
 
                                 trackingItemList.add(new TrackingItem(
                                         todayTracking.getTrackingId(),
@@ -175,6 +174,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
                                         habit.getGroupId(),
                                         habit.getHabitName(),
                                         habit.getHabitDescription(),
+                                        todayTracking.getDescription(),
                                         habit.getHabitType(),
                                         Integer.parseInt(habit.getMonitorType()),
                                         habit.getMonitorNumber(),
@@ -231,21 +231,22 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
 
     @Override
     public void onTrackingValueChanged(View view, int type, int position, int totalCount, int count) {
-        TrackingItem item = trackingItemList.get(position);
-        item.setCount(count);
-        item.setTotalCount(totalCount);
+        TrackingItem trackingItem = trackingItemList.get(position);
+        trackingItem.setCount(count);
+        trackingItem.setTotalCount(totalCount);
 
         // save to appDatabase local
         Database db = Database.getInstance(this);
         db.open();
         TrackingList trackingData = new TrackingList();
         Tracking tracking = new Tracking();
-        tracking.setTrackingId(item.getTrackId());
-        tracking.setHabitId(item.getHabitId());
-        tracking.setCount(String.valueOf(item.getCount()));
+        tracking.setTrackingId(trackingItem.getTrackId());
+        tracking.setHabitId(trackingItem.getHabitId());
+        tracking.setCount(String.valueOf(trackingItem.getCount()));
         tracking.setCurrentDate(currentDate);
-//        tracking.setDescription(item.getDescription());
+        tracking.setDescription(trackingItem.getTrackingDescription());
         trackingData.getTrackingList().add(tracking);
+
         if (!Database.getTrackingDb().updateTracking(Database.getTrackingDb().convert(tracking))) {
             return;
         }
@@ -289,23 +290,24 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
         int totalCount = 0;
         for (HabitEntity habit : habitEntities) {
             // get tracking records on current date
-            TrackingEntity record = Database.getTrackingDb().getTracking(habit.getHabitId(), currentDate);
-            if (record == null) {
-                record = getTodayTracking(habit.getHabitId(), currentDate, 0);
+            TrackingEntity trackingEntity = Database.getTrackingDb().getTracking(habit.getHabitId(), currentDate);
+            if (trackingEntity == null) {
+                trackingEntity = getTodayTracking(habit.getHabitId(), currentDate, 0);
             }
 
-            totalCount = getSumTrackValueByHabit(habit.getHabitId(), Integer.parseInt(habit.getHabitType()), Integer.parseInt(record.getCount()));
+            totalCount = getSumTrackValueByHabit(habit.getHabitId(), Integer.parseInt(habit.getHabitType()), Integer.parseInt(trackingEntity.getCount()));
             trackingItemList.add(new TrackingItem(
-                    record.getTrackingId(),
+                    trackingEntity.getTrackingId(),
                     habit.getHabitId(),
                     habit.getHabitTarget(),
                     habit.getGroupId(),
                     habit.getHabitName(),
                     habit.getHabitDescription(),
+                    trackingEntity.getDescription(),
                     habit.getHabitType(),
                     Integer.parseInt(habit.getMonitorType()),
                     habit.getMonitorNumber(),
-                    Integer.parseInt(record.getCount()),
+                    Integer.parseInt(trackingEntity.getCount()),
                     habit.getMonitorUnit(),
                     habit.getHabitColor(),
                     totalCount)
@@ -377,7 +379,7 @@ public class MainActivity extends AppCompatActivity implements HabitRecyclerView
     @OnClick(R.id.tabSuggestion)
     public void showSuggestion(View view) {
         isReStart = true;
-        Intent intent = new Intent(this, SuggestionByLevelActivity.class);
+        Intent intent = new Intent(this, ProfileActivity.class);
         startActivity(intent);
     }
 

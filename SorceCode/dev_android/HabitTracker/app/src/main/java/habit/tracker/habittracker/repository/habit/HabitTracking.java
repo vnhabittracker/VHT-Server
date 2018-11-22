@@ -9,8 +9,8 @@ import habit.tracker.habittracker.repository.tracking.TrackingEntity;
  * Created by DatTVT1 on 2018/10/26
  */
 public class HabitTracking {
-    HabitEntity habitEntity;
-    List<TrackingEntity> trackingEntityList = new ArrayList<>();
+    private HabitEntity habitEntity;
+    private List<TrackingEntity> trackingEntityList = new ArrayList<>();
 
     public HabitEntity getHabit() {
         return habitEntity;

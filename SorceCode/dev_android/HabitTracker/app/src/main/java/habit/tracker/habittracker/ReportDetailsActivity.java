@@ -145,7 +145,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
 
                 initDefaultUI(habitEntity);
 
-                // load chart mData (default is week)
+                // load chart displayItemList (default is week)
                 ArrayList<BarEntry> values = loadData(currentDate);
                 chartStartReportDate = curStartReportDate;
                 chartEndReportDate = curEndReportDate;
@@ -168,7 +168,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
 
         initDefaultUI(habitEntity);
 
-        // load chart mData (default is week)
+        // load chart displayItemList (default is week)
         ArrayList<BarEntry> values = loadData(currentDate);
         chartHelper.setData(values, mode);
 
@@ -368,7 +368,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
     }
 
     @OnClick({R.id.minusCount, R.id.addCount})
-    public void onCountChanged(View v) {
+    public void onTrackingCountChanged(View v) {
         if (timeLine > 0 || currentDate.compareTo(habitEntity.getStartDate()) < 0
                 || !AppGenerator.isValidTrackingDay(currentDate, trackingDaysInWeek)) {
             return;
@@ -388,15 +388,15 @@ public class ReportDetailsActivity extends AppCompatActivity {
         // save to appDatabase
         Database db = Database.getInstance(this);
         db.open();
-        TrackingEntity record = Database.getTrackingDb().getTracking(habitEntity.getHabitId(), currentDate);
-        if (record == null) {
-            record = new TrackingEntity();
-            record.setTrackingId(AppGenerator.getNewId());
-            record.setHabitId(habitEntity.getHabitId());
-            record.setCurrentDate(currentDate);
+        TrackingEntity trackingEntity = Database.getTrackingDb().getTracking(habitEntity.getHabitId(), currentDate);
+        if (trackingEntity == null) {
+            trackingEntity = new TrackingEntity();
+            trackingEntity.setTrackingId(AppGenerator.getNewId());
+            trackingEntity.setHabitId(habitEntity.getHabitId());
+            trackingEntity.setCurrentDate(currentDate);
         }
-        record.setCount(String.valueOf(curTrackingCount));
-        Database.getTrackingDb().saveTracking(record);
+        trackingEntity.setCount(String.valueOf(curTrackingCount));
+        Database.getTrackingDb().saveTracking(trackingEntity);
         db.close();
 
         ArrayList<BarEntry> values = loadData(currentDate);
@@ -404,11 +404,13 @@ public class ReportDetailsActivity extends AppCompatActivity {
 
         TrackingList trackingData = new TrackingList();
         Tracking tracking = new Tracking();
-        tracking.setTrackingId(record.getTrackingId());
-        tracking.setHabitId(record.getHabitId());
+        tracking.setTrackingId(trackingEntity.getTrackingId());
+        tracking.setHabitId(trackingEntity.getHabitId());
         tracking.setCurrentDate(currentDate);
-        tracking.setCount(String.valueOf(record.getCount()));
+        tracking.setCount(String.valueOf(trackingEntity.getCount()));
+        tracking.setDescription(trackingEntity.getDescription());
         trackingData.getTrackingList().add(tracking);
+
         VnHabitApiService service = VnHabitApiUtils.getApiService();
         service.updateTracking(trackingData).enqueue(new Callback<ResponseBody>() {
             @Override
@@ -508,7 +510,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
                     hb = habitTracking.getHabit();
                 }
                 int count;
-                // mData per day in month
+                // displayItemList per day in month
                 for (TrackingEntity track : habitTracking.getTrackingList()) {
                     count = Integer.parseInt(track.getCount());
                     completedPerMonth[m] += count;

@@ -24,6 +24,7 @@
         android:layout_height="0dp"
         android:layout_weight="10"
         android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
         android:padding="10dp">
 
         <LinearLayout
@@ -66,7 +67,7 @@
             android:layout_below="@+id/tabTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:orientation="horizontal">
 
             <ImageView
@@ -84,7 +85,7 @@
                 android:textColor="#303030"
                 android:textSize="14sp"
                 android:gravity="center"
-                android:text="abc"/>
+                android:text="11/11/2018"/>
             <ImageView
                 android:id="@+id/next"
                 android:layout_width="0dp"
@@ -117,51 +118,52 @@
 
         <TextView
             android:id="@+id/total"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_above="@+id/totalDone"
-            android:padding="5dp"
-            android:textSize="20sp"
-            android:textColor="#2837ba"
+            android:layout_toEndOf="@+id/lbTotalDone"
+            android:layout_alignEnd="@+id/totalDone"
+            android:layout_marginBottom="12dp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textColor="#6271ff"
             android:text="5"/>
 
         <TextView
             android:id="@+id/lbTotal"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_alignTop="@+id/total"
+            android:layout_alignEnd="@+id/lbTotalDone"
             android:layout_alignBottom="@+id/total"
-            android:layout_toStartOf="@+id/total"
+            android:layout_alignTop="@+id/total"
             android:gravity="center_vertical"
-            android:textSize="13sp"
-            android:textColor="#2d2d2d"
-            android:text="Tổng số thói quen (của tuần/tháng/năm: đang hiển thị)"/>
-
-        <TextView
-            android:id="@+id/totalDone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_marginBottom="20dp"
-            android:layout_alignParentBottom="true"
-            android:padding="5dp"
-            android:text="1"
-            android:textColor="#2837ba"
-            android:textSize="20sp" />
+            android:textSize="16sp"
+            android:text="Tổng số thói quen"/>
 
         <TextView
             android:id="@+id/lbTotalDone"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_alignTop="@+id/totalDone"
             android:layout_alignBottom="@+id/totalDone"
-            android:layout_toStartOf="@+id/totalDone"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
             android:gravity="center_vertical"
-            android:textSize="13sp"
-            android:textColor="#2d2d2d"
-            android:text="Tổng số lượt  hoàn thành (của tuần/tháng/năm: đang hiển thị)"/>
+            android:textSize="16sp"
+            android:text="Tổng số lượt  hoàn thành"/>
 
+        <TextView
+            android:id="@+id/totalDone"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toEndOf="@+id/lbTotalDone"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textColor="#6271ff"
+            android:textSize="18sp"
+            android:text="1"/>
     </RelativeLayout>
 
     <LinearLayout
@@ -174,31 +176,33 @@
         <ImageView
             android:id="@+id/report"
             android:padding="10dp"
-            app:srcCompat="@drawable/chart_active"
+            app:srcCompat="@drawable/chart"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
-        <ImageView
-            android:onClick="showEmpty"
-            android:padding="10dp"
-            app:srcCompat="@drawable/calendar"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" />
+        <!--<ImageView-->
+            <!--android:onClick="showEmpty"-->
+            <!--android:padding="10dp"-->
+            <!--app:srcCompat="@drawable/calendar"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content" />-->
         <ImageView
             android:onClick="finishThis"
             android:padding="10dp"
-            app:srcCompat="@drawable/check_fade"
+            app:srcCompat="@drawable/check"
             android:layout_weight="1"
             android:layout_width="0dp"
+            android:alpha="0.3"
             android:layout_height="wrap_content" />
         <ImageView
-            android:onClick="showEmpty"
+            android:onClick="showProfile"
             android:padding="10dp"
             app:srcCompat="@drawable/note"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:alpha="0.3"/>
     </LinearLayout>
 
 </LinearLayout>
