@@ -1319,7 +1319,7 @@
 											"top": 314,
 											"width": -10,
 											"height": 13,
-											"text": "Set Reminder User"
+											"text": "User Reminder"
 										},
 										{
 											"_type": "LabelView",
@@ -1352,7 +1352,7 @@
 									"font": "Arial;13;0",
 									"left": 456,
 									"top": 307,
-									"width": 126.32080078125,
+									"width": 102.47900390625,
 									"height": 25,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAFl4K7KfBirwZw="
@@ -15476,7 +15476,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFl4Koj0xWe7bM="
 					},
-					"name": "User Reminder",
+					"name": "Set User Reminder",
 					"ownedElements": [
 						{
 							"_type": "UMLGeneralization",
@@ -17719,11 +17719,11 @@
 												"$ref": "AAAAAAFl8StPZJpRa8c="
 											},
 											"font": "Arial;13;1",
-											"left": 402.5,
+											"left": 407.5,
 											"top": 483.5,
-											"width": 91,
+											"width": 115,
 											"height": 13,
-											"text": "User Reminder"
+											"text": "Set User Reminder"
 										},
 										{
 											"_type": "LabelView",
@@ -17754,9 +17754,9 @@
 										}
 									],
 									"font": "Arial;13;0",
-									"left": 397.5,
+									"left": 402.5,
 									"top": 476.5,
-									"width": 102.47900390625,
+									"width": 126.32080078125,
 									"height": 25,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAFl8StPZJpSR/g="
@@ -17856,7 +17856,7 @@
 							"containerChangeable": true,
 							"left": 376,
 							"top": 472,
-							"width": 144,
+							"width": 178,
 							"height": 35,
 							"autoResize": true,
 							"nameCompartment": {
@@ -23814,8 +23814,8 @@
 									},
 									"visible": false,
 									"font": "Arial;13;0",
-									"left": 445,
-									"top": 546,
+									"left": 452,
+									"top": 548,
 									"height": 13,
 									"alpha": 1.5707963267948966,
 									"distance": 15,
@@ -23835,8 +23835,8 @@
 									},
 									"visible": null,
 									"font": "Arial;13;0",
-									"left": 460,
-									"top": 550,
+									"left": 466,
+									"top": 554,
 									"height": 13,
 									"alpha": 1.5707963267948966,
 									"distance": 30,
@@ -23856,8 +23856,8 @@
 									},
 									"visible": false,
 									"font": "Arial;13;0",
-									"left": 416,
-									"top": 539,
+									"left": 425,
+									"top": 537,
 									"height": 13,
 									"alpha": -1.5707963267948966,
 									"distance": 15,
@@ -23875,7 +23875,7 @@
 								"$ref": "AAAAAAFl8StPZJpQ55I="
 							},
 							"lineStyle": 1,
-							"points": "442:507;420:591",
+							"points": "457:507;422:591",
 							"showVisibility": true,
 							"nameLabel": {
 								"$ref": "AAAAAAFmBKb9gKmlhQk="
@@ -25866,7 +25866,7 @@
 											"top": 499.5,
 											"width": 119,
 											"height": 13,
-											"text": "Habit Reminder"
+											"text": "Set Habit Reminder"
 										},
 										{
 											"_type": "LabelView",
@@ -25897,7 +25897,7 @@
 									"font": "Arial;13;0",
 									"left": 939,
 									"top": 492.5,
-									"width": 129,
+									"width": 129.91357421875,
 									"height": 25,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAFmR9hvsHpSGV4="
@@ -26425,8 +26425,8 @@
 									},
 									"visible": false,
 									"font": "Arial;13;0",
-									"left": 565,
-									"top": 477,
+									"left": 582,
+									"top": 476,
 									"height": 13,
 									"alpha": 1.5707963267948966,
 									"distance": 15,
@@ -26445,8 +26445,8 @@
 										"$ref": "AAAAAAFmcIkW5YC9GQE="
 									},
 									"font": "Arial;13;0",
-									"left": 538,
-									"top": 474,
+									"left": 555,
+									"top": 473,
 									"width": 53.49169921875,
 									"height": 13,
 									"alpha": 1.519616908448504,
@@ -26468,8 +26468,8 @@
 									},
 									"visible": false,
 									"font": "Arial;13;0",
-									"left": 560,
-									"top": 448,
+									"left": 577,
+									"top": 447,
 									"height": 13,
 									"alpha": -1.5707963267948966,
 									"distance": 15,
@@ -26487,7 +26487,7 @@
 								"$ref": "AAAAAAFmcIjQA36u3qg="
 							},
 							"lineStyle": 1,
-							"points": "607:462;520:477",
+							"points": "607:463;554:473",
 							"showVisibility": true,
 							"nameLabel": {
 								"$ref": "AAAAAAFmcIkW54DAKds="
@@ -26719,8 +26719,8 @@
 									},
 									"visible": false,
 									"font": "Arial;13;0",
-									"left": 499,
-									"top": 449,
+									"left": 509,
+									"top": 448,
 									"height": 13,
 									"alpha": 1.5707963267948966,
 									"distance": 15,
@@ -26739,12 +26739,12 @@
 										"$ref": "AAAAAAFmcIl0TIUb2BA="
 									},
 									"font": "Arial;13;0",
-									"left": 498,
-									"top": 431,
+									"left": 512,
+									"top": 424,
 									"width": 53.49169921875,
 									"height": 13,
-									"alpha": 2.5482422630807497,
-									"distance": 36.6742416417845,
+									"alpha": 2.58526229947951,
+									"distance": 42.720018726587654,
 									"hostEdge": {
 										"$ref": "AAAAAAFmcIl0TYUdn/c="
 									},
@@ -26762,8 +26762,8 @@
 									},
 									"visible": false,
 									"font": "Arial;13;0",
-									"left": 478,
-									"top": 428,
+									"left": 486,
+									"top": 429,
 									"height": 13,
 									"alpha": -1.5707963267948966,
 									"distance": 15,
@@ -26781,7 +26781,7 @@
 								"$ref": "AAAAAAFmcIlI9YNJDSQ="
 							},
 							"lineStyle": 1,
-							"points": "515:419;464:471",
+							"points": "518:419;478:471",
 							"showVisibility": true,
 							"nameLabel": {
 								"$ref": "AAAAAAFmcIl0TYUePcA="
@@ -26882,7 +26882,7 @@
 								"$ref": "AAAAAAFm9CLsZb98VTU="
 							},
 							"lineStyle": 1,
-							"points": "661:336;563:469"
+							"points": "664:336;580:468"
 						},
 						{
 							"_type": "UMLNoteView",
@@ -26913,7 +26913,7 @@
 								"$ref": "AAAAAAFm9CSqts47B7A="
 							},
 							"lineStyle": 1,
-							"points": "440:442;489:445"
+							"points": "440:442;498:445"
 						},
 						{
 							"_type": "UMLUseCaseView",
@@ -32020,7 +32020,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFl8SrMHXeBE6A="
 					},
-					"name": "Habit Reminder",
+					"name": "Set Habit Reminder",
 					"ownedElements": [
 						{
 							"_type": "UMLExtend",
