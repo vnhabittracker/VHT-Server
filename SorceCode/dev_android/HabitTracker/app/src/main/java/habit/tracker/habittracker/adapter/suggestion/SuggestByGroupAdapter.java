@@ -42,14 +42,14 @@ public class SuggestByGroupAdapter extends RecyclerView.Adapter<SuggestByGroupAd
     public void onBindViewHolder(@NonNull SuggestByGroupAdapter.HabitSuggestionViewHolder viewHolder, int position) {
         HabitSuggestion item = data.get(position);
         if (data.get(position).isHeader()) {
-            viewHolder.tvGroup.setTextSize(13);
+            viewHolder.tvGroup.setTextSize(12);
             viewHolder.tvGroup.setTypeface(Typeface.DEFAULT_BOLD);
             viewHolder.tvGroup.setPadding(0, 20, 0, 0);
             viewHolder.tvGroup.setText(item.getGroup());
             viewHolder.tvHabitNameCount.setVisibility(View.GONE);
             viewHolder.imgUser.setVisibility(View.GONE);
         } else {
-            viewHolder.tvGroup.setTextSize(13);
+            viewHolder.tvGroup.setTextSize(12);
             viewHolder.tvGroup.setPadding(20, 7, 0, 0);
             viewHolder.tvGroup.setText(item.getHabitNameUni());
             viewHolder.tvHabitNameCount.setText(item.getHabitNameCount());

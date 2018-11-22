@@ -19,13 +19,9 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,7 +35,7 @@ import habit.tracker.habittracker.repository.habit.HabitTracking;
 import habit.tracker.habittracker.repository.tracking.TrackingEntity;
 
 
-public class StaticsActivity extends AppCompatActivity implements OnChartValueSelectedListener {
+public class StaticsActivity extends BaseActivity implements OnChartValueSelectedListener {
     private static final String DEBUG_TAG = "vnhb_debug";
     @BindView(R.id.pre)
     View imgPreDate;
@@ -115,6 +111,13 @@ public class StaticsActivity extends AppCompatActivity implements OnChartValueSe
         initializeScreen();
     }
 
+    private void initializeScreen() {
+        currentDate = AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT);
+        firstCurrentDate = currentDate;
+        ArrayList<BarEntry> values = loadWeekData(currentDate);
+        chartHelper.setData(values, mode);
+    }
+
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         int[] outLocation = new int[2];
@@ -159,24 +162,6 @@ public class StaticsActivity extends AppCompatActivity implements OnChartValueSe
                 break;
         }
         return super.dispatchTouchEvent(ev);
-    }
-
-    private void initializeScreen() {
-        try {
-            currentDate = AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT);
-//            String userId = MySharedPreference.getUserId(this);
-//            int sumHabit = Database.getHabitDb().countHabitByUser(userId);
-//            int sumTracking = Database.getTrackingDb().countTrackByUser(userId);
-//            tvTotal.setText(String.valueOf(sumHabit));
-//            tvTotalDone.setText(String.valueOf(sumTracking));
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            currentDate = dateFormat.format(dateFormat.parse(currentDate));
-            firstCurrentDate = currentDate;
-            ArrayList<BarEntry> values = loadWeekData(currentDate);
-            chartHelper.setData(values, mode);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
     }
 
     @SuppressLint("ResourceType")
@@ -281,9 +266,9 @@ public class StaticsActivity extends AppCompatActivity implements OnChartValueSe
         String endDate = AppGenerator.format(daysInWeek[6], AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT);
         tvDisplayTime.setText(startDate + " - " + endDate);
 
-        List<HabitTracking> weekData = Database.getHabitDb().getHabitTrackingBetween(MySharedPreference.getUserId(this));
+        List<HabitTracking> weekData = Database.getHabitDb().getHabitTracking(MySharedPreference.getUserId(this), daysInWeek[0], daysInWeek[6]);
 
-        List<TrackingEntity> meetGoalTrackingList = getMeetGoalDateList(weekData, currentDate, daysInWeek[0], daysInWeek[6]);
+        List<TrackingEntity> meetGoalTrackingList = getMeetGoalDateList(weekData, daysInWeek[0], daysInWeek[6]);
 
         int[] count = new int[7];
         for (int i = 0; i < meetGoalTrackingList.size(); i++) {
@@ -322,9 +307,9 @@ public class StaticsActivity extends AppCompatActivity implements OnChartValueSe
         String endDate = AppGenerator.format(daysInMonth[daysInMonth.length - 1], AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT);
         tvDisplayTime.setText(startDate + " - " + endDate);
 
-        List<HabitTracking> monthData = Database.getHabitDb().getHabitTrackingBetween(MySharedPreference.getUserId(this));
+        List<HabitTracking> monthData = Database.getHabitDb().getHabitTracking(MySharedPreference.getUserId(this), daysInMonth[0], daysInMonth[daysInMonth.length - 1]);
 
-        List<TrackingEntity> meetGoalTrackingList = getMeetGoalDateList(monthData, currentDate, daysInMonth[0], daysInMonth[daysInMonth.length - 1]);
+        List<TrackingEntity> meetGoalTrackingList = getMeetGoalDateList(monthData, daysInMonth[0], daysInMonth[daysInMonth.length - 1]);
 
         int[] count = new int[daysInMonth.length];
         for (TrackingEntity item : meetGoalTrackingList) {
@@ -350,12 +335,12 @@ public class StaticsActivity extends AppCompatActivity implements OnChartValueSe
         calendar.setTime(AppGenerator.getDate(currentDate.split("-")[0] + "-12-01", AppGenerator.YMD_SHORT));
         tvDisplayTime.setText("Năm " + calendar.get(Calendar.YEAR));
 
-        String start = calendar.get(Calendar.YEAR) + "-01-01";
-        String end = calendar.get(Calendar.YEAR) + "-12-" + calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+        String startYearDate = calendar.get(Calendar.YEAR) + "-01-01";
+        String endYearDate = calendar.get(Calendar.YEAR) + "-12-" + calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 
-        List<HabitTracking> yearData = Database.getHabitDb().getHabitTrackingBetween(MySharedPreference.getUserId(this));
+        List<HabitTracking> yearData = Database.getHabitDb().getHabitTracking(MySharedPreference.getUserId(this), startYearDate, endYearDate);
 
-        List<TrackingEntity> meetGoalTrackingList = getMeetGoalDateList(yearData, currentDate, start, end);
+        List<TrackingEntity> meetGoalTrackingList = getMeetGoalDateList(yearData, startYearDate, endYearDate);
 
         String[] months = new String[]{"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
         int[] count = new int[12];
@@ -376,31 +361,24 @@ public class StaticsActivity extends AppCompatActivity implements OnChartValueSe
         return values;
     }
 
-    private List<TrackingEntity> getMeetGoalDateList(List<HabitTracking> data, String currentDate, String start, String end) {
+    private List<TrackingEntity> getMeetGoalDateList(List<HabitTracking> trackingData, String start, String end) {
         List<TrackingEntity> meetGoalTrackingList = new ArrayList<>();
         HabitEntity habitEntity;
-        TrackingEntity trackingEntity = null;
         int total = 0;
         int goal;
-        for (HabitTracking item : data) {
-            habitEntity = item.getHabit();
+        for (HabitTracking habitTracking : trackingData) {
+            habitEntity = habitTracking.getHabit();
             goal = Integer.parseInt(habitEntity.getMonitorNumber());
-            for (TrackingEntity tr : item.getTrackingList()) {
-                if (tr.getCurrentDate().compareTo(start) >= 0 && tr.getCurrentDate().compareTo(end) <= 0) {
-                    total += Integer.parseInt(tr.getCount());
-                    trackingEntity = tr;
+            for (TrackingEntity trackingEntity : habitTracking.getTrackingList()) {
+                if (trackingEntity.getCurrentDate().compareTo(start) >= 0 && trackingEntity.getCurrentDate().compareTo(end) <= 0) {
+                    total += Integer.parseInt(trackingEntity.getCount());
                     if (total >= goal) {
+                        meetGoalTrackingList.add(trackingEntity);
                         break;
                     }
                 }
             }
-            if (total >= goal) {
-                if (trackingEntity != null) {
-                    meetGoalTrackingList.add(trackingEntity);
-                }
-            }
             total = 0;
-            trackingEntity= null;
         }
         return meetGoalTrackingList;
     }
@@ -443,10 +421,6 @@ public class StaticsActivity extends AppCompatActivity implements OnChartValueSe
     public void showEmpty(View view) {
         Intent intent = new Intent(this, EmptyActivity.class);
         startActivity(intent);
-    }
-
-    public void finishThis(View view) {
-        finish();
     }
 
     @Override

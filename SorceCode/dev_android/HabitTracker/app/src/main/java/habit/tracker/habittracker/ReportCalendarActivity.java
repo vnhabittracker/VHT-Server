@@ -91,7 +91,7 @@ public class ReportCalendarActivity extends AppCompatActivity implements Trackin
     List<TrackingCalendarItem> calendarItemList = new ArrayList<>();
 
     int timeLine = 0;
-    String firstCurTrackingDate;
+    String defaultCurrentDate;
     String currentDate;
     String lastDayPreMonth;
     String firstDayNextMonth;
@@ -116,8 +116,7 @@ public class ReportCalendarActivity extends AppCompatActivity implements Trackin
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_report_calendar);
         ButterKnife.bind(this);
 
@@ -151,11 +150,11 @@ public class ReportCalendarActivity extends AppCompatActivity implements Trackin
         isDbOpen = true;
 
         currentDate = AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT);
-        firstCurTrackingDate = currentDate;
+        defaultCurrentDate = currentDate;
         habitEntity = Database.getHabitDb().getHabit(habitId);
         String habitColor = habitEntity.getHabitColor();
         TrackingEntity trackingEntity = Database.getTrackingDb().getTracking(habitId, currentDate);
-        List<TrackingEntity> totalList = Database.getTrackingDb().getRecordByHabit(habitId);
+        List<TrackingEntity> totalList = Database.getTrackingDb().getTrackingListByHabit(habitId);
 
         if (trackingEntity != null) {
             curTrackingCount = Integer.parseInt(trackingEntity.getCount());
@@ -363,7 +362,7 @@ public class ReportCalendarActivity extends AppCompatActivity implements Trackin
         TrackingCalendarItem item = calendarItemList.get(position);
         currentDate = item.getDate();
 
-        timeLine = AppGenerator.countDayBetween(item.getDate(), firstCurTrackingDate);
+        timeLine = AppGenerator.countDayBetween(item.getDate(), defaultCurrentDate);
         timeLine = currentDate.compareTo(firstDayNextMonth) < 0? timeLine * -1: timeLine;
 
         TrackingEntity trackingEntity = Database.getTrackingDb().getTracking(habitEntity.getHabitId(), currentDate);
@@ -422,26 +421,27 @@ public class ReportCalendarActivity extends AppCompatActivity implements Trackin
         }
 
         // save to appDatabase
-        TrackingEntity record =
-                Database.trackingImpl.getTracking(this.habitEntity.getHabitId(), this.currentDate);
-        if (record == null) {
-            record = new TrackingEntity();
-            record.setTrackingId(AppGenerator.getNewId());
-            record.setHabitId(this.habitEntity.getHabitId());
-            record.setCurrentDate(this.currentDate);
+        TrackingEntity trackingEntity = Database.getTrackingDb().getTracking(habitEntity.getHabitId(), currentDate);
+        if (trackingEntity == null) {
+            trackingEntity = new TrackingEntity();
+            trackingEntity.setTrackingId(AppGenerator.getNewId());
+            trackingEntity.setHabitId(habitEntity.getHabitId());
+            trackingEntity.setCurrentDate(currentDate);
         }
-        record.setCount(String.valueOf(curTrackingCount));
-        Database.trackingImpl.saveTracking(record);
+        trackingEntity.setCount(String.valueOf(curTrackingCount));
+        Database.getTrackingDb().saveTracking(trackingEntity);
 
         updateUI();
 
         TrackingList trackingData = new TrackingList();
         Tracking tracking = new Tracking();
-        tracking.setTrackingId(record.getTrackingId());
-        tracking.setHabitId(record.getHabitId());
+        tracking.setTrackingId(trackingEntity.getTrackingId());
+        tracking.setHabitId(trackingEntity.getHabitId());
         tracking.setCurrentDate(currentDate);
-        tracking.setCount(String.valueOf(record.getCount()));
+        tracking.setCount(String.valueOf(trackingEntity.getCount()));
+        tracking.setDescription(trackingEntity.getDescription());
         trackingData.getTrackingList().add(tracking);
+
         VnHabitApiService service = VnHabitApiUtils.getApiService();
         service.updateTracking(trackingData).enqueue(new Callback<ResponseBody>() {
             @Override
@@ -494,7 +494,7 @@ public class ReportCalendarActivity extends AppCompatActivity implements Trackin
         String startReportDate = daysInMonth[0];
 
         Map<String, TrackingEntity> mapDayInMonth = new HashMap<>(31);
-        HabitTracking habitTracking = Database.getTrackingDb().getHabitTrackingBetween(habitEntity.getHabitId(), startReportDate, currentDate);
+        HabitTracking habitTracking = Database.getTrackingDb().getHabitTrackingBetween(habitEntity.getHabitId(), startReportDate, defaultCurrentDate);
         if (habitTracking != null) {
             totalCount = habitTracking.getTrackingList().size();
             for (TrackingEntity entity : habitTracking.getTrackingList()) {

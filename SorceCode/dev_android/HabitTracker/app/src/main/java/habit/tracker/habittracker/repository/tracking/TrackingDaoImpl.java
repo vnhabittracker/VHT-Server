@@ -57,6 +57,20 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
         return entity;
     }
 
+    private ContentValues getContentValue() {
+        return initialValues;
+    }
+
+    public TrackingEntity convert(Tracking tracking) {
+        TrackingEntity entity = new TrackingEntity();
+        entity.setTrackingId(tracking.getTrackingId());
+        entity.setHabitId(tracking.getHabitId());
+        entity.setCount(tracking.getCount());
+        entity.setCurrentDate(tracking.getCurrentDate());
+        entity.setDescription(tracking.getDescription());
+        return entity;
+    }
+
     public HabitTracking getHabitTrackingBetween(String habitId, String startDate, String endDate) {
         HabitTracking habitTracking = null;
         try {
@@ -124,7 +138,7 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
     }
 
     @Override
-    public List<TrackingEntity> getRecordByHabit(String habitId) {
+    public List<TrackingEntity> getTrackingListByHabit(String habitId) {
         List<TrackingEntity> list = new ArrayList<>();
         final String selectionArgs[] = {String.valueOf(habitId)};
         final String selection = HABIT_ID + " = ?";
@@ -139,6 +153,22 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
         }
         if (list.size() > 0) {
             return list;
+        }
+        return null;
+    }
+
+    public TrackingEntity getTracking(String trackId) {
+        final String selectionArgs[] = {trackId};
+        final String selection = TRACKING_ID + " = ?";
+
+        TrackingEntity entity;
+        cursor = super.query(TRACKING_TABLE, TRACKING_COLUMNS, selection, selectionArgs, CURRENT_DATE);
+
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            entity = cursorToEntity(cursor);
+            cursor.close();
+            return entity;
         }
         return null;
     }
@@ -200,19 +230,7 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
         }
     }
 
-    private ContentValues getContentValue() {
-        return initialValues;
-    }
 
-    public TrackingEntity convert(Tracking record) {
-        TrackingEntity entity = new TrackingEntity();
-        entity.setTrackingId(record.getTrackingId());
-        entity.setHabitId(record.getHabitId());
-        entity.setCount(record.getCount());
-        entity.setCurrentDate(record.getCurrentDate());
-        entity.setDescription(record.getDescription());
-        return entity;
-    }
 
     public String getParams(String[] columns, String alias, boolean removeEnd) {
         String str = "";

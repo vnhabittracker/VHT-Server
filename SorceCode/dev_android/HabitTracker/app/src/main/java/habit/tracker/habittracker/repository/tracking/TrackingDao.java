@@ -5,5 +5,5 @@ import java.util.List;
 public interface TrackingDao {
     boolean saveTracking(TrackingEntity entity);
     boolean updateTracking(TrackingEntity entity);
-    List<TrackingEntity> getRecordByHabit(String habitId);
+    List<TrackingEntity> getTrackingListByHabit(String habitId);
 }

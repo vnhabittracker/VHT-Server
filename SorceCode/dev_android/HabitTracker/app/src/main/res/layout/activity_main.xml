@@ -93,14 +93,15 @@
             app:srcCompat="@drawable/chart"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="wrap_content" />
-        <ImageView
-            android:onClick="showEmpty"
-            android:padding="10dp"
-            app:srcCompat="@drawable/calendar"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:alpha="0.2"/>
+        <!--<ImageView-->
+            <!--android:onClick="showEmpty"-->
+            <!--android:padding="10dp"-->
+            <!--app:srcCompat="@drawable/calendar"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content" />-->
         <ImageView
             android:onClick="backToCurrent"
             android:padding="10dp"
@@ -114,6 +115,7 @@
             app:srcCompat="@drawable/note"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:alpha="0.3"/>
     </LinearLayout>
 </LinearLayout>

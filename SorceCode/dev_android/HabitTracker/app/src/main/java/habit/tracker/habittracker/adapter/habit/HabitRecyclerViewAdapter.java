@@ -108,7 +108,7 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
     @SuppressLint("ResourceType")
     private void initLayoutCount(CountTypeViewHolder holder, TrackingItem item) {
         holder.tvCategory.setText(item.getName());
-        holder.tvDescription.setText(item.getDescription());
+        holder.tvDescription.setText(item.getHabitDescription());
         holder.tvHabitType.setText(item.getHabitTypeName());
 
         if (isEditable) {
@@ -135,7 +135,7 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
     @SuppressLint("ResourceType")
     private void initLayoutCheck(CheckTypeViewHolder holder, TrackingItem item) {
         holder.tvCategory.setText(item.getName());
-        holder.tvDescription.setText(item.getDescription());
+        holder.tvDescription.setText(item.getHabitDescription());
         holder.tvHabitType.setText(item.getHabitTypeName());
 
         String color = item.getColor();

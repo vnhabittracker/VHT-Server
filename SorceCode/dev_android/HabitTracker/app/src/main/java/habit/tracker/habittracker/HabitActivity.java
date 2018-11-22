@@ -412,8 +412,8 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         Bundle data = getIntent().getExtras();
         if (data != null) {
             initHabitId = data.getString(MainActivity.HABIT_ID, null);
-            suggestHabitNameId = data.getString(SuggestionByLevelActivity.SUGGEST_NAME_ID, null);
-            suggestHabitName = data.getString(SuggestionByLevelActivity.SUGGEST_NAME, null);
+            suggestHabitNameId = data.getString(ProfileActivity.SUGGEST_NAME_ID, null);
+            suggestHabitName = data.getString(ProfileActivity.SUGGEST_NAME, null);
             editHabitName.setText(suggestHabitName);
             selectedSuggestion = true;
         }

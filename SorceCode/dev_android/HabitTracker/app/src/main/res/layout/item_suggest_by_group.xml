@@ -1,40 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="35dp"
     android:layout_marginBottom="5dp"
-    android:orientation="horizontal"
-    >
-
+    android:paddingEnd="10dp">
     <TextView
         android:id="@+id/tvGroup"
-        android:layout_width="0dp"
-        android:layout_weight="8"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:text="groupId"
-        />
-
+        android:text="groupId" />
     <TextView
         android:id="@+id/tvHabitNameCount"
-        android:layout_weight="1"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:layout_toStartOf="@+id/imgUser"
         android:gravity="center"
+        android:paddingEnd="3dp"
         android:textSize="12sp"
         android:textColor="#3e3e3e"
-        android:text="124"
-        >
+        android:text="124">
     </TextView>
-
     <ImageView
         android:id="@+id/imgUser"
-        android:layout_width="0dp"
-        android:layout_weight="1"
+        android:layout_width="10dp"
         android:layout_height="match_parent"
-        android:padding="10dp"
+        android:layout_alignParentEnd="true"
         android:src="@drawable/group"
-        android:layout_margin="3dp"
-        />
-</LinearLayout>
+        android:layout_margin="3dp" />
+</RelativeLayout>

@@ -4,7 +4,8 @@ public class TrackingItem {
     private String trackId;
     private String habitId;
     private String name;
-    private String description;
+    private String habitDescription;
+    private String trackingDescription;
     private String target;
     private int habitType;
     private String habitTypeName;
@@ -20,7 +21,7 @@ public class TrackingItem {
     public TrackingItem() {}
 
     public TrackingItem(String trackId, String habitId, String target, String groupId,
-                        String name, String description,
+                        String name, String habitDescription, String trackingDescription,
                         String habitType, int monitorType,
                         String number, int count, String unit, String color, int totalCount) {
         this.trackId = trackId;
@@ -28,7 +29,8 @@ public class TrackingItem {
         this.target = target;
         this.groupId = groupId;
         this.name = name;
-        this.description = description;
+        this.habitDescription = habitDescription;
+        this.trackingDescription = trackingDescription;
         this.habitType = Integer.parseInt(habitType);
         switch (this.habitType) {
             case 0:
@@ -64,8 +66,12 @@ public class TrackingItem {
         return name;
     }
 
-    public String getDescription() {
-        return description;
+    public String getHabitDescription() {
+        return habitDescription;
+    }
+
+    public String getTrackingDescription() {
+        return trackingDescription;
     }
 
     public String getHabitTypeName() {
@@ -124,8 +130,12 @@ public class TrackingItem {
         this.name = name;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setHabitDescription(String habitDescription) {
+        this.habitDescription = habitDescription;
+    }
+
+    public void setTrackingDescription(String trackingDescription) {
+        this.trackingDescription = trackingDescription;
     }
 
     public void setHabitTypeName(String habitTypeName) {
