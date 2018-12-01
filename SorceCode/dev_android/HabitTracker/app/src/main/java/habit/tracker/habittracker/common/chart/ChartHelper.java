@@ -121,7 +121,7 @@ public class ChartHelper implements OnChartValueSelectedListener {
 
             List<GradientColor> gradientColors = new ArrayList<>();
             gradientColors.add(new com.github.mikephil.charting.model.GradientColor(startColor, endColor));
-
+            // set theme color for chart
             set1.setGradientColors(gradientColors);
 
             set1.setValues(values);
@@ -136,7 +136,7 @@ public class ChartHelper implements OnChartValueSelectedListener {
 
             List<GradientColor> gradientColors = new ArrayList<>();
             gradientColors.add(new com.github.mikephil.charting.model.GradientColor(startColor, endColor));
-
+            // set theme color for chart
             set1.setGradientColors(gradientColors);
 
             ArrayList<IBarDataSet> dataSets = new ArrayList<>();

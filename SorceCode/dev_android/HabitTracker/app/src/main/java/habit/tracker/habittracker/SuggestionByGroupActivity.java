@@ -21,6 +21,7 @@ import habit.tracker.habittracker.api.model.group.GroupResponse;
 import habit.tracker.habittracker.api.model.search.HabitSuggestion;
 import habit.tracker.habittracker.api.model.search.SearchResponse;
 import habit.tracker.habittracker.api.service.VnHabitApiService;
+import habit.tracker.habittracker.common.util.MySharedPreference;
 import habit.tracker.habittracker.repository.Database;
 import habit.tracker.habittracker.repository.group.GroupEntity;
 import retrofit2.Call;
@@ -120,7 +121,8 @@ public class SuggestionByGroupActivity extends AppCompatActivity implements Recy
     }
 
     private void initializeGroupList() {
-        mService.getGroupItems().enqueue(new Callback<GroupResponse>() {
+        String userId = MySharedPreference.getUserId(this);
+        mService.getGroups(userId).enqueue(new Callback<GroupResponse>() {
             @Override
             public void onResponse(Call<GroupResponse> call, Response<GroupResponse> response) {
                 if (response.body().getResult().equals("1")) {
@@ -140,14 +142,16 @@ public class SuggestionByGroupActivity extends AppCompatActivity implements Recy
             public void onFailure(Call<GroupResponse> call, Throwable t) {
                 Database db = new Database(SuggestionByGroupActivity.this);
                 db.open();
-                List<GroupEntity> entities = Database.getGroupDb().fetchGroup();
+
+                List<GroupEntity> entities = Database.getGroupDb().getAll();
+
                 for (GroupEntity entity: entities) {
                     groupsList.add(new Group(
                             entity.getGroupId(),
+                            entity.getUserId(),
                             entity.getGroupName(),
-                            entity.getParentId(),
-                            entity.getGroupIcon(),
-                            entity.getGroupDescription()
+                            entity.getDescription(),
+                            entity.isDefault()
                     ));
                 }
                 db.close();

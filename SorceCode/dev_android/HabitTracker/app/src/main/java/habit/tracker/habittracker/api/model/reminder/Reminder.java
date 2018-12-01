@@ -10,9 +10,12 @@ public class Reminder {
     @SerializedName("reminder_description")
     @Expose
     private String remindText;
-    @SerializedName("reminder_time")
+    @SerializedName("remind_start_time")
     @Expose
-    private String reminderTime;
+    private String remindStartTime;
+    @SerializedName("remind_end_time")
+    @Expose
+    private String remindEndTime;
     @SerializedName("repeat_type")
     @Expose
     private String repeatType;
@@ -23,7 +26,11 @@ public class Reminder {
     @Expose
     private String serverId;
     private String habitName;
-    private String endDate;
+    @SerializedName("is_delete")
+    @Expose
+    private boolean isDelete = false;
+
+    private String userId;
 
     public String getReminderId() {
         return reminderId;
@@ -34,8 +41,12 @@ public class Reminder {
     }
 
     // yyyy-MM-dd HH:mm:ss
-    public String getReminderTime() {
-        return reminderTime;
+    public String getRemindStartTime() {
+        return remindStartTime;
+    }
+
+    public String getRemindEndTime() {
+        return remindEndTime;
     }
 
     public String getRepeatType() {
@@ -54,8 +65,12 @@ public class Reminder {
         return habitName;
     }
 
-    public String getEndDate() {
-        return endDate;
+    public boolean isDelete() {
+        return isDelete;
+    }
+
+    public String getUserId() {
+        return userId;
     }
 
     public void setReminderId(String reminderId) {
@@ -66,8 +81,12 @@ public class Reminder {
         this.remindText = remindText;
     }
 
-    public void setReminderTime(String reminderTime) {
-        this.reminderTime = reminderTime;
+    public void setRemindStartTime(String remindStartTime) {
+        this.remindStartTime = remindStartTime;
+    }
+
+    public void setRemindEndTime(String remindEndTime) {
+        this.remindEndTime = remindEndTime;
     }
 
     public void setRepeatType(String repeatType) {
@@ -86,7 +105,11 @@ public class Reminder {
         this.habitName = habitName;
     }
 
-    public void setEndDate(String endDate) {
-        this.endDate = endDate;
+    public void setDelete(boolean delete) {
+        isDelete = delete;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

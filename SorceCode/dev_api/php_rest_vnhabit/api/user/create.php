@@ -6,7 +6,7 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Access-Control-Allow-Headers,Content-Type,Access-Control-Allow-Methods, Authorization, X-Requested-With');
 
-include_once '../../config/Database.php';
+include_once '../../config/config.php';
 include_once '../../models/User.php';
 
 // Instantiate DB & connect
@@ -23,11 +23,9 @@ $user->user_id = $data->user_id;
 $user->username = $data->username;
 $user->password = $data->password;
 $user->email = $data->email;
-$user->phone = $data->phone;
 $user->date_of_birth = $data->date_of_birth;
 $user->gender = $data->gender;
-$user->user_icon = $data->user_icon;
-$user->avatar = $data->avatar;
+$user->real_name = $data->real_name;
 $user->user_description = $data->user_description;
 $user->created_date = $data->created_date;
 $user->last_login_time = $data->last_login_time;

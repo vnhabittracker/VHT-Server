@@ -15,7 +15,7 @@ import habit.tracker.habittracker.repository.tracking.TrackingEntity;
 import habit.tracker.habittracker.repository.tracking.TrackingSchema;
 
 /**
- * Created by DatTVT1 on 10/16/2018
+ * Created on 10/16/2018
  */
 public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSchema, TrackingSchema {
     private Cursor cursor;
@@ -282,30 +282,11 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
             if (cursor.getColumnIndex(LAST_DATE_SYN) != 1) {
                 habitEntity.setLastDateSyn(cursor.getString(cursor.getColumnIndexOrThrow(LAST_DATE_SYN)));
             }
+            if (cursor.getColumnIndex(IS_DELETE) != 1) {
+                habitEntity.setDelete(cursor.getString(cursor.getColumnIndexOrThrow(IS_DELETE)).equals("1"));
+            }
         }
         return habitEntity;
-    }
-
-    private TrackingEntity cursorToTrackingEntity(Cursor cursor) {
-        TrackingEntity entity = new TrackingEntity();
-        if (cursor != null) {
-            if (cursor.getColumnIndex(TRACKING_ID) != -1) {
-                entity.setTrackingId(cursor.getString(cursor.getColumnIndexOrThrow(TRACKING_ID)));
-            }
-            if (cursor.getColumnIndex(TrackingSchema.HABIT_ID) != -1) {
-                entity.setHabitId(cursor.getString(cursor.getColumnIndexOrThrow(TrackingSchema.HABIT_ID)));
-            }
-            if (cursor.getColumnIndex(CURRENT_DATE) != -1) {
-                entity.setCurrentDate(cursor.getString(cursor.getColumnIndexOrThrow(CURRENT_DATE)));
-            }
-            if (cursor.getColumnIndex(COUNT) != -1) {
-                entity.setCount(cursor.getString(cursor.getColumnIndexOrThrow(COUNT)));
-            }
-            if (cursor.getColumnIndex(TRACKING_DESCRIPTION) != -1) {
-                entity.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(TRACKING_DESCRIPTION)));
-            }
-        }
-        return entity;
     }
 
     public HabitEntity convert(Habit habit) {
@@ -332,6 +313,7 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
             entity.setFri(habit.getFri());
             entity.setSat(habit.getSat());
             entity.setSun(habit.getSun());
+            entity.setDelete(habit.isDelete());
             return entity;
         }
         return null;
@@ -363,21 +345,11 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
         initialValues.put(SAT, habitEntity.getSat());
         initialValues.put(SUN, habitEntity.getSun());
         initialValues.put(LAST_DATE_SYN, habitEntity.getLastDateSyn());
+        initialValues.put(IS_DELETE, habitEntity.isDelete() ? "1" : "0");
     }
 
     @Override
     public ContentValues getContentValue() {
         return initialValues;
-    }
-
-    public String getParams(String[] columns, String alias, boolean removeEnd) {
-        String str = "";
-        for (int i = 0; i < columns.length; i++) {
-            str = str + alias + "." + columns[i] + ", ";
-            if (removeEnd && i == columns.length - 1) {
-                return str.substring(0, str.length() - 2);
-            }
-        }
-        return str;
     }
 }

@@ -6,7 +6,7 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Access-Control-Allow-Headers,Content-Type,Access-Control-Allow-Methods, Authorization, X-Requested-With');
 
-include_once '../../config/Database.php';
+include_once '../../config/config.php';
 include_once '../../models/Reminder.php';
 include_once '../../models/MonitorDate.php';
 include_once '../../models/Habit.php';
@@ -49,8 +49,8 @@ $habitSuggestion->habit_name_ascii = $data->habit_name_ascii;
 $habitSuggestion->habit_name_count = $data->habit_name_count;
 $habitSuggestion->total_track = 0;
 $habitSuggestion->success_track = 0;
-$found = $habitSuggestion->find($data->habit_name_ascii)->rowCount() == 0;
-if ($found) {
+
+if (!$habitSuggestion->isUpdate()) {
     $habitSuggestion->create();
 } else {
     $habitSuggestion->updateCount();
@@ -74,13 +74,17 @@ if ($habit->create()) {
         if ($habit->update()) {
 
             // save reminders
-            $arr_reminder = $data->reminders;
+            $arr_reminder = $data->reminder_list;
             for($i = 0; $i < count($arr_reminder); $i++) {
+
                 $item = $arr_reminder[$i];
                 $reminder->reminder_id = $item->server_id;
                 $reminder->habit_id = $item->habit_id;
-                $reminder->reminder_time = $item->reminder_time;
+                $reminder->remind_start_time = $item->remind_start_time;
+                $reminder->remind_end_time = $item->remind_end_time;
+                $reminder->repeat_type = $item->repeat_type;
                 $reminder->reminder_description = $item->reminder_description;
+                
                 if ($reminder->create()) {
                     $error = false;
                 }

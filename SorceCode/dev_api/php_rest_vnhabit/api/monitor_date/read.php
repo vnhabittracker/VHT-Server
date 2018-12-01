@@ -4,38 +4,35 @@
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-include_once '../../config/Database.php';
+include_once '../../config/config.php';
 include_once '../../models/MonitorDate.php';
 
 // Instantiate DB & connect
 $database = new Database();
 $db = $database->connect();
 
-// Instantiate User object
-$date = new MonitorDate($db);
+$monitorDate = new MonitorDate($db);
 
-// User query
-$result = $date->read();
+$result = $monitorDate->read();
 
 // get row count
-$num = $result->rowCount();
+$row_count = $result->rowCount();
 
-if ($num > 0) {
-    $arr = array();
+if ($row_count > 0) {
+    $monitorDate_arr = array();
     while($row = $result->fetch(PDO::FETCH_ASSOC)) {
-        array_push($arr, $row);
+        array_push($monitorDate_arr, $row);
     }
 
     // turn to JSON
     echo json_encode(
         array(
             'result' => '1',
-            'data' => $arr
+            'data' => $monitorDate_arr
         )
     );
 
 } else {
-    // no users
     echo json_encode(
         array(
             'result' => '0'

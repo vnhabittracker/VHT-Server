@@ -317,6 +317,21 @@ public class AppGenerator {
         return pattern.matcher(temp).replaceAll("").toLowerCase();
     }
 
+    public static String getFirstDateNextWeek(String currentDate, String fmIn, String fmOut) {
+        Date date = getDate(currentDate, fmIn);
+        Calendar ca = Calendar.getInstance();
+        String next;
+        for (int i = 0; i < 7; i++) {
+            next = getNextDate(currentDate, fmIn);
+            ca.setTime(getDate(next, fmIn));
+            if (ca.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY) {
+                return next;
+            }
+            currentDate = next;
+        }
+        return null;
+    }
+
     public static String getFirstDateNextMonth(String currentDate, String fmIn, String fmOut) {
         Date date = getDate(currentDate, fmIn);
         Calendar calendar = Calendar.getInstance();

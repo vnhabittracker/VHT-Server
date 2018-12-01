@@ -4,40 +4,35 @@
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-include_once '../../config/Database.php';
+include_once '../../config/config.php';
 include_once '../../models/Group.php';
 
 // Instantiate DB & connect
 $database = new Database();
 $db = $database->connect();
 
-// Instantiate User object
 $group = new Group($db);
 
-// User query
-$result = $group->read();
+$group->user_id = isset($_GET['user_id']) ? $_GET['user_id'] : die();
 
-// get row count
-$num = $result->rowCount();
+$result = $group->readByUser();
 
-// check if any users
-if ($num > 0) {
-    $group_arr = array();
-    
+if ($result->rowCount() > 0) {
+
+    $group_array = array();
     while($row = $result->fetch(PDO::FETCH_ASSOC)) {
-        array_push($group_arr, $row);
+        array_push($group_array, $row);
     }
 
     // turn to JSON
     echo json_encode(
         array(
             'result' => '1',
-            'data' => $group_arr
+            'data' => $group_array
         )
     );
 
 } else {
-    // no users
     echo json_encode(
         array(
             'result' => '0'

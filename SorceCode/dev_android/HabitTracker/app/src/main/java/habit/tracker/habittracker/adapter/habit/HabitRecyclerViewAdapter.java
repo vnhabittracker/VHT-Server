@@ -74,10 +74,10 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
             return new ViewHolderAdd(view);
         } else if (TYPE_COUNT == viewType) {
             View view = mInflater.inflate(R.layout.item_habit_count, parent, false);
-            return new CountTypeViewHolder(view);
+            return new TypeCountViewHolder(view);
         } else if (TYPE_CHECK == viewType) {
             View view = mInflater.inflate(R.layout.item_habit_check, parent, false);
-            return new CheckTypeViewHolder(view);
+            return new TypeCheckViewHolder(view);
         } else {
             throw new RuntimeException("unknown view type");
         }
@@ -89,10 +89,10 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
             case TYPE_ADD:
                 break;
             case TYPE_COUNT:
-                initLayoutCount((CountTypeViewHolder) holder, mData.get(position));
+                initializeLayoutTypeCount((TypeCountViewHolder) holder, mData.get(position));
                 break;
             case TYPE_CHECK:
-                initLayoutCheck((CheckTypeViewHolder) holder, mData.get(position));
+                initializeLayoutTypeCheck((TypeCheckViewHolder) holder, mData.get(position));
                 break;
         }
     }
@@ -106,7 +106,7 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
     }
 
     @SuppressLint("ResourceType")
-    private void initLayoutCount(CountTypeViewHolder holder, TrackingItem item) {
+    private void initializeLayoutTypeCount(TypeCountViewHolder holder, TrackingItem item) {
         holder.tvCategory.setText(item.getName());
         holder.tvDescription.setText(item.getHabitDescription());
         holder.tvHabitType.setText(item.getHabitTypeName());
@@ -128,12 +128,12 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
 
 //        float ratio = (float) item.getCount() / Integer.parseInt(item.getNumber());
         float ratio = (float) item.getTotalCount() / Integer.parseInt(item.getNumber());
-        scaleView(holder.background, item.getComp(), ratio > 1 ? 1f : ratio, 0);
+        scaleView(holder.background, item.getCompletion(), ratio > 1 ? 1f : ratio, 0);
         item.setRatio(ratio);
     }
 
     @SuppressLint("ResourceType")
-    private void initLayoutCheck(CheckTypeViewHolder holder, TrackingItem item) {
+    private void initializeLayoutTypeCheck(TypeCheckViewHolder holder, TrackingItem item) {
         holder.tvCategory.setText(item.getName());
         holder.tvDescription.setText(item.getHabitDescription());
         holder.tvHabitType.setText(item.getHabitTypeName());
@@ -145,7 +145,7 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
         holder.layout.setBackground(getBackground(color));
         holder.background.setBackground(getBackground(color));
 
-        if (item.getCount() == 1) {
+        if (item.getCount() > 0) {
             holder.isCheck = true;
             holder.imgCheck.setImageResource(R.drawable.ck_checked);
             scaleView(holder.background, 1f, 1f, 0);
@@ -157,7 +157,7 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
         }
     }
 
-    public class CountTypeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class TypeCountViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         RelativeLayout layout;
         View background;
         TextView tvCategory;
@@ -168,7 +168,7 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
         View btnPlus;
         View btnMinus;
 
-        CountTypeViewHolder(View itemView) {
+        TypeCountViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
             layout = itemView.findViewById(R.id.rl_habit);
@@ -210,14 +210,14 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
                 mClickListener.onItemClick(view, TYPE_COUNT, getAdapterPosition());
             }
 
-            float goal = mData.get(getAdapterPosition()).getComp();
+            float goal = mData.get(getAdapterPosition()).getCompletion();
             float ratio = (float) num / Integer.parseInt(mData.get(getAdapterPosition()).getNumber());
             scaleView(background, goal, ratio > 1 ? 1f : ratio, 400);
             mData.get(getAdapterPosition()).setRatio(ratio);
         }
     }
 
-    public class CheckTypeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class TypeCheckViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         RelativeLayout layout;
         View background;
         TextView tvCategory;
@@ -226,7 +226,7 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
         ImageView imgCheck;
         boolean isCheck = false;
 
-        CheckTypeViewHolder(View itemView) {
+        TypeCheckViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
             layout = itemView.findViewById(R.id.rl_habit);
@@ -265,7 +265,7 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
         }
     }
 
-    public void scaleView(View v, float startScale, float endScale, int time) {
+    private void scaleView(View v, float startScale, float endScale, int time) {
         Animation anim = new ScaleAnimation(
                 startScale, endScale, // Start and end values for the X axis scaling
                 1f, 1f, // Start and end values for the Y axis scaling

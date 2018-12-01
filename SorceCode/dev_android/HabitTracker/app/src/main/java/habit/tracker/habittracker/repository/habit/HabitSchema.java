@@ -1,7 +1,7 @@
 package habit.tracker.habittracker.repository.habit;
 
 /**
- * Created by DatTVT1 on 10/16/2018
+ * Created on 10/16/2018
  */
 public interface HabitSchema {
     String HABIT_TABLE = "habit";
@@ -28,6 +28,7 @@ public interface HabitSchema {
     String SAT = "sat";
     String SUN = "sun";
     String LAST_DATE_SYN = "last_date_syn";
+    String IS_DELETE = "is_delete";
 
     String CREATE_HABIT_TABLE =
             "CREATE TABLE IF NOT EXISTS " + HABIT_TABLE + " ("
@@ -53,7 +54,8 @@ public interface HabitSchema {
                     + FRI + " TEXT, "
                     + SAT + " TEXT, "
                     + SUN + " TEXT, "
-                    + LAST_DATE_SYN + " TEXT"
+                    + LAST_DATE_SYN + " TEXT, "
+                    + IS_DELETE + " TEXT "
                     + ")";
 
     String[] HABIT_COLUMNS = {HABIT_ID, USER_ID, GROUP_ID, MONITOR_ID,
@@ -61,5 +63,5 @@ public interface HabitSchema {
             MONITOR_UNIT, MONITOR_NUMBER,
             START_DATE, END_DATE, CREATED_DATE,
             HABIT_COLOR, HABIT_DESCRIPTION, MON, TUE, WED, THU, FRI, SAT, SUN,
-            LAST_DATE_SYN};
+            LAST_DATE_SYN, IS_DELETE};
 }

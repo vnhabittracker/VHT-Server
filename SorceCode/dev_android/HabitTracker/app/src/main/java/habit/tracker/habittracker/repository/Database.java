@@ -17,20 +17,20 @@ import habit.tracker.habittracker.repository.user.UserDaoImpl;
 import habit.tracker.habittracker.repository.user.UserSchema;
 
 /**
- * Created by DatTVT1 on 10/12/2018
+ * Created on 10/12/2018
  */
 public class Database {
-    private static final String DATABASE_NAME = "vnhabit";
+    public static final String DATABASE_NAME = "vnhabit";
     private static final int DATABASE_VERSION = 1;
 
     private DatabaseHelper dbHelper;
     private final Context mContext;
 
     public static UserDaoImpl userDaoImpl;
-    public static HabitDaoImpl habitDaoImpl;
+    private static HabitDaoImpl habitDaoImpl;
     public static GroupDaoImpl groupDaoImpl;
     public static TrackingDaoImpl trackingImpl;
-    public static ReminderDaoImpl reminderImpl;
+    private static ReminderDaoImpl reminderImpl;
 
     public static UserDaoImpl getUserDb() {
         return userDaoImpl;
@@ -55,6 +55,7 @@ public class Database {
     public Database(Context context) {
         this.mContext = context;
     }
+
     private static Database sInstance;
 
     public static synchronized Database getInstance(Context context) {

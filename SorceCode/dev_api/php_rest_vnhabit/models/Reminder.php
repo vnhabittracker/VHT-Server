@@ -11,7 +11,9 @@ include_once '../../models/Model.php';
 
         public $reminder_id;
         public $habit_id;
-        public $reminder_time;
+        public $remind_start_time;
+        public $remind_end_time;
+        public $repeat_type;
         public $reminder_description;
 
         public function __construct($db) {
@@ -30,8 +32,7 @@ include_once '../../models/Model.php';
 
         public function find($habitId, $time) {
             // Create query
-            $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . 
-                ' WHERE habit_id = :habit_id AND reminder_time = :reminder_time LIMIT 0,1';
+            $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . ' WHERE habit_id = :habit_id AND reminder_time = :reminder_time LIMIT 0,1';
 
             // Prepare statement
             $stmt = $this->conn->prepare($query);
@@ -50,6 +51,36 @@ include_once '../../models/Model.php';
             }
         }
 
+        public function lookUp() {
+            // Create query
+            $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . ' WHERE reminder_id = :reminder_id';
+            // Prepare statement
+            $stmt = $this->conn->prepare($query);
+            // Bind params
+            $stmt = $this->bind_param($stmt, array('reminder_id' => $this->reminder_id));
+            // Execute query
+            $stmt->execute();
+            // get row count
+            $num = $stmt->rowCount();
+            if ($num == 1) {
+                return $stmt;
+            } else {
+                return NULL;
+            }
+        }
+
+        public function getRemindersByHabit() {
+            // Create query
+            $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . ' WHERE habit_id = :habit_id';
+            // Prepare statement
+            $stmt = $this->conn->prepare($query);
+            // Bind params
+            $stmt = $this->bind_param($stmt, array('habit_id' => $this->habit_id));
+            // Execute query
+            $stmt->execute();
+            return $stmt;
+        }
+
         // Create
         public function create() {
             // create query
@@ -66,17 +97,15 @@ include_once '../../models/Model.php';
             return false;
         }
 
-        // Update
-        public function update() {
+        public function delete() {
             // create query
-            $query = 'UPDATE ' . $this->table . ' SET ' . $this->get_query_param(array('reminder_id'))
-                        . ' WHERE habit_id = :habit_id AND current_date = :current_date';
-            
-                // Prepare statement
+            $query = 'DELETE FROM ' . $this->table . ' WHERE reminder_id = :reminder_id';
+            // Prepare statement
             $stmt = $this->conn->prepare($query);
-            $stmt = $this->bind_param_exc($stmt, NULL);
+            // Bind data
+            $stmt->bindParam(':reminder_id', $this->reminder_id);
             // Execute query
-            if ($stmt->execute()) {
+            if($stmt->execute()) {
                 return true;
             }
             // Print error if something goes wrong
@@ -85,14 +114,12 @@ include_once '../../models/Model.php';
         }
 
         // Update
-        public function updateById($reminderId) {
+        public function update() {
             // create query
-            $query = 'UPDATE ' . $this->table . ' SET ' . $this->get_query_param(array('reminder_id'))
-                        . ' WHERE reminder_id = :reminder_id';
-            
-                // Prepare statement
+            $query = 'UPDATE ' . $this->table . ' SET ' . $this->get_query_param(array('reminder_id')) . ' WHERE reminder_id = :reminder_id';
+            // Prepare statement
             $stmt = $this->conn->prepare($query);
-            $stmt = $this->bind_param($stmt, array('reminder_id' => $reminderId));
+            $stmt = $this->bind_param_exc($stmt, NULL);
             // Execute query
             if ($stmt->execute()) {
                 return true;

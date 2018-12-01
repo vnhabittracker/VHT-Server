@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".PersonalActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:background="@drawable/border_bottom">
+        <ImageView
+            android:id="@+id/btnBack"
+            app:srcCompat="@drawable/arrow_back"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:paddingStart="13dp"
+            android:paddingEnd="13dp"
+            android:layout_height="match_parent" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="8"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textColor="#103cc1"
+            android:textSize="20sp"
+            android:text="Cá nhân" />
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="11"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingStart="40dp"
+        android:paddingEnd="40dp">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="40dp"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/editUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_input"
+                    android:layout_marginBottom="15dp"
+                    android:gravity="center"
+                    android:hint="@string/username"
+                    android:textSize="13sp" />
+                <EditText
+                    android:id="@+id/editRealName"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_input"
+                    android:layout_marginBottom="15dp"
+                    android:gravity="center"
+                    android:hint="Tên đầy đủ"
+                    android:textSize="13sp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp">
+                    <EditText
+                        android:id="@+id/editDay"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="14sp"
+                        android:hint="ngày"/>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="/"/>
+                    <EditText
+                        android:id="@+id/editMonth"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="14sp"
+                        android:hint="tháng"/>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="/"/>
+                    <EditText
+                        android:id="@+id/editYear"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="14sp"
+                        android:hint="năm"/>
+                </LinearLayout>
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_marginBottom="15dp"
+                    android:orientation="horizontal">
+                    <RadioButton android:id="@+id/radioMale"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="30dp"
+                        android:textSize="13sp"
+                        android:text="Nam"
+                        android:checked="true"/>
+                    <RadioButton android:id="@+id/radioFemale"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="13sp"
+                        android:text="Nữ"/>
+                </RadioGroup>
+                <EditText
+                    android:id="@+id/editOldPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_input"
+                    android:layout_marginBottom="15dp"
+                    android:gravity="center"
+                    android:inputType="textPassword"
+                    android:hint="Mật khẩu cũ"
+                    android:textSize="13sp" />
+                <EditText
+                    android:id="@+id/editNewPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_input"
+                    android:layout_marginBottom="15dp"
+                    android:gravity="center"
+                    android:inputType="textPassword"
+                    android:hint="Mật khẩu mới"
+                    android:textSize="13sp" />
+                <EditText
+                    android:id="@+id/editEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_input"
+                    android:layout_marginBottom="15dp"
+                    android:gravity="center"
+                    android:hint="@string/email"
+                    android:textSize="13sp" />
+                <EditText
+                    android:id="@+id/editDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_input"
+                    android:layout_marginBottom="30dp"
+                    android:gravity="center"
+                    android:hint="Trích dẫn"
+                    android:textSize="13sp" />
+                <LinearLayout
+                    android:id="@+id/ll_control"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+                    <Button
+                        android:id="@+id/btnCancel"
+                        android:layout_width="100dp"
+                        android:layout_height="25dp"
+                        android:textSize="12sp"
+                        android:background="@drawable/bg_button_white"
+                        android:textColor="#363636"
+                        android:text="Hủy"/>
+                    <Button
+                        android:id="@+id/btnSave"
+                        android:layout_width="100dp"
+                        android:layout_height="25dp"
+                        android:layout_marginStart="20dp"
+                        android:textSize="12sp"
+                        android:background="@drawable/button_green2"
+                        android:text="Lưu lại"/>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+    </LinearLayout>
+
+</LinearLayout>

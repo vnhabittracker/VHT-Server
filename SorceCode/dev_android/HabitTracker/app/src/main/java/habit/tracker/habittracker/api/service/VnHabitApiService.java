@@ -16,16 +16,22 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface VnHabitApiService {
-    @GET("user/read_single.php")
-    Call<UserResponse> getUser(@Query("username") String username, @Query("password") String password);
+    @FormUrlEncoded
+    @POST("user/read_single.php")
+    Call<UserResponse> getUser(@Field("username") String username, @Field("password") String password);
 
     @POST("user/create.php")
     Call<UserResult> registerUser(@Body User user);
+
+    @POST("user/update.php")
+    Call<ResponseBody> updateUser(@Body User user);
 
     @POST("habit/create.php")
     Call<ResponseBody> addHabit(@Body Habit habit);
@@ -40,10 +46,13 @@ public interface VnHabitApiService {
     Call<HabitResponse> getHabit(@Query("user_id") String userId);
 
     @GET("group/read.php")
-    Call<GroupResponse> getGroupItems();
+    Call<GroupResponse> getGroups(@Query("user_id") String userId);
 
     @POST("group/create.php")
-    Call<GroupResponse> addNewGroup(@Body Group group);
+    Call<ResponseBody> addNewGroup(@Body Group group);
+
+    @GET("group/delete.php")
+    Call<GroupResponse> deleteGroup(@Query("group_id") String groupId);
 
     @POST("tracking/create_update.php")
     Call<ResponseBody> updateTracking(@Body TrackingList trackingList);

@@ -6,7 +6,7 @@ import java.util.List;
 import habit.tracker.habittracker.repository.tracking.TrackingEntity;
 
 /**
- * Created by DatTVT1 on 2018/10/26
+ * Created on 2018/10/26
  */
 public class HabitTracking {
     private HabitEntity habitEntity;

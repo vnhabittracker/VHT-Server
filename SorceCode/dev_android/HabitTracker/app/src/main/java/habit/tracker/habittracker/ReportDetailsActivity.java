@@ -7,7 +7,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.graphics.ColorUtils;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -41,7 +40,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ReportDetailsActivity extends AppCompatActivity {
+import static habit.tracker.habittracker.common.AppConstant.TYPE_0;
+
+public class ReportDetailsActivity extends BaseActivity {
     private static final String DEBUG_TAG = "vnhb_debug";
     @BindView(R.id.header)
     View vHeader;
@@ -93,11 +94,12 @@ public class ReportDetailsActivity extends AppCompatActivity {
 
     @BindView(R.id.tabEditHabit)
     View tabEditHabit;
+    @BindView(R.id.tabAddJournal)
+    View tabAddJournal;
+    @BindView(R.id.tabChart)
+    View tabChart;
     @BindView(R.id.tabCalendar)
     View tabCalendar;
-
-    @BindView(R.id.tabAddJournal)
-    View tabAddDiary;
 
     private HabitEntity habitEntity;
     private String firstCurrentDate;
@@ -122,9 +124,37 @@ public class ReportDetailsActivity extends AppCompatActivity {
     float touchY = 0;
     float boundTop = 0;
     float boundBottom = 0;
-    float touchThresh = 70;
-    float touchTimeThresh = 50;
+    float touchThresh = 90;
+    float touchTimeThresh = 100;
     long lastTouchTime = 0;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == HabitActivity.REQUEST_UPDATE) {
+            boolean delete = false;
+            if (data != null) {
+                delete = data.getBooleanExtra("delete", false);
+            }
+
+            if (!delete) {
+                Database db = Database.getInstance(this);
+                db.open();
+                habitEntity = Database.getHabitDb().getHabit(habitEntity.getHabitId());
+                db.close();
+                if (habitEntity.getMonitorType().equals(TYPE_0)) {
+                    finish();
+                    return;
+                }
+                initDefaultUI(habitEntity);
+                ArrayList<BarEntry> values = loadData(currentDate);
+                chartHelper.setData(values, mode);
+                updateUI();
+            } else {
+                finish();
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,15 +163,14 @@ public class ReportDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_report_details);
         ButterKnife.bind(this);
 
+        Database db = Database.getInstance(this);
+        db.open();
         Bundle data = getIntent().getExtras();
         if (data != null) {
             String habitId = data.getString(MainActivity.HABIT_ID);
 
             if (!TextUtils.isEmpty(habitId)) {
-                Database db = Database.getInstance(this);
-                db.open();
                 habitEntity = Database.getHabitDb().getHabit(habitId);
-                db.close();
 
                 initDefaultUI(habitEntity);
 
@@ -155,6 +184,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
                 updateUI();
             }
         }
+        db.close();
     }
 
     @Override
@@ -191,13 +221,13 @@ public class ReportDetailsActivity extends AppCompatActivity {
             curTrackingCount = Integer.parseInt(currentTrackingList.getCount());
         }
 
-        trackingDaysInWeek[0] = habitEntity.getMon().equals(AppConstant.RES_OK);
-        trackingDaysInWeek[1] = habitEntity.getTue().equals(AppConstant.RES_OK);
-        trackingDaysInWeek[2] = habitEntity.getWed().equals(AppConstant.RES_OK);
-        trackingDaysInWeek[3] = habitEntity.getThu().equals(AppConstant.RES_OK);
-        trackingDaysInWeek[4] = habitEntity.getFri().equals(AppConstant.RES_OK);
-        trackingDaysInWeek[5] = habitEntity.getSat().equals(AppConstant.RES_OK);
-        trackingDaysInWeek[6] = habitEntity.getSun().equals(AppConstant.RES_OK);
+        trackingDaysInWeek[0] = habitEntity.getMon().equals(AppConstant.STATUS_OK);
+        trackingDaysInWeek[1] = habitEntity.getTue().equals(AppConstant.STATUS_OK);
+        trackingDaysInWeek[2] = habitEntity.getWed().equals(AppConstant.STATUS_OK);
+        trackingDaysInWeek[3] = habitEntity.getThu().equals(AppConstant.STATUS_OK);
+        trackingDaysInWeek[4] = habitEntity.getFri().equals(AppConstant.STATUS_OK);
+        trackingDaysInWeek[5] = habitEntity.getSat().equals(AppConstant.STATUS_OK);
+        trackingDaysInWeek[6] = habitEntity.getSun().equals(AppConstant.STATUS_OK);
 
         tvHabitName.setText(habitEntity.getHabitName());
         tvGoal.setText(habitEntity.getMonitorNumber() + " " + habitEntity.getMonitorUnit());
@@ -226,32 +256,6 @@ public class ReportDetailsActivity extends AppCompatActivity {
         chartHelper = new ChartHelper(this, chart);
         chartHelper.initChart();
         chartHelper.setChartColor(startColor, endColor);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == HabitActivity.REQUEST_UPDATE) {
-            boolean delete = false;
-            if (data != null) {
-                delete = data.getBooleanExtra("delete", false);
-            }
-
-            if (!delete) {
-                Database db = Database.getInstance(this);
-                db.open();
-                habitEntity = Database.getHabitDb().getHabit(habitEntity.getHabitId());
-                db.close();
-
-                initDefaultUI(habitEntity);
-
-                ArrayList<BarEntry> values = loadData(currentDate);
-                chartHelper.setData(values, mode);
-                updateUI();
-            } else {
-                finish();
-            }
-        }
     }
 
     @Override
@@ -597,26 +601,17 @@ public class ReportDetailsActivity extends AppCompatActivity {
 
     @OnClick(R.id.tabEditHabit)
     public void editHabitDetails(View v) {
-        Intent intent = new Intent(this, HabitActivity.class);
-        intent.putExtra(MainActivity.HABIT_ID, this.habitEntity.getHabitId());
-        startActivityForResult(intent, HabitActivity.REQUEST_UPDATE);
-    }
-
-    @OnClick(R.id.tabCalendar)
-    public void showOnCalendar(View v) {
-        Intent intent = new Intent(this, ReportCalendarActivity.class);
-        intent.putExtra(MainActivity.HABIT_ID, habitEntity.getHabitId());
-        intent.putExtra(MainActivity.HABIT_COLOR, habitEntity.getHabitColor());
-        startActivity(intent);
-        finish();
+        super.editHabitDetails(habitEntity.getHabitId());
     }
 
     @OnClick(R.id.tabAddJournal)
     public void addJournal(View v) {
-        Intent intent = new Intent(this, NoteActivity.class);
-        intent.putExtra(MainActivity.HABIT_ID, habitEntity.getHabitId());
-        startActivity(intent);
-        finish();
+        super.showNoteScreen(habitEntity.getHabitId());
+    }
+
+    @OnClick(R.id.tabCalendar)
+    public void showOnCalendar(View v) {
+        super.showOnCalendar(habitEntity.getHabitId());
     }
 
     public void select(View v) {

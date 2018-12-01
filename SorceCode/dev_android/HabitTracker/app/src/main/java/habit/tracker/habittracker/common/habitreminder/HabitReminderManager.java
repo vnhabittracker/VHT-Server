@@ -4,13 +4,11 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import habit.tracker.habittracker.api.model.reminder.Reminder;
 import habit.tracker.habittracker.common.util.AppGenerator;
@@ -18,17 +16,13 @@ import habit.tracker.habittracker.common.util.AppGenerator;
 public class HabitReminderManager {
     public static final String REMIND_ID = "remind_id";
     public static final String REMIND_TEXT = "remind_text";
-    public static final String HABIT_NAME = "habit_name";
+    public static final String REMIND_TITLE = "remind_title";
     public static final String END_TIME = "end_time";
 
     private Context context;
     private AlarmManager alarmMgr;
     private PendingIntent alarmIntent;
     private List<Reminder> remindersList;
-
-    public HabitReminderManager(Context context) {
-        this.context = context;
-    }
 
     public HabitReminderManager(Context context, List<Reminder> remindAddNew) {
         this.context = context;
@@ -47,16 +41,20 @@ public class HabitReminderManager {
         Reminder reminder;
         for (int i = 0; i < remindersList.size(); i++) {
             reminder = remindersList.get(i);
-            remindTime = reminder.getReminderTime();
-            date = AppGenerator.getDate(remindTime, AppGenerator.YMD2);
-            calendar.setTime(date);
+            if (reminder.isDelete()) {
+                cancelReminder(Integer.parseInt(reminder.getReminderId()));
+            } else {
+                remindTime = reminder.getRemindStartTime();
+                date = AppGenerator.getDate(remindTime, AppGenerator.YMD2);
+                calendar.setTime(date);
 
-            year = calendar.get(Calendar.YEAR);
-            month = calendar.get(Calendar.MONTH);
-            day = calendar.get(Calendar.DAY_OF_MONTH);
-            hour = calendar.get(Calendar.HOUR_OF_DAY);
-            minute = calendar.get(Calendar.MINUTE);
-            remind(reminder, year, month, day, hour, minute);
+                year = calendar.get(Calendar.YEAR);
+                month = calendar.get(Calendar.MONTH);
+                day = calendar.get(Calendar.DAY_OF_MONTH);
+                hour = calendar.get(Calendar.HOUR_OF_DAY);
+                minute = calendar.get(Calendar.MINUTE);
+                remind(reminder, year, month, day, hour, minute);
+            }
         }
     }
 
@@ -65,8 +63,27 @@ public class HabitReminderManager {
         Intent intent = new Intent(context, HabitReminderServiceReceiver.class);
         intent.putExtra(REMIND_ID, reminder.getHabitId());
         intent.putExtra(REMIND_TEXT, reminder.getRemindText());
-        intent.putExtra(HABIT_NAME, reminder.getHabitName());
-        intent.putExtra(END_TIME, reminder.getEndDate());
+        String title = null;
+        if (TextUtils.isEmpty(reminder.getHabitName())) {
+            switch (reminder.getRepeatType()) {
+                case "0":
+                    title = "Hăng ngày";
+                    break;
+                case "1":
+                    title = "Hăng tuần";
+                    break;
+                case "2":
+                    title = "Hăng tháng";
+                    break;
+                case "3":
+                    title = "Hăng năm";
+                    break;
+            }
+        } else {
+            title = reminder.getHabitName();
+        }
+        intent.putExtra(REMIND_TITLE, title);
+        intent.putExtra(END_TIME, reminder.getRemindEndTime());
         alarmIntent = PendingIntent.getBroadcast(context, Integer.parseInt(reminder.getReminderId()), intent, 0);
 
         Calendar calendar = Calendar.getInstance();

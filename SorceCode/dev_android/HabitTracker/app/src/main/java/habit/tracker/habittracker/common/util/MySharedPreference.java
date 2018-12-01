@@ -8,6 +8,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class MySharedPreference {
     public final static  String MY_PREFS = "vnhabit_pref";
+    public static final String FIRST_INSTALL = "first_install";
     public static final String USER_ID = "user_id";
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
@@ -38,15 +39,15 @@ public class MySharedPreference {
         return user;
     }
 
-    public static void save(Context context, String key, String tail, String val) {
+    public static void save(Context context, String key, String val) {
         SharedPreferences.Editor editor = context.getSharedPreferences(MY_PREFS, MODE_PRIVATE).edit();
-        editor.putString(key + tail, val);
+        editor.putString(key, val);
         editor.apply();
     }
 
-    public static String get(Context context, String key, String tail) {
+    public static String get(Context context, String key) {
         SharedPreferences prefs = context.getSharedPreferences(MY_PREFS, MODE_PRIVATE);
-        String val = prefs.getString(key + tail, null);
+        String val = prefs.getString(key, null);
         if (!TextUtils.isEmpty(val)) {
             return val;
         }

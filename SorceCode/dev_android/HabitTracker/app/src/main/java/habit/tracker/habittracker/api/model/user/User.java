@@ -4,16 +4,12 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class User {
-
     @SerializedName("user_id")
     @Expose
     private String userId;
     @SerializedName("username")
     @Expose
     private String username;
-    @SerializedName("phone")
-    @Expose
-    private String phone;
     @SerializedName("password")
     @Expose
     private String password;
@@ -26,9 +22,9 @@ public class User {
     @SerializedName("gender")
     @Expose
     private String gender;
-    @SerializedName("user_icon")
+    @SerializedName("real_name")
     @Expose
-    private String userIcon;
+    private String realName;
     @SerializedName("avatar")
     @Expose
     private String avatar;
@@ -54,8 +50,7 @@ public class User {
     @Expose
     private String userScore;
 
-    public User() {
-    }
+    public User() {}
 
     public String getUserId() {
         return userId;
@@ -63,10 +58,6 @@ public class User {
 
     public String getUsername() {
         return username;
-    }
-
-    public String getPhone() {
-        return phone;
     }
 
     public String getPassword() {
@@ -85,15 +76,15 @@ public class User {
         return gender;
     }
 
-    public String getUserIcon() {
-        return userIcon;
+    public String getRealName() {
+        return realName;
     }
 
     public String getAvatar() {
         return avatar;
     }
 
-    public String getUserDescription() {
+    public String getDescription() {
         return userDescription;
     }
 
@@ -129,10 +120,6 @@ public class User {
         this.username = username;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
     public void setPassword(String password) {
         this.password = password;
     }
@@ -149,15 +136,15 @@ public class User {
         this.gender = gender;
     }
 
-    public void setUserIcon(String userIcon) {
-        this.userIcon = userIcon;
+    public void setRealName(String realName) {
+        this.realName = realName;
     }
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
 
-    public void setUserDescription(String userDescription) {
+    public void setDescription(String userDescription) {
         this.userDescription = userDescription;
     }
 

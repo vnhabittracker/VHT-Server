@@ -104,10 +104,10 @@ public class RegisterActivity extends BaseActivity {
                 if (!validator.checkEqual(password, passwordConf, "Mật khẩu")) {
                     return;
                 }
+                newUser.setUserId(AppGenerator.getNewId());
                 newUser.setUsername(username);
                 newUser.setEmail(email);
                 newUser.setPassword(password);
-                newUser.setUserId(AppGenerator.getNewId());
                 newUser.setCreatedDate(AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT));
                 newUser.setLastLoginTime(AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT));
                 newUser.setContinueUsingCount("1");
@@ -133,13 +133,15 @@ public class RegisterActivity extends BaseActivity {
         mService.registerUser(user).enqueue(new Callback<UserResult>() {
             @Override
             public void onResponse(Call<UserResult> call, Response<UserResult> response) {
-                if (response.body().getResult().equals(AppConstant.RES_OK)) {
+                if (response.body().getResult().equals(AppConstant.STATUS_OK)) {
                     Database.getUserDb().saveUser(Database.getUserDb().convert(user));
                     Intent intent = getIntent();
                     intent.putExtra(LoginActivity.USERNAME, user.getUsername());
                     RegisterActivity.this.setResult(RESULT_OK, intent);
                     Toast.makeText(RegisterActivity.this, "Đăng ký tài khoản thành công", Toast.LENGTH_SHORT).show();
                     finish();
+                } else if (response.body().getResult().equals("2")) {
+                    Toast.makeText(RegisterActivity.this, "Tài khoản đã tồn tại", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(RegisterActivity.this, "Đăng ký không thành công", Toast.LENGTH_SHORT).show();
                 }

@@ -8,7 +8,7 @@ public class UserEntity {
     private String gender;
     private String dateOfBirth;
     private String password;
-    private String userIcon;
+    private String realName;
     private String avatar;
     private String userDescription;
     private String createdDate;
@@ -19,7 +19,7 @@ public class UserEntity {
     private String userScore;
 
     public UserEntity(String userId, String username, String email, String phone, String gender, String dateOfBirth,
-                      String password, String userIcon, String avatar, String userDescription,
+                      String password, String realName, String avatar, String userDescription,
                       String lastLoginTime, String continueUsingDate, String currentContinueUsingCount, String bestContinueUsingCount, String userScore) {
         this.userId = userId;
         this.username = username;
@@ -28,7 +28,7 @@ public class UserEntity {
         this.gender = gender;
         this.dateOfBirth = dateOfBirth;
         this.password = password;
-        this.userIcon = userIcon;
+        this.realName = realName;
         this.avatar = avatar;
         this.userDescription = userDescription;
         this.lastLoginTime = lastLoginTime;
@@ -69,15 +69,15 @@ public class UserEntity {
         return password;
     }
 
-    public String getUserIcon() {
-        return userIcon;
+    public String getRealName() {
+        return realName;
     }
 
     public String getAvatar() {
         return avatar;
     }
 
-    public String getUserDescription() {
+    public String getDescription() {
         return userDescription;
     }
 
@@ -133,15 +133,15 @@ public class UserEntity {
         this.password = password;
     }
 
-    public void setUserIcon(String userIcon) {
-        this.userIcon = userIcon;
+    public void setRealName(String realName) {
+        this.realName = realName;
     }
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
 
-    public void setUserDescription(String userDescription) {
+    public void setDescription(String userDescription) {
         this.userDescription = userDescription;
     }
 

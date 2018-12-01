@@ -5,7 +5,7 @@ import android.content.ContentValues;
 import java.util.List;
 
 /**
- * Created by DatTVT1 on 10/16/2018
+ * Created on 10/16/2018
  */
 public interface HabitDao {
     List<HabitTracking> getHabitTracking(String userId, String startDate, String endDate);

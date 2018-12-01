@@ -34,6 +34,8 @@ import habit.tracker.habittracker.repository.habit.HabitEntity;
 import habit.tracker.habittracker.repository.habit.HabitTracking;
 import habit.tracker.habittracker.repository.tracking.TrackingEntity;
 
+import static habit.tracker.habittracker.common.AppConstant.TYPE_0;
+
 
 public class StaticsActivity extends BaseActivity implements OnChartValueSelectedListener {
     private static final String DEBUG_TAG = "vnhb_debug";
@@ -73,8 +75,8 @@ public class StaticsActivity extends BaseActivity implements OnChartValueSelecte
     float touchY = 0;
     float boundTop = 0;
     float boundBottom = 0;
-    float touchThresh = 100;
-    float touchTimeThresh = 50;
+    float touchThresh = 90;
+    float touchTimeThresh = 100;
     long lastTouchTime = 0;
 
     Database appDatabase = Database.getInstance(this);
@@ -266,6 +268,7 @@ public class StaticsActivity extends BaseActivity implements OnChartValueSelecte
         String endDate = AppGenerator.format(daysInWeek[6], AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT);
         tvDisplayTime.setText(startDate + " - " + endDate);
 
+        // get groupList in week
         List<HabitTracking> weekData = Database.getHabitDb().getHabitTracking(MySharedPreference.getUserId(this), daysInWeek[0], daysInWeek[6]);
 
         List<TrackingEntity> meetGoalTrackingList = getMeetGoalDateList(weekData, daysInWeek[0], daysInWeek[6]);
@@ -366,15 +369,21 @@ public class StaticsActivity extends BaseActivity implements OnChartValueSelecte
         HabitEntity habitEntity;
         int total = 0;
         int goal;
+        boolean isDaily = false;
         for (HabitTracking habitTracking : trackingData) {
             habitEntity = habitTracking.getHabit();
+            isDaily = habitEntity.getMonitorType().equals(TYPE_0);
             goal = Integer.parseInt(habitEntity.getMonitorNumber());
             for (TrackingEntity trackingEntity : habitTracking.getTrackingList()) {
                 if (trackingEntity.getCurrentDate().compareTo(start) >= 0 && trackingEntity.getCurrentDate().compareTo(end) <= 0) {
                     total += Integer.parseInt(trackingEntity.getCount());
                     if (total >= goal) {
                         meetGoalTrackingList.add(trackingEntity);
-                        break;
+                        if (isDaily) {
+                            total = 0;
+                        } else {
+                            break;
+                        }
                     }
                 }
             }

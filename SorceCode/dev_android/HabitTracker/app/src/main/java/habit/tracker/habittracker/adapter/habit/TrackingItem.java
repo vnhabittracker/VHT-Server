@@ -98,7 +98,7 @@ public class TrackingItem {
         return color;
     }
 
-    public float getComp() {
+    public float getCompletion() {
         return comp;
     }
 

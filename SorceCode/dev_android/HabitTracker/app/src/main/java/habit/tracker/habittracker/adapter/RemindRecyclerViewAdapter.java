@@ -40,7 +40,7 @@ public class RemindRecyclerViewAdapter extends RecyclerView.Adapter<RemindRecycl
     @Override
     public void onBindViewHolder(@NonNull ReminderViewHolder holder, int position) {
         Reminder reminder = data.get(position);
-        String dspStr = AppGenerator.format(reminder.getReminderTime(), AppGenerator.YMD2, AppGenerator.DMY2) + " " + reminder.getRemindText();
+        String dspStr = AppGenerator.format(reminder.getRemindStartTime(), AppGenerator.YMD2, AppGenerator.DMY2) + " " + reminder.getRemindText();
         holder.tvRemindTime.setText(dspStr);
     }
 

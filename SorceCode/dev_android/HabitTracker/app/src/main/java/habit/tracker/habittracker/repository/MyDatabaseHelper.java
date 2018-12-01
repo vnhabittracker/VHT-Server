@@ -5,7 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 /**
- * Created by DatTVT1 on 10/15/2018
+ * Created on 10/15/2018
  */
 public abstract class MyDatabaseHelper {
     public SQLiteDatabase mDb;
@@ -39,5 +39,16 @@ public abstract class MyDatabaseHelper {
 
     public Cursor rawQuery(String sql, String[] selectionArgs) {
         return mDb.rawQuery(sql, selectionArgs);
+    }
+
+    public String getParams(String[] columns, String alias, boolean removeEnd) {
+        String str = "";
+        for (int i = 0; i < columns.length; i++) {
+            str = str + alias + "." + columns[i] + ", ";
+            if (removeEnd && i == columns.length - 1) {
+                return str.substring(0, str.length() - 2);
+            }
+        }
+        return str;
     }
 }

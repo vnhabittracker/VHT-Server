@@ -1,13 +1,14 @@
 package habit.tracker.habittracker;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.graphics.ColorUtils;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -45,11 +46,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static habit.tracker.habittracker.common.AppConstant.DEBUG_TAG;
+import static habit.tracker.habittracker.common.AppConstant.TYPE_0;
+import static habit.tracker.habittracker.common.AppConstant.TYPE_1;
 
-public class ReportCalendarActivity extends AppCompatActivity implements TrackingCalendarAdapter.OnItemClickListener {
+public class ReportCalendarActivity extends BaseActivity implements TrackingCalendarAdapter.OnItemClickListener {
 
     @BindView(R.id.header)
-    View vHeader;
+    View llHeader;
 
     @BindView(R.id.tvHabitName)
     TextView tvHabitName;
@@ -83,10 +86,13 @@ public class ReportCalendarActivity extends AppCompatActivity implements Trackin
 
     @BindView(R.id.tabEditHabit)
     View tabEditHabit;
+    @BindView(R.id.tabAddJournal)
+    View tabAddJournal;
     @BindView(R.id.tabChart)
     View tabChart;
 
-    private HabitEntity habitEntity;
+    private HabitEntity defaultHabitEntity;
+    private boolean isCountHabitType = false;
     TrackingCalendarAdapter calendarAdapter;
     List<TrackingCalendarItem> calendarItemList = new ArrayList<>();
 
@@ -109,9 +115,27 @@ public class ReportCalendarActivity extends AppCompatActivity implements Trackin
     float touchY = 0;
     float boundTop = 0;
     float boundBottom = 0;
-    float touchThreshTime = 90;
+    float touchThresh = 90;
     float touchTimeThresh = 100;
     long lastTouchTime = 0;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == HabitActivity.REQUEST_UPDATE) {
+            boolean delete = false;
+            if (data != null) {
+                delete = data.getBooleanExtra("delete", false);
+            }
+            if (!delete) {
+                initializeScreen(defaultHabitEntity.getHabitId());
+
+            } else {
+                finish();
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,47 +151,35 @@ public class ReportCalendarActivity extends AppCompatActivity implements Trackin
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == HabitActivity.REQUEST_UPDATE) {
-            boolean delete = false;
-            if (data != null) {
-                delete = data.getBooleanExtra("delete", false);
-            }
-            if (!delete) {
-                initializeScreen(habitEntity.getHabitId());
-
-            } else {
-                finish();
-            }
-        }
-    }
-
+    @SuppressLint("ResourceType")
     private void initializeScreen(String habitId) {
         appDatabase.open();
         isDbOpen = true;
 
         currentDate = AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT);
         defaultCurrentDate = currentDate;
-        habitEntity = Database.getHabitDb().getHabit(habitId);
-        String habitColor = habitEntity.getHabitColor();
+        defaultHabitEntity = Database.getHabitDb().getHabit(habitId);
+        isCountHabitType = defaultHabitEntity.getMonitorType().equals(TYPE_1);
+        String habitColor = defaultHabitEntity.getHabitColor();
         TrackingEntity trackingEntity = Database.getTrackingDb().getTracking(habitId, currentDate);
         List<TrackingEntity> totalList = Database.getTrackingDb().getTrackingListByHabit(habitId);
 
         if (trackingEntity != null) {
             curTrackingCount = Integer.parseInt(trackingEntity.getCount());
         }
-        vHeader.setBackgroundColor(ColorUtils.setAlphaComponent(Color.parseColor(habitColor), 100));
+        if (TextUtils.isEmpty(habitColor) || habitColor.equals(getString(R.color.color0))) {
+            llHeader.setBackgroundColor(ColorUtils.setAlphaComponent(Color.parseColor(getString(R.color.gray2)), 100));
+        } else {
+            llHeader.setBackgroundColor(ColorUtils.setAlphaComponent(Color.parseColor(habitColor), 100));
+        }
 
-        availDaysInWeek[0] = habitEntity.getMon().equals("1");
-        availDaysInWeek[1] = habitEntity.getTue().equals("1");
-        availDaysInWeek[2] = habitEntity.getWed().equals("1");
-        availDaysInWeek[3] = habitEntity.getThu().equals("1");
-        availDaysInWeek[4] = habitEntity.getFri().equals("1");
-        availDaysInWeek[5] = habitEntity.getSat().equals("1");
-        availDaysInWeek[6] = habitEntity.getSun().equals("1");
+        availDaysInWeek[0] = defaultHabitEntity.getMon().equals("1");
+        availDaysInWeek[1] = defaultHabitEntity.getTue().equals("1");
+        availDaysInWeek[2] = defaultHabitEntity.getWed().equals("1");
+        availDaysInWeek[3] = defaultHabitEntity.getThu().equals("1");
+        availDaysInWeek[4] = defaultHabitEntity.getFri().equals("1");
+        availDaysInWeek[5] = defaultHabitEntity.getSat().equals("1");
+        availDaysInWeek[6] = defaultHabitEntity.getSun().equals("1");
 
         String curDay = currentDate;
         String preDay;
@@ -205,11 +217,33 @@ public class ReportCalendarActivity extends AppCompatActivity implements Trackin
             }
         }
 
-        calendarAdapter = new TrackingCalendarAdapter(this, calendarItemList, habitEntity.getHabitColor());
+        calendarAdapter = new TrackingCalendarAdapter(this, calendarItemList, defaultHabitEntity.getHabitColor());
         calendarAdapter.setClickListener(this);
         recyclerViewCalendar.setLayoutManager(new GridLayoutManager(this, 7));
         recyclerViewCalendar.setAdapter(calendarAdapter);
         loadCalendar(currentDate);
+
+        if (!isCountHabitType) {
+            if (imgMinusCount.getVisibility() == View.VISIBLE) {
+                imgMinusCount.setVisibility(View.GONE);
+            }
+            if (imgAddCount.getVisibility() == View.VISIBLE) {
+                imgAddCount.setVisibility(View.GONE);
+            }
+            if (tabChart.getVisibility() == View.VISIBLE) {
+                tabChart.setVisibility(View.GONE);
+            }
+        } else {
+            if (imgMinusCount.getVisibility() == View.GONE) {
+                imgMinusCount.setVisibility(View.VISIBLE);
+            }
+            if (imgAddCount.getVisibility() == View.GONE) {
+                imgAddCount.setVisibility(View.VISIBLE);
+            }
+            if (tabChart.getVisibility() == View.GONE) {
+                tabChart.setVisibility(View.VISIBLE);
+            }
+        }
 
         updateUI();
     }
@@ -278,19 +312,23 @@ public class ReportCalendarActivity extends AppCompatActivity implements Trackin
         // add imgPreDate month item
         calendarItemList.addAll(head);
 
-        Map<String, TrackingEntity> mapValues = loadData(currentDate);
+        Map<String, TrackingEntity> trackingEntityMap = loadData(currentDate);
         boolean[] watchDay = new boolean[7];
-        watchDay[0] = habitEntity.getMon().equals("1");
-        watchDay[1] = habitEntity.getTue().equals("1");
-        watchDay[2] = habitEntity.getWed().equals("1");
-        watchDay[3] = habitEntity.getThu().equals("1");
-        watchDay[4] = habitEntity.getFri().equals("1");
-        watchDay[5] = habitEntity.getSat().equals("1");
-        watchDay[6] = habitEntity.getSun().equals("1");
+        watchDay[0] = defaultHabitEntity.getMon().equals("1");
+        watchDay[1] = defaultHabitEntity.getTue().equals("1");
+        watchDay[2] = defaultHabitEntity.getWed().equals("1");
+        watchDay[3] = defaultHabitEntity.getThu().equals("1");
+        watchDay[4] = defaultHabitEntity.getFri().equals("1");
+        watchDay[5] = defaultHabitEntity.getSat().equals("1");
+        watchDay[6] = defaultHabitEntity.getSun().equals("1");
 
         for (int i = 0; i < datesInMonth.length; i++) {
-            if (mapValues.containsKey(datesInMonth[i])) {
-                calendarItemList.add(new TrackingCalendarItem(String.valueOf(i + 1), datesInMonth[i], true, false));
+            if (trackingEntityMap.containsKey(datesInMonth[i])) {
+                if (isCountHabitType || !trackingEntityMap.get(datesInMonth[i]).getCount().equals(TYPE_0)) {
+                    calendarItemList.add(new TrackingCalendarItem(String.valueOf(i + 1), datesInMonth[i], true, false));
+                } else {
+                    calendarItemList.add(new TrackingCalendarItem(String.valueOf(i + 1), datesInMonth[i], false, false));
+                }
             } else {
                 calendarItemList.add(new TrackingCalendarItem(String.valueOf(i + 1), datesInMonth[i], false, false));
             }
@@ -322,7 +360,7 @@ public class ReportCalendarActivity extends AppCompatActivity implements Trackin
             case (MotionEvent.ACTION_MOVE):
                 if (ev.getY() > boundTop && ev.getY() < boundBottom) {
                     if (System.currentTimeMillis() - lastTouchTime > touchTimeThresh) {
-                        if (ev.getX() - touchX > touchThreshTime && Math.abs(ev.getY() - touchY) < touchThreshTime) {
+                        if (ev.getX() - touchX > touchThresh && Math.abs(ev.getY() - touchY) < touchThresh) {
 
                             String pre = AppGenerator.getFirstDatePreMonth(currentDate, AppGenerator.YMD_SHORT, AppGenerator.YMD_SHORT);
                             timeLine = AppGenerator.countDayBetween(pre, currentDate) * -1;
@@ -330,7 +368,7 @@ public class ReportCalendarActivity extends AppCompatActivity implements Trackin
                             loadCalendarByDate(currentDate);
                             updateUI();
                             Log.d(DEBUG_TAG, "Action was MOVE: right");
-                        } else if (touchX - ev.getX() > touchThreshTime && Math.abs(ev.getY() - touchY) < touchThreshTime) {
+                        } else if (touchX - ev.getX() > touchThresh && Math.abs(ev.getY() - touchY) < touchThresh) {
 
                             String next = AppGenerator.getFirstDateNextMonth(currentDate, AppGenerator.YMD_SHORT, AppGenerator.YMD_SHORT);
                             timeLine = AppGenerator.countDayBetween(currentDate, next);
@@ -357,54 +395,10 @@ public class ReportCalendarActivity extends AppCompatActivity implements Trackin
         return super.dispatchTouchEvent(ev);
     }
 
-    @Override
-    public void onItemClick(View v, int position) {
-        TrackingCalendarItem item = calendarItemList.get(position);
-        currentDate = item.getDate();
-
-        timeLine = AppGenerator.countDayBetween(item.getDate(), defaultCurrentDate);
-        timeLine = currentDate.compareTo(firstDayNextMonth) < 0? timeLine * -1: timeLine;
-
-        TrackingEntity trackingEntity = Database.getTrackingDb().getTracking(habitEntity.getHabitId(), currentDate);
-        curTrackingCount = 0;
-        if (trackingEntity != null) {
-            curTrackingCount = Integer.parseInt(trackingEntity.getCount());
-        }
-
-        updateUI();
-    }
-
-    @OnClick({R.id.pre, R.id.next})
-    public void onDateChanged(View v) {
-        switch (v.getId()) {
-            case R.id.pre:
-                timeLine--;
-                currentDate = AppGenerator.getPreDate(currentDate, AppGenerator.YMD_SHORT);
-                break;
-            case R.id.next:
-                timeLine++;
-                currentDate = AppGenerator.getNextDate(currentDate, AppGenerator.YMD_SHORT);
-                break;
-        }
-        loadCalendarByDate(currentDate);
-        updateUI();
-    }
-
-    private void loadCalendarByDate(String currentDate) {
-        if (timeLine <= 0) {
-            // get today tracking record of current habit
-            TrackingEntity todayTracking = Database.trackingImpl.getTracking(habitEntity.getHabitId(), currentDate);
-            curTrackingCount = 0;
-            if (todayTracking != null) {
-                curTrackingCount = Integer.parseInt(todayTracking.getCount());
-            }
-        }
-    }
-
     @OnClick({R.id.minusCount, R.id.addCount})
     public void onTrackingCountChanged(View v) {
         if (timeLine > 0
-                || currentDate.compareTo(habitEntity.getStartDate()) < 0
+                || currentDate.compareTo(defaultHabitEntity.getStartDate()) < 0
                 || !AppGenerator.isValidTrackingDay(currentDate, availDaysInWeek)) {
             return;
         }
@@ -420,12 +414,16 @@ public class ReportCalendarActivity extends AppCompatActivity implements Trackin
                 break;
         }
 
+        updateLocalAndApi(defaultHabitEntity.getHabitId(), currentDate, String.valueOf(curTrackingCount));
+    }
+
+    private void updateLocalAndApi(String habitId, String currentDate, String curTrackingCount) {
         // save to appDatabase
-        TrackingEntity trackingEntity = Database.getTrackingDb().getTracking(habitEntity.getHabitId(), currentDate);
+        TrackingEntity trackingEntity = Database.getTrackingDb().getTracking(habitId, currentDate);
         if (trackingEntity == null) {
             trackingEntity = new TrackingEntity();
             trackingEntity.setTrackingId(AppGenerator.getNewId());
-            trackingEntity.setHabitId(habitEntity.getHabitId());
+            trackingEntity.setHabitId(habitId);
             trackingEntity.setCurrentDate(currentDate);
         }
         trackingEntity.setCount(String.valueOf(curTrackingCount));
@@ -454,6 +452,60 @@ public class ReportCalendarActivity extends AppCompatActivity implements Trackin
         });
     }
 
+    @Override
+    public void onItemClick(View v, int position) {
+        TrackingCalendarItem item = calendarItemList.get(position);
+        currentDate = item.getDate();
+
+        timeLine = AppGenerator.countDayBetween(currentDate, defaultCurrentDate);
+        timeLine = defaultCurrentDate.compareTo(firstDayNextMonth) < 0 ? timeLine * -1 : timeLine;
+
+        TrackingEntity trackingEntity = Database.getTrackingDb().getTracking(defaultHabitEntity.getHabitId(), currentDate);
+        curTrackingCount = 0;
+        if (trackingEntity != null) {
+            curTrackingCount = Integer.parseInt(trackingEntity.getCount());
+        }
+        if (!isCountHabitType) {
+            if (timeLine <= 0 && currentDate.compareTo(defaultHabitEntity.getStartDate()) >= 0
+                    && AppGenerator.isValidTrackingDay(currentDate, availDaysInWeek)) {
+
+                curTrackingCount = curTrackingCount > 0 ? 0 : 1;
+                item.setFilled(curTrackingCount == 1);
+                calendarAdapter.notifyDataSetChanged();
+
+                updateLocalAndApi(defaultHabitEntity.getHabitId(), currentDate, String.valueOf(curTrackingCount));
+            }
+        }
+        updateUI();
+    }
+
+    @OnClick({R.id.pre, R.id.next})
+    public void onDateChanged(View v) {
+        switch (v.getId()) {
+            case R.id.pre:
+                timeLine--;
+                currentDate = AppGenerator.getPreDate(currentDate, AppGenerator.YMD_SHORT);
+                break;
+            case R.id.next:
+                timeLine++;
+                currentDate = AppGenerator.getNextDate(currentDate, AppGenerator.YMD_SHORT);
+                break;
+        }
+        loadCalendarByDate(currentDate);
+        updateUI();
+    }
+
+    private void loadCalendarByDate(String currentDate) {
+        if (timeLine <= 0) {
+            // get today tracking record of current habit
+            TrackingEntity todayTracking = Database.trackingImpl.getTracking(defaultHabitEntity.getHabitId(), currentDate);
+            curTrackingCount = 0;
+            if (todayTracking != null) {
+                curTrackingCount = Integer.parseInt(todayTracking.getCount());
+            }
+        }
+    }
+
     private void updateUI() {
         if (timeLine == 0) {
             tvCurrentTime.setText("Hôm nay");
@@ -466,15 +518,21 @@ public class ReportCalendarActivity extends AppCompatActivity implements Trackin
                     AppGenerator.format(currentDate, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT));
         }
 
-        if (timeLine <= 0
-                && currentDate.compareTo(habitEntity.getStartDate()) >= 0
+        if (timeLine <= 0 && currentDate.compareTo(defaultHabitEntity.getStartDate()) >= 0
                 && AppGenerator.isValidTrackingDay(currentDate, availDaysInWeek)) {
-            tvTrackCount.setText(String.valueOf(curTrackingCount));
+
+            if (isCountHabitType) {
+                tvTrackCount.setText(String.valueOf(curTrackingCount));
+            } else if (curTrackingCount > 0) {
+                tvTrackCount.setText("Hoàn thành");
+            } else if (curTrackingCount == 0) {
+                tvTrackCount.setText("Chưa hoàn thành");
+            }
         } else {
             tvTrackCount.setText("--");
         }
 
-        tvHabitName.setText(habitEntity.getHabitName());
+        tvHabitName.setText(defaultHabitEntity.getHabitName());
 
         tvTotalCount.setText(String.valueOf(totalCount));
 
@@ -490,17 +548,15 @@ public class ReportCalendarActivity extends AppCompatActivity implements Trackin
     }
 
     public Map<String, TrackingEntity> loadData(String currentDate) {
-        String[] daysInMonth = AppGenerator.getDatesInMonth(currentDate, false);
-        String startReportDate = daysInMonth[0];
-
+        String startReportDate = AppGenerator.getFirstDateInMonth(currentDate, AppGenerator.YMD_SHORT, AppGenerator.YMD_SHORT);
+        HabitTracking habitTracking = Database.getTrackingDb().getHabitTrackingBetween(defaultHabitEntity.getHabitId(), startReportDate, defaultCurrentDate);
         Map<String, TrackingEntity> mapDayInMonth = new HashMap<>(31);
-        HabitTracking habitTracking = Database.getTrackingDb().getHabitTrackingBetween(habitEntity.getHabitId(), startReportDate, defaultCurrentDate);
         if (habitTracking != null) {
             totalCount = habitTracking.getTrackingList().size();
             for (TrackingEntity entity : habitTracking.getTrackingList()) {
                 mapDayInMonth.put(entity.getCurrentDate(), entity);
             }
-            habitEntity = habitTracking.getHabit();
+            defaultHabitEntity = habitTracking.getHabit();
         }
         return mapDayInMonth;
     }
@@ -532,25 +588,20 @@ public class ReportCalendarActivity extends AppCompatActivity implements Trackin
         return padding;
     }
 
-    public void showEmpty(View view) {
-        Intent intent = new Intent(this, EmptyActivity.class);
-        startActivity(intent);
+
+    @OnClick(R.id.tabAddJournal)
+    public void addJournal(View v) {
+        super.showNoteScreen(defaultHabitEntity.getHabitId());
     }
 
     @OnClick(R.id.tabEditHabit)
     public void editHabitDetails(View v) {
-        Intent intent = new Intent(this, HabitActivity.class);
-        intent.putExtra(MainActivity.HABIT_ID, this.habitEntity.getHabitId());
-        startActivityForResult(intent, HabitActivity.REQUEST_UPDATE);
+        super.editHabitDetails(defaultHabitEntity.getHabitId());
     }
 
     @OnClick(R.id.tabChart)
     public void showDetailsChart(View v) {
-        Intent intent = new Intent(this, ReportDetailsActivity.class);
-        intent.putExtra(MainActivity.HABIT_ID, habitEntity.getHabitId());
-        intent.putExtra(MainActivity.HABIT_COLOR, habitEntity.getHabitColor());
-        startActivity(intent);
-        finish();
+        super.showDetailsChart(defaultHabitEntity.getHabitId());
     }
 
     @Override

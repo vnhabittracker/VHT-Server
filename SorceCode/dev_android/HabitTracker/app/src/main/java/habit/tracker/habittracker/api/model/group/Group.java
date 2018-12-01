@@ -7,46 +7,41 @@ public class Group {
     @SerializedName("group_id")
     @Expose
     private String groupId;
+    @SerializedName("user_id")
+    @Expose
+    private String userId;
     @SerializedName("group_name")
     @Expose
     private String groupName;
-    @SerializedName("parent_id")
-    @Expose
-    private String parentId;
-    @SerializedName("group_icon")
-    @Expose
-    private String groupIcon;
     @SerializedName("group_description")
     @Expose
     private String groupDescription;
 
-    boolean isSelected = false;
+    private boolean isSelected = false;
+    private boolean isDelete = false;
+    private boolean isDefault = false;
 
     public Group() {
     }
 
-    public Group(String groupId, String groupName, String parentId, String groupIcon, String groupDescription) {
+    public Group(String groupId, String userId, String groupName, String groupDescription, boolean isDefault) {
         this.groupId = groupId;
+        this.userId = userId;
         this.groupName = groupName;
-        this.parentId = parentId;
-        this.groupIcon = groupIcon;
         this.groupDescription = groupDescription;
+        this.isDefault = isDefault;
     }
 
     public String getGroupId() {
         return groupId;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
     public String getGroupName() {
         return groupName;
-    }
-
-    public String getParentId() {
-        return parentId;
-    }
-
-    public String getGroupIcon() {
-        return groupIcon;
     }
 
     public String getGroupDescription() {
@@ -57,20 +52,24 @@ public class Group {
         return isSelected;
     }
 
+    public boolean isDelete() {
+        return isDelete;
+    }
+
+    public boolean isDefault() {
+        return isDefault;
+    }
+
     public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
 
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     public void setGroupName(String groupName) {
         this.groupName = groupName;
-    }
-
-    public void setParentId(String parentId) {
-        this.parentId = parentId;
-    }
-
-    public void setGroupIcon(String groupIcon) {
-        this.groupIcon = groupIcon;
     }
 
     public void setGroupDescription(String groupDescription) {
@@ -79,5 +78,13 @@ public class Group {
 
     public void setSelected(boolean selected) {
         isSelected = selected;
+    }
+
+    public void setDelete(boolean delete) {
+        isDelete = delete;
+    }
+
+    public void setDefault(boolean local) {
+        isDefault = local;
     }
 }

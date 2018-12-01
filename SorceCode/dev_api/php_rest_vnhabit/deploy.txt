@@ -1,0 +1,7 @@
+db name: heroku_7fcf4b302659005
+
+git add -A
+git commit -m "update"
+git push heroku master
+mysql -u b6c50987d4ce83 -h us-cdbr-iron-east-01.cleardb.net -p heroku_7fcf4b302659005 < vnhabit.sql
+pw: 51830534

@@ -63,25 +63,10 @@ public class LoginActivity extends BaseActivity {
                     backFromSignUp = true;
                 }
             }
-        }
-        // back from guide screen
-        else if (requestCode == GUIDE) {
+        } else if (requestCode == GUIDE) {
             if (resultCode == RESULT_OK) {
                 backFromGuild = true;
             }
-        }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (!backFromSignUp && MySharedPreference.getUserId(this) != null) {
-            String[] info = MySharedPreference.getUser(this);
-            getUser(info[1], info[2], backFromGuild);
-
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
         }
     }
 
@@ -96,6 +81,21 @@ public class LoginActivity extends BaseActivity {
         SpannableString content = new SpannableString(registerText);
         content.setSpan(new UnderlineSpan(), 0, registerText.length(), 0);
         linkRegister.setText(content);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (!backFromSignUp && MySharedPreference.getUserId(this) != null) {
+            String[] info = MySharedPreference.getUser(this);
+            getUser(info[1], info[2], backFromGuild);
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+        if (backFromSignUp) {
+            backFromSignUp = false;
+        }
     }
 
     @OnClick({R.id.btn_login, R.id.link_register, R.id.btn_fb_login, R.id.btn_google_login})
@@ -116,7 +116,6 @@ public class LoginActivity extends BaseActivity {
                     return;
                 }
                 getUser(username, password, true);
-
                 break;
             case R.id.btn_fb_login:
                 showEmptyScreen();
@@ -135,30 +134,26 @@ public class LoginActivity extends BaseActivity {
         mService.getUser(username, password).enqueue(new Callback<UserResponse>() {
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
-                if (response.body().getResult().equals(AppConstant.RES_OK)) {
-                    User user = response.body().getData();
+                if (response.body().getResult().equals(AppConstant.STATUS_OK)) {
                     Database db = new Database(LoginActivity.this);
-                    UserEntity userEntity = new UserEntity();
                     db.open();
-                    if (user != null) {
-                        userEntity.setUserId(user.getUserId());
-                        userEntity.setUsername(user.getUsername());
-                        userEntity.setEmail(user.getEmail());
-                        userEntity.setPhone(user.getPhone());
-                        userEntity.setGender(user.getGender());
-                        userEntity.setDateOfBirth(user.getDateOfBirth());
-                        userEntity.setPassword(user.getPassword());
-                        userEntity.setUserIcon(user.getUserIcon());
-                        userEntity.setAvatar(user.getAvatar());
-                        userEntity.setUserDescription(user.getUserDescription());
-                        userEntity.setCreatedDate(user.getCreatedDate());
-                        userEntity.setLastLoginTime(user.getLastLoginTime());
-                        userEntity.setContinueUsingCount(user.getContinueUsingCount());
-                        userEntity.setCurrentContinueUsingCount(user.getCurrentContinueUsingCount());
-                        userEntity.setBestContinueUsingCount(user.getBestContinueUsingCount());
-                        userEntity.setUserScore(user.getUserScore());
-                        Database.getUserDb().saveUser(userEntity);
-                    }
+                    User user = response.body().getData();
+                    UserEntity userEntity = Database.getUserDb().getUser(user.getUserId());
+                    userEntity.setUserId(user.getUserId());
+                    userEntity.setUsername(user.getUsername());
+                    userEntity.setEmail(user.getEmail());
+                    userEntity.setGender(user.getGender());
+                    userEntity.setDateOfBirth(user.getDateOfBirth());
+                    userEntity.setPassword(user.getPassword());
+                    userEntity.setRealName(user.getRealName());
+                    userEntity.setDescription(user.getDescription());
+                    userEntity.setCreatedDate(user.getCreatedDate());
+                    userEntity.setLastLoginTime(user.getLastLoginTime());
+                    userEntity.setContinueUsingCount(user.getContinueUsingCount());
+                    userEntity.setCurrentContinueUsingCount(user.getCurrentContinueUsingCount());
+                    userEntity.setBestContinueUsingCount(user.getBestContinueUsingCount());
+                    userEntity.setUserScore(user.getUserScore());
+                    Database.getUserDb().saveUser(userEntity);
                     db.close();
                     if (isLogin) {
                         showMainScreen(user.getUserId(), user.getUsername(), user.getPassword());
@@ -185,13 +180,13 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void showMainScreen(String userId, String username, String password) {
-        if (backFromSignUp || MySharedPreference.getUserId(this) == null) {
-            MySharedPreference.saveUser(this, userId, username, password);
-            pushDataService = new PushDataService(this, userId);
-            pushDataService.start();
+        MySharedPreference.saveUser(this, userId, username, password);
+        if (MySharedPreference.get(this, MySharedPreference.FIRST_INSTALL) == null) {
+            MySharedPreference.save(this, MySharedPreference.FIRST_INSTALL, "1");
             startActivityForResult(new Intent(this, GuideActivity.class), GUIDE);
         } else {
-            MySharedPreference.saveUser(this, userId, username, password);
+            pushDataService = new PushDataService(this, userId);
+            pushDataService.start();
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish();

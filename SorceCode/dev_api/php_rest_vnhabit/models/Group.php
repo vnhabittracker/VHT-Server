@@ -9,9 +9,8 @@ include_once '../../models/Model.php';
         private $params;
 
         public $group_id;
-        public $parent_id;
+        public $user_id;
         public $group_name;
-        public $group_icon;
         public $group_description;
 
         public function __construct($db) {
@@ -29,9 +28,37 @@ include_once '../../models/Model.php';
             return $stmt;
         }
 
+        public function readByUser() {
+            $query = 'SELECT ' . $this->cols . ' FROM `' . $this->table . '` WHERE user_id IS NULL OR user_id = :user_id ORDER BY group_id ASC';
+
+            // Prepare statement
+            $stmt = $this->conn->prepare($query);
+
+            // Bind params
+            $stmt->bindParam(":user_id", $this->user_id);
+
+            // Execute query
+            $stmt->execute();
+            return $stmt;
+        }
+
+        public function deleteById() {
+            $query = 'DELETE FROM `' . $this->table . '` WHERE `user_id` IS NOT NULL AND group_id = :group_id';
+
+            // Prepare statement
+            $stmt = $this->conn->prepare($query);
+
+            // Bind params
+            $stmt->bindParam(":group_id", $this->group_id);
+
+            // Execute query
+            $stmt->execute();
+            return $stmt;
+        }
+
         public function create() {
             // create query
-            $query = 'INSERT INTO `group` SET ' . $this->get_query_param(NULL);
+            $query = "INSERT INTO `" .  $this->table . "` SET " . $this->get_query_param(NULL);
             // Prepare statement
             $stmt = $this->conn->prepare($query);
             $stmt = $this->bind_param_exc($stmt, NULL);

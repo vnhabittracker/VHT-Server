@@ -6,23 +6,23 @@
 
     <color name="color0">#ffffff</color>
     <color name="color1">#646066cc</color>
-    <color name="color2">#644a90e6</color>
+    <color name="color2">#784a90e6</color>
     <color name="color3">#64b4c148</color>
     <color name="color4">#78ed872a</color>
-    <color name="color5">#78ab5dc7</color>
-    <color name="color6">#78af4553</color>
-    <color name="color7">#789c4dd9</color>
-    <color name="color8">#78e1385f</color>
+    <color name="color5">#786ed74e</color>
+    <color name="color6">#78da5566</color>
+    <color name="color7">#789c54d4</color>
+    <color name="color8">#78e15474</color>
     <color name="color9">#784dcaba</color>
     <color name="color10">#787c5ed4</color>
 
     <color name="light_brown">#a77777</color>
     <color name="habit_item">#96838383</color>
 
-    <color name="line">#d1d1d1</color>
+    <color name="line">#d4d4d4</color>
 
     <color name="gray1">#e7e7e7</color>
-    <color name="gray2">#64838383</color>
+    <color name="gray2">#78a7a7a7</color>
 
     <color name="red1">#ffcccc</color>
     <color name="red2">#bc1c1c</color>
@@ -32,4 +32,6 @@
 
     <color name="blue1">#bbcdff</color>
     <color name="blue2">#0f3cb7</color>
+
+    <color name="blue_setting">#2949a9</color>
 </resources>

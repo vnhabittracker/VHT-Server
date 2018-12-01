@@ -4,7 +4,7 @@
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-include_once '../../config/Database.php';
+include_once '../../config/config.php';
 include_once '../../models/HabitSuggestion.php';
 
 // Instantiate DB & connect
@@ -18,9 +18,9 @@ $search_key = isset($_GET['search']) ? $_GET['search'] : die();
 
 $result = $habit->search($search_key);
 
-$num = $result->rowCount();
+$row_count = $result->rowCount();
 
-if ($num > 0) {
+if ($row_count > 0) {
     $arr = array();
     while($row = $result->fetch(PDO::FETCH_ASSOC)) {
         array_push($arr, $row);
@@ -35,7 +35,6 @@ if ($num > 0) {
     );
 
 } else {
-    // no users
     echo json_encode(
         array(
             'result' => '0'

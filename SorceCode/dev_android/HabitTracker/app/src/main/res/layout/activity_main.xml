@@ -17,7 +17,7 @@
         android:background="@drawable/border_bottom">
 
         <ImageView
-            android:onClick="showEmpty"
+            android:id="@+id/imgSetting"
             app:srcCompat="@drawable/ic_setting"
             android:layout_weight="1"
             android:layout_width="0dp"

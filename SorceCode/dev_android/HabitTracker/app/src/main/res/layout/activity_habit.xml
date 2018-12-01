@@ -301,7 +301,7 @@
                         android:layout_marginStart="5dp"
                         android:textSize="12sp"
                         android:enabled="false"
-                        android:text="Lần"
+                        android:text="lần"
                         android:background="@drawable/bg_input1"/>
                     <TextView
                         android:id="@+id/tv_count_unit"

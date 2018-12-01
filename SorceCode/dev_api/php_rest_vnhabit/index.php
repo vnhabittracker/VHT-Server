@@ -1,7 +1,5 @@
 <?php
 
-// echo 'Welcome to VNHABIT API SERVER!';
+echo 'Welcome to VNHABIT Rest API server.';
 
-echo levenshtein("bay","nay");
-echo levenshtein("bay","ay");
 ?>

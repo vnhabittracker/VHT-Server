@@ -13,55 +13,64 @@
     android:background="@drawable/bg_main"
     tools:context=".RegisterActivity">
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
     <ImageView
         android:id="@+id/logo"
         android:layout_width="90dp"
-        android:layout_height="90dp"
+        android:layout_height="0dp"
+        android:layout_weight="1.5"
+        android:layout_marginBottom="30dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="40dp"
-        android:layout_marginBottom="20dp"
         android:contentDescription="@string/app_name"
         app:srcCompat="@drawable/app_logo" />
 
     <EditText
         android:id="@+id/edit_username"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="0dp"
+        android:layout_weight="0.7"
         android:background="@drawable/bg_input"
         android:gravity="center"
         android:hint="@string/username"
-        android:textSize="16sp" />
+        android:textSize="13sp" />
 
     <EditText
         android:id="@+id/edit_email"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="0dp"
+        android:layout_weight="0.7"
         android:background="@drawable/bg_input"
         android:gravity="center"
         android:layout_marginTop="10dp"
         android:hint="@string/email"
         android:focusableInTouchMode="true"
-        android:textSize="16sp" />
+        android:textSize="13sp" />
 
     <EditText
         android:id="@+id/edit_password"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="0dp"
+        android:layout_weight="0.7"
         android:background="@drawable/bg_input"
         android:gravity="center"
         android:layout_marginTop="10dp"
-        android:textSize="16sp"
+        android:textSize="13sp"
         android:hint="@string/password"
         android:inputType="textPassword" />
 
     <EditText
         android:id="@+id/edit_conf_password"
+        android:layout_height="0dp"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_weight="0.7"
         android:background="@drawable/bg_input"
         android:gravity="center"
         android:layout_marginTop="10dp"
-        android:textSize="16sp"
+        android:textSize="13sp"
         android:hint="@string/password_conf"
         android:focusableInTouchMode="true"
         android:inputType="textPassword" />
@@ -69,17 +78,19 @@
     <Button
         android:id="@+id/btn_register"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:textSize="18sp"
+        android:layout_height="0dp"
+        android:layout_weight="0.7"
         android:textAllCaps="false"
         android:background="@drawable/bg_button_blue"
         android:layout_marginTop="10dp"
+        android:textSize="14sp"
         android:textColor="#fffd"
         android:text="@string/register"/>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"
         android:gravity="center"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="15dp"
@@ -106,7 +117,8 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="0dp"
+        android:layout_weight="0.7"
         android:orientation="horizontal"
         android:gravity="center_horizontal">
 
@@ -116,7 +128,7 @@
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="10dp"
             android:textAlignment="textStart"
             android:textAllCaps="false"
             android:background="@drawable/bg_facebook" />
@@ -127,7 +139,7 @@
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="10dp"
             android:textAlignment="textStart"
             android:textAllCaps="false"
             android:background="@drawable/bg_google" />
@@ -136,12 +148,15 @@
     <TextView
         android:id="@+id/link_login"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
+        android:layout_height="0dp"
+        android:layout_weight="0.7"
+        android:gravity="center"
         android:layout_marginTop="15dp"
-        android:paddingBottom="10dp"
         android:textSize="14sp"
         android:textColor="#333"
         android:text="@string/remind_login"/>
-
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 </LinearLayout>

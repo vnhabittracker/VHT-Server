@@ -1,13 +1,14 @@
 package habit.tracker.habittracker;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -33,18 +34,11 @@ import habit.tracker.habittracker.common.AppConstant;
 import habit.tracker.habittracker.common.util.AppGenerator;
 import habit.tracker.habittracker.common.util.MySharedPreference;
 import habit.tracker.habittracker.repository.Database;
-import habit.tracker.habittracker.repository.habit.HabitEntity;
-import habit.tracker.habittracker.repository.habit.HabitTracking;
-import habit.tracker.habittracker.repository.tracking.TrackingEntity;
 import habit.tracker.habittracker.repository.user.UserEntity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static habit.tracker.habittracker.common.AppConstant.TYPE_0;
-import static habit.tracker.habittracker.common.AppConstant.TYPE_1;
-import static habit.tracker.habittracker.common.AppConstant.TYPE_2;
-import static habit.tracker.habittracker.common.AppConstant.TYPE_3;
 import static habit.tracker.habittracker.common.util.AppGenerator.YMD_SHORT;
 import static habit.tracker.habittracker.common.util.AppGenerator.getLevel;
 
@@ -57,6 +51,8 @@ public class ProfileActivity extends BaseActivity implements RecyclerViewItemCli
     ImageView imgAvatar;
     @BindView(R.id.tvStartedDate)
     TextView tvStartedDate;
+    @BindView(R.id.tvRealName)
+    TextView tvRealName;
     @BindView(R.id.tvUserDescription)
     TextView tvUserDescription;
     @BindView(R.id.tvLevel)
@@ -97,22 +93,20 @@ public class ProfileActivity extends BaseActivity implements RecyclerViewItemCli
         mService.getUser(userInfo[1], userInfo[2]).enqueue(new Callback<UserResponse>() {
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
-                if (response.body().getResult().equals(AppConstant.RES_OK)) {
+                if (response.body().getResult().equals(AppConstant.STATUS_OK)) {
                     User user = response.body().getData();
                     Database db = new Database(ProfileActivity.this);
                     db.open();
                     if (user != null) {
-                        UserEntity userEntity = Database.getUserDb().getUser(user.getUserId());
+                        ProfileActivity.this.userEntity = Database.getUserDb().getUser(user.getUserId());
                         userEntity.setUserId(user.getUserId());
                         userEntity.setUsername(user.getUsername());
                         userEntity.setEmail(user.getEmail());
-                        userEntity.setPhone(user.getPhone());
                         userEntity.setGender(user.getGender());
                         userEntity.setDateOfBirth(user.getDateOfBirth());
                         userEntity.setPassword(user.getPassword());
-                        userEntity.setUserIcon(user.getUserIcon());
-//                        userEntity.setAvatar(user.getAvatar());
-                        userEntity.setUserDescription(user.getUserDescription());
+                        userEntity.setRealName(user.getRealName());
+                        userEntity.setDescription(user.getDescription());
                         userEntity.setCreatedDate(user.getCreatedDate());
                         userEntity.setLastLoginTime(user.getLastLoginTime());
                         userEntity.setContinueUsingCount(user.getContinueUsingCount());
@@ -134,6 +128,7 @@ public class ProfileActivity extends BaseActivity implements RecyclerViewItemCli
 
     private void initializeScreen() {
         mService.getHabitSuggestByLevel().enqueue(new Callback<SuggestByLevelReponse>() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onResponse(Call<SuggestByLevelReponse> call, Response<SuggestByLevelReponse> response) {
                 if (response.body().getResult().equals("1")) {
@@ -144,10 +139,7 @@ public class ProfileActivity extends BaseActivity implements RecyclerViewItemCli
                     List<List<HabitSuggestion>> data = response.body().getData();
 
                     String currentDate = AppGenerator.getCurrentDate(YMD_SHORT);
-                    String userId = MySharedPreference.getUserId(ProfileActivity.this);
-                    userEntity = Database.getUserDb().getUser(userId);
-
-                    int habitCount = Database.getHabitDb().countHabitByUser(userId);
+                    int habitCount = Database.getHabitDb().countHabitByUser(userEntity.getUserId());
                     int userLevel = AppGenerator.getLevel(Integer.parseInt(userEntity.getUserScore()));
                     String[] level = new String[]{"Thói quen dễ được nhiều người chọn", "Thói quen trung bình được nhiều người chọn", "Thói quen khó được nhiều người chọn"};
                     if (userLevel <= 3) {
@@ -173,7 +165,7 @@ public class ProfileActivity extends BaseActivity implements RecyclerViewItemCli
                             ));
                         }
                     }
-                    if (userEntity.getAvatar() != null) {
+                    if (!TextUtils.isEmpty(userEntity.getAvatar())) {
                         try {
                             Uri uri = Uri.parse(userEntity.getAvatar());
                             Bitmap bitmap = MediaStore.Images.Media.getBitmap(ProfileActivity.this.getContentResolver(), uri);
@@ -182,7 +174,8 @@ public class ProfileActivity extends BaseActivity implements RecyclerViewItemCli
                             e.printStackTrace();
                         }
                     }
-                    tvUserDescription.setText(userEntity.getUserDescription());
+                    tvRealName.setText(userEntity.getRealName());
+                    tvUserDescription.setText(userEntity.getDescription());
                     tvStartedDate.setText(AppGenerator.format(userEntity.getCreatedDate(), AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT));
                     tvLevel.setText(String.valueOf(getLevel(Integer.parseInt(userEntity.getUserScore()))));
                     tvUserScore.setText(userEntity.getUserScore());
@@ -191,28 +184,6 @@ public class ProfileActivity extends BaseActivity implements RecyclerViewItemCli
                     tvContinueUsing.setText(userEntity.getContinueUsingCount() + " ngày");
                     tvTotalHabit.setText(String.valueOf(habitCount));
                     suggestByGroupAdapter.notifyDataSetChanged();
-
-//                    int totalTrack = 0;
-//                    int successTrack = 0;
-//                    HabitEntity habitEntity;
-//                    List<TrackingEntity> trackingEntityList;
-//                    List<HabitTracking> habitTrackingList = Database.getHabitDb().getHabitTracking(userId, userEntity.getCreatedDate(), currentDate);
-//                    for (HabitTracking habitTracking : habitTrackingList) {
-//                        habitEntity = habitTracking.getHabit();
-//                        trackingEntityList = habitTracking.getTrackingList();
-//                        switch (habitEntity.getHabitType()) {
-//                            case TYPE_0:
-//                                for (TrackingEntity trackingEntity: trackingEntityList) {
-//                                }
-//                                break;
-//                            case TYPE_1:
-//                                break;
-//                            case TYPE_2:
-//                                break;
-//                            case TYPE_3:
-//                                break;
-//                        }
-//                    }
 
                     db.close();
                 }

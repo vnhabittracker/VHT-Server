@@ -5,14 +5,15 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/app_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/app_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
@@ -44,11 +45,11 @@
         <activity android:name=".ReminderCreateActivity" />
 
         <receiver android:name=".common.habitreminder.HabitReminderServiceReceiver" />
-
-        <receiver android:name=".common.pushservice.AppBootReceiver"
+        <receiver
+            android:name=".common.pushservice.AppBootReceiver"
             android:enabled="false">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
@@ -60,6 +61,8 @@
         <activity android:name=".NoteActivity" />
         <activity android:name=".SuggestionByGroupActivity" />
         <activity android:name=".ProfileActivity" />
+        <activity android:name=".SettingActivity" />
+        <activity android:name=".PersonalActivity"></activity>
     </application>
 
 </manifest>

@@ -13,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="3"
-        android:gravity="center"
+        android:gravity="center_horizontal"
+        android:paddingTop="10sp"
         android:layout_marginBottom="15dp"
         android:background="@color/gray1">
         <TextView
@@ -21,9 +22,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:textSize="20sp"
+            android:textSize="23sp"
             android:textStyle="bold"
             android:text="Chạy bộ"/>
 
@@ -195,30 +195,30 @@
 
         <ImageView
             android:id="@+id/tabEditHabit"
-            android:padding="7dp"
+            android:padding="10dp"
             app:srcCompat="@drawable/tab_edit"
-            android:alpha="0.5"
+            android:alpha="0.2"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent" />
         <ImageView
-            android:onClick="showEmpty"
-            android:padding="7dp"
+            android:id="@+id/tabAddJournal"
+            android:padding="10dp"
             app:srcCompat="@drawable/tab_description"
-            android:alpha="0.5"
+            android:alpha="0.2"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent" />
         <ImageView
             android:id="@+id/tabChart"
-            android:padding="7dp"
+            android:padding="10dp"
             app:srcCompat="@drawable/tab_chart"
-            android:alpha="0.5"
+            android:alpha="0.2"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent" />
         <ImageView
-            android:padding="7dp"
+            android:padding="10dp"
             app:srcCompat="@drawable/tab_calendar"
             android:layout_weight="1"
             android:layout_width="0dp"

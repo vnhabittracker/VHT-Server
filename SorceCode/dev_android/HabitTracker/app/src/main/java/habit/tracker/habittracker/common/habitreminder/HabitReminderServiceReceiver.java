@@ -12,29 +12,25 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import habit.tracker.habittracker.R;
 import habit.tracker.habittracker.common.util.AppGenerator;
 
 public class HabitReminderServiceReceiver extends BroadcastReceiver {
 
-    NotificationManager notifManager;
+    NotificationManager notificationManager;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         Bundle extras = intent.getExtras();
-
         if (extras != null) {
             String remindId = extras.getString(HabitReminderManager.REMIND_ID);
             String remindText = extras.getString(HabitReminderManager.REMIND_TEXT);
-            String habitName = extras.getString(HabitReminderManager.HABIT_NAME);
+            String remindTitle = extras.getString(HabitReminderManager.REMIND_TITLE);
             String endTime = extras.getString(HabitReminderManager.END_TIME);
 
-            if (remindId == null || remindText == null || habitName == null) {
+            if (remindId == null || remindText == null || remindTitle == null) {
                 return;
             }
 
@@ -52,34 +48,34 @@ public class HabitReminderServiceReceiver extends BroadcastReceiver {
                 }
             }
 
-            if (notifManager == null) {
-                notifManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (notificationManager == null) {
+                notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             }
 
             String defaultId = "habittracker";
             Notification notification = null;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
 
-                NotificationChannel mChannel = notifManager.getNotificationChannel(defaultId);
+                NotificationChannel mChannel = notificationManager.getNotificationChannel(defaultId);
                 if (mChannel == null) {
-                    mChannel = new NotificationChannel(defaultId, habitName, NotificationManager.IMPORTANCE_HIGH);
+                    mChannel = new NotificationChannel(defaultId, remindTitle, NotificationManager.IMPORTANCE_HIGH);
 //                    mChannel.enableVibration(true);
 //                    mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-                    notifManager.createNotificationChannel(mChannel);
+                    notificationManager.createNotificationChannel(mChannel);
                 }
 
                 notification = new NotificationCompat.Builder(context, defaultId)
-                                .setSmallIcon(R.drawable.ic_launcher_foreground)
-                                .setContentTitle("VN Habit Tracker: " + habitName)
+                                .setSmallIcon(R.drawable.app_launcher)
+                                .setContentTitle("VN Habit Tracker: " + remindTitle)
                                 .setContentText(remindText).build();
             } else {
                 notification = new NotificationCompat.Builder(context, defaultId)
-                        .setSmallIcon(R.drawable.ic_launcher_foreground)
-                        .setContentTitle("VN Habit Tracker: " + habitName)
+                        .setSmallIcon(R.drawable.app_launcher)
+                        .setContentTitle("VN Habit Tracker: " + remindTitle)
                         .setContentText(remindText).build();
             }
 
-            notifManager.notify(0, notification);
+            notificationManager.notify(0, notification);
         }
     }
 }

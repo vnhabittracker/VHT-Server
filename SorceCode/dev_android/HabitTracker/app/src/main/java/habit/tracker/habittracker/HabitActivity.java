@@ -11,13 +11,10 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -29,7 +26,6 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -37,13 +33,14 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import habit.tracker.habittracker.adapter.RecyclerViewItemClickListener;
 import habit.tracker.habittracker.adapter.RemindRecyclerViewAdapter;
+import habit.tracker.habittracker.adapter.search.HabitTextWatcher;
 import habit.tracker.habittracker.adapter.search.SearchRecyclerViewAdapter;
 import habit.tracker.habittracker.api.VnHabitApiUtils;
 import habit.tracker.habittracker.api.model.habit.Habit;
 import habit.tracker.habittracker.api.model.reminder.Reminder;
 import habit.tracker.habittracker.api.model.search.HabitSuggestion;
-import habit.tracker.habittracker.api.model.search.SearchResponse;
 import habit.tracker.habittracker.api.service.VnHabitApiService;
+import habit.tracker.habittracker.common.dialog.AppDialogHelper;
 import habit.tracker.habittracker.common.habitreminder.HabitReminderManager;
 import habit.tracker.habittracker.common.util.AppGenerator;
 import habit.tracker.habittracker.common.util.MySharedPreference;
@@ -53,13 +50,10 @@ import habit.tracker.habittracker.repository.Database;
 import habit.tracker.habittracker.repository.group.GroupEntity;
 import habit.tracker.habittracker.repository.habit.HabitEntity;
 import habit.tracker.habittracker.repository.reminder.ReminderEntity;
-import habit.tracker.habittracker.repository.user.UserEntity;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static habit.tracker.habittracker.common.AppConstant.RES_OK;
 
 public class HabitActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     public static final int REQUEST_UPDATE = 0;
@@ -77,19 +71,21 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
     public static final String TYPE_7 = "7";
     public static final String TYPE_8 = "8";
     public static final String TYPE_9 = "9";
-    public static final String DAY_OF_WEEK = "day_of_week";
+
+    VnHabitApiService mApiService = VnHabitApiUtils.getApiService();
 
     @BindView(R.id.edit_habitName)
     EditText editHabitName;
     @BindView(R.id.rvHabitSuggestion)
     RecyclerView rvHabitSuggestion;
-    SearchRecyclerViewAdapter suggestAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
-    List<HabitSuggestion> suggestList = new ArrayList<>();
+
+    SearchRecyclerViewAdapter habitSuggestionAdapter;
+    List<HabitSuggestion> searchResultList = new ArrayList<>();
+
     String initHabitId;
     String suggestHabitNameId;
     String suggestHabitName;
-    boolean selectedSuggestion = true;
+    HabitTextWatcher habitTextWatcher = new HabitTextWatcher(this);
 
     @BindView(R.id.btn_suggestHabit)
     View btnSuggestHabit;
@@ -131,7 +127,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
     View selGroup;
     @BindView(R.id.tv_groupName)
     TextView tvGroupName;
-    String savedGroupId;
+    String selectedGroupId;
 
     @BindView(R.id.btnMon)
     TextView btnMon;
@@ -220,9 +216,86 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
 
     @BindView(R.id.rvRemind)
     RecyclerView rvRemind;
-    List<Reminder> remindDisplayList = new ArrayList<>();
-    List<Reminder> remindAddNewList = new ArrayList<>();
-    RemindRecyclerViewAdapter remindAdapter;
+    List<Reminder> reminderDisplayList = new ArrayList<>();
+    List<Reminder> reminderUpdateList = new ArrayList<>();
+    RemindRecyclerViewAdapter reminderAdapter;
+
+    @Override
+    @SuppressLint("DefaultLocale")
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == SELECT_GROUP) {
+            if (resultCode == RESULT_OK) {
+                if (data != null && data.getExtras() != null) {
+                    selectedGroupId = data.getStringExtra(GroupActivity.GROUP_ID);
+                    Database db = Database.getInstance(HabitActivity.this);
+                    db.open();
+                    GroupEntity groupEntity = Database.getGroupDb().getGroup(selectedGroupId);
+                    db.close();
+                    if (groupEntity != null) {
+                        tvGroupName.setText(data.getStringExtra(GroupActivity.GROUP_NAME));
+                    } else {
+                        selectedGroupId = null;
+                        tvGroupName.setText("Chưa có");
+                    }
+                }
+            }
+        } else if (requestCode == ADD_REMINDER) {
+            if (resultCode == RESULT_OK) {
+                if (data != null && data.getExtras() != null) {
+                    String format = "%02d";
+                    boolean isDelete = data.getBooleanExtra(ReminderCreateActivity.IS_DELETE_REMINDER, false);
+                    int pos = data.getIntExtra(ReminderCreateActivity.POSITION_IN_LIST, -1);
+                    String reminderId = data.getStringExtra(ReminderCreateActivity.REMINDER_ID);
+                    String remindType = String.valueOf(data.getIntExtra(ReminderCreateActivity.REMIND_TYPE, -1));
+                    String remindText = data.getStringExtra(ReminderCreateActivity.REMIND_TEXT);
+                    String hour = String.format(format, data.getIntExtra(ReminderCreateActivity.REMIND_HOUR, 0));
+                    String minute = String.format(format, data.getIntExtra(ReminderCreateActivity.REMIND_MINUTE, 0));
+                    String date = data.getStringExtra(ReminderCreateActivity.REMIND_DATE);
+
+                    if (TextUtils.isEmpty(reminderId)) {
+                        // add new
+                        Reminder reminder = new Reminder();
+                        reminder.setServerId(AppGenerator.getNewId());
+                        reminder.setRemindText(remindText);
+                        reminder.setRemindStartTime(date + " " + hour + ":" + minute);
+                        reminder.setRepeatType(remindType);
+                        reminderDisplayList.add(reminder);
+                        reminderUpdateList.add(reminder);
+                    } else {
+                        // update
+                        boolean f = false;
+                        Reminder updateReminder = reminderDisplayList.get(pos);
+                        updateReminder.setRemindText(remindText);
+                        updateReminder.setRepeatType(remindType);
+                        updateReminder.setRemindStartTime(date + " " + hour + ":" + minute);
+                        for (Reminder reminder : reminderUpdateList) {
+                            if (reminder.getReminderId().equals(reminderId)) {
+                                reminder.setDelete(isDelete);
+                                f = true;
+                                break;
+                            }
+                        }
+                        if (!f) {
+                            reminderUpdateList.add(updateReminder);
+                        }
+                        if (isDelete) {
+                            reminderDisplayList.remove(pos);
+                        }
+                    }
+                    reminderAdapter.notifyDataSetChanged();
+                }
+            }
+        } else if (requestCode == GET_SUGGEST) {
+            if (resultCode == RESULT_OK) {
+                if (data != null) {
+                    suggestHabitNameId = data.getStringExtra(SuggestionByGroupActivity.SUGGEST_HABIT_ID);
+                    suggestHabitName = data.getStringExtra(SuggestionByGroupActivity.SUGGEST_HABIT_NAME_UNI);
+                    habitTextWatcher.setAfterSelectedSuggestion(true);
+                    editHabitName.setText(suggestHabitName);
+                }
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -231,119 +304,41 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         setContentView(R.layout.activity_habit);
         ButterKnife.bind(this);
 
-        suggestAdapter = new SearchRecyclerViewAdapter(this, suggestList, new RecyclerViewItemClickListener() {
+        final HabitTextWatcher habitNameTextWatcher = new HabitTextWatcher(this);
+        habitSuggestionAdapter = new SearchRecyclerViewAdapter(this, searchResultList, new RecyclerViewItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                suggestHabitNameId = suggestList.get(position).getHabitNameId();
-                suggestHabitName = suggestList.get(position).getHabitNameUni();
-                selectedSuggestion = true;
+                habitNameTextWatcher.setAfterSelectedSuggestion(true);
+                suggestHabitNameId = searchResultList.get(position).getHabitNameId();
+                suggestHabitName = searchResultList.get(position).getHabitNameUni();
                 editHabitName.setText(suggestHabitName);
-                suggestList.clear();
-                suggestAdapter.notifyDataSetChanged();
+                searchResultList.clear();
+                habitSuggestionAdapter.notifyDataSetChanged();
             }
         });
         rvHabitSuggestion.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(this);
-        rvHabitSuggestion.setLayoutManager(mLayoutManager);
-        rvHabitSuggestion.setAdapter(suggestAdapter);
+        rvHabitSuggestion.setLayoutManager(new LinearLayoutManager(this));
+        rvHabitSuggestion.setAdapter(habitSuggestionAdapter);
         rvHabitSuggestion.setItemAnimator(null);
 
-        editHabitName.addTextChangedListener(new TextWatcher() {
+        // get habit name suggestion
+        habitNameTextWatcher.setSearchResultList(searchResultList);
+        habitNameTextWatcher.setAdapter(habitSuggestionAdapter);
+        editHabitName.addTextChangedListener(habitNameTextWatcher);
+
+        // init remind list
+        reminderAdapter = new RemindRecyclerViewAdapter(this, reminderDisplayList);
+        reminderAdapter.setListener(new RecyclerViewItemClickListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (selectedSuggestion) {
-                    selectedSuggestion = false;
-                    return;
-                }
-                if (TextUtils.isEmpty(s.toString())) {
-                    suggestList.clear();
-                    suggestAdapter.notifyDataSetChanged();
-                    return;
-                }
-                VnHabitApiService mService = VnHabitApiUtils.getApiService();
-                mService.searchHabitName(AppGenerator.getSearchKey(s.toString().trim())).enqueue(new Callback<SearchResponse>() {
-                    @Override
-                    public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
-                        suggestList.clear();
-                        if (response.body().getResult().equals(RES_OK)) {
-                            List<HabitSuggestion> searchResult = response.body().getSearchResult();
-                            Database db = Database.getInstance(HabitActivity.this);
-                            db.open();
-                            UserEntity userEntity = Database.getUserDb().getUser(MySharedPreference.getUserId(HabitActivity.this));
-                            int userLevel = AppGenerator.getLevel(Integer.parseInt(userEntity.getUserScore()));
-                            db.close();
-
-                            if (searchResult.size() > 0) {
-                                List<HabitSuggestion> lowList = new ArrayList<>();
-                                List<HabitSuggestion> medList = new ArrayList<>();
-                                List<HabitSuggestion> higList = new ArrayList<>();
-                                List<HabitSuggestion> tmpList = new ArrayList<>();
-                                int topLow = -1;
-                                int topMed = -1;
-                                int topHig = -1;
-                                int hbLevel;
-                                int numOfUser;
-                                for (HabitSuggestion sg : searchResult) {
-                                    hbLevel = (int) (((float) sg.getSuccessTrack() / (float) sg.getTotalTrack()) * 100);
-                                    numOfUser = Integer.parseInt(sg.getHabitNameCount());
-                                    if (hbLevel >= 80) {
-                                        if (numOfUser > topLow) {
-                                            lowList.add(0, sg);
-                                            topLow = numOfUser;
-                                        } else {
-                                            lowList.add(sg);
-                                        }
-                                    } else if (hbLevel >= 50) {
-                                        if (numOfUser > topMed) {
-                                            medList.add(0, sg);
-                                            topMed = numOfUser;
-                                        } else {
-                                            medList.add(sg);
-                                        }
-                                    } else {
-                                        if (numOfUser > topHig) {
-                                            higList.add(0, sg);
-                                            topMed = numOfUser;
-                                        } else {
-                                            higList.add(sg);
-                                        }
-                                    }
-                                }
-                                tmpList.addAll(lowList);
-                                tmpList.addAll(medList);
-                                tmpList.addAll(higList);
-                                if (userLevel <= 3) {
-                                    suggestList.addAll(tmpList.size() >= 5 ? tmpList.subList(0, 5) : tmpList);
-                                } else if (userLevel < 6) {
-                                    int size = lowList.size() + medList.size();
-                                    suggestList.addAll(tmpList.subList(size, 0));
-                                    if (suggestList.size() < 5) {
-                                        size = 5 - suggestList.size();
-                                        suggestList.addAll(higList.size() >= size ? higList.subList(0, size) : higList);
-                                    }
-                                } else {
-                                    Collections.reverse(tmpList);
-                                    suggestList.addAll(tmpList.size() >= 5 ? tmpList.subList(0, 5) : tmpList);
-                                }
-                            }
-                        }
-                        suggestAdapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onFailure(Call<SearchResponse> call, Throwable t) {
-                    }
-                });
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
+            public void onItemClick(View view, final int position) {
+                Intent intent = new Intent(HabitActivity.this, ReminderCreateActivity.class);
+                intent.putExtra(ReminderCreateActivity.REMINDER_ID, reminderDisplayList.get(position).getReminderId());
+                intent.putExtra(ReminderCreateActivity.POSITION_IN_LIST, position);
+                startActivityForResult(intent, ADD_REMINDER);
             }
         });
+        rvRemind.setLayoutManager(new LinearLayoutManager(this));
+        rvRemind.setAdapter(reminderAdapter);
 
         // init habit type: daily
         btnHabitType = btnDaily;
@@ -365,48 +360,9 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         color10.setBackground(getCircleBackground(colorsList.get(9)));
         setHabitColor(color1);
 
-        // start and end date
+        // start and end remindDate
         startHabitDate = AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT);
         endHabitDate = AppGenerator.getNextDate(startHabitDate, AppGenerator.YMD_SHORT);
-
-        // init remind list
-        remindAdapter = new RemindRecyclerViewAdapter(this, remindDisplayList);
-        remindAdapter.setListener(new RecyclerViewItemClickListener() {
-            @Override
-            public void onItemClick(View view, final int position) {
-                AlertDialog.Builder builder1 = new AlertDialog.Builder(HabitActivity.this);
-                builder1.setMessage("Xóa nhắc nhở này");
-                builder1.setCancelable(true);
-                builder1.setPositiveButton("Có", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        HabitReminderManager manager = new HabitReminderManager(HabitActivity.this);
-                        manager.cancelReminder(Integer.parseInt(remindDisplayList.get(position).getReminderId()));
-                        remindDisplayList.remove(position);
-                        remindAdapter.notifyDataSetChanged();
-                        dialog.cancel();
-                    }
-                });
-
-                builder1.setNegativeButton("Không", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
-
-                final AlertDialog alertDialog = builder1.create();
-                alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                    @SuppressLint("ResourceType")
-                    @Override
-                    public void onShow(DialogInterface dialog) {
-                        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor(HabitActivity.this.getString(R.color.colorAccent)));
-                        alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor(HabitActivity.this.getString(R.color.colorAccent)));
-                    }
-                });
-                alertDialog.show();
-            }
-        });
-        rvRemind.setLayoutManager(new LinearLayoutManager(this));
-        rvRemind.setAdapter(remindAdapter);
 
         // load habit from local trackingItemList
         Bundle data = getIntent().getExtras();
@@ -415,7 +371,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
             suggestHabitNameId = data.getString(ProfileActivity.SUGGEST_NAME_ID, null);
             suggestHabitName = data.getString(ProfileActivity.SUGGEST_NAME, null);
             editHabitName.setText(suggestHabitName);
-            selectedSuggestion = true;
+            habitNameTextWatcher.setAfterSelectedSuggestion(true);
         }
         if (!TextUtils.isEmpty(initHabitId)) {
             if (initHabitId != null) {
@@ -424,7 +380,8 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                 initializeBySavedHabit(initHabitId);
             }
         } else {
-            // init monitor date
+
+            // init monitor remindDate
             setMonitorDate(btnMon);
             setMonitorDate(btnTue);
             setMonitorDate(btnWed);
@@ -433,220 +390,162 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
             setMonitorDate(btnSat);
             setMonitorDate(btnSun);
 
-            // set plan date
+            // set plan remindDate
             tvStartDate.setText(AppGenerator.format(startHabitDate, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT));
             tvEndDate.setText(AppGenerator.format(endHabitDate, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT));
         }
     }
 
-    @Override
-    @SuppressLint("DefaultLocale")
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == SELECT_GROUP) {
-            if (resultCode == RESULT_OK) {
-                if (data != null && data.getExtras() != null) {
-                    savedGroupId = data.getStringExtra(GroupActivity.GROUP_ID);
-                    tvGroupName.setText(data.getStringExtra(GroupActivity.GROUP_NAME));
-                }
-            }
-        } else if (requestCode == ADD_REMINDER) {
-            if (resultCode == RESULT_OK) {
-                if (data != null && data.getExtras() != null) {
-                    String remindType = String.valueOf(data.getIntExtra(ReminderCreateActivity.REMIND_TYPE, -1));
-                    String remindText = data.getStringExtra(ReminderCreateActivity.REMIND_TEXT);
-                    String date = data.getStringExtra(ReminderCreateActivity.REMIND_DATE);
-                    String format = "%02d";
-                    String hour = String.format(format, data.getIntExtra(ReminderCreateActivity.REMIND_HOUR, 0));
-                    String minute = String.format(format, data.getIntExtra(ReminderCreateActivity.REMIND_MINUTE, 0));
-
-                    Reminder reminder = new Reminder();
-                    reminder.setServerId(AppGenerator.getNewId());
-                    reminder.setRemindText(remindText);
-                    reminder.setReminderTime(date + " " + hour + ":" + minute);
-                    reminder.setRepeatType(remindType);
-                    remindDisplayList.add(reminder);
-                    remindAddNewList.add(reminder);
-                    remindAdapter.notifyDataSetChanged();
-                }
-            }
-        } else if (requestCode == GET_SUGGEST) {
-            if (resultCode == RESULT_OK) {
-                if (data != null) {
-                    suggestHabitNameId = data.getStringExtra(SuggestionByGroupActivity.SUGGEST_HABIT_ID);
-                    suggestHabitName = data.getStringExtra(SuggestionByGroupActivity.SUGGEST_HABIT_NAME_UNI);
-                    selectedSuggestion = true;
-                    editHabitName.setText(suggestHabitName);
-                }
-            }
-        }
-    }
-
     private void initializeBySavedHabit(String habitId) {
         if (habitId != null) {
+            Database db = new Database(this);
+            db.open();
+
             // change UI for update and delete
             btnSave.setText("Cập nhật");
             btnCancel.setText("Xóa");
 
-            Database db = new Database(this);
-            db.open();
-            HabitEntity habitEntity = Database.habitDaoImpl.getHabit(habitId);
+            HabitEntity habitEntity = Database.getHabitDb().getHabit(habitId);
+            if (habitEntity == null) {
+                return;
+            }
 
-            if (habitEntity != null) {
-
-                if (habitEntity.getGroupId() != null) {
-                    this.savedGroupId = habitEntity.getGroupId();
-                    GroupEntity groupEntity = Database.groupDaoImpl.getGroup(habitEntity.getGroupId());
+            // set group
+            if (habitEntity.getGroupId() != null) {
+                this.selectedGroupId = habitEntity.getGroupId();
+                GroupEntity groupEntity = Database.groupDaoImpl.getGroup(habitEntity.getGroupId());
+                if (groupEntity != null) {
                     tvGroupName.setText(groupEntity.getGroupName());
                 }
-                if (habitEntity.getMonitorId() != null) {
-                    this.savedMonitorDateId = habitEntity.getMonitorId();
-                }
+            }
 
-                // habit name
-                editHabitName.setText(habitEntity.getHabitName());
+            // set monitor days in week
+            if (habitEntity.getMonitorId() != null) {
+                this.savedMonitorDateId = habitEntity.getMonitorId();
+            }
+            if (habitEntity.getMon() != null && habitEntity.getMon().equals(TYPE_1)) {
+                setMonitorDate(btnMon);
+            }
+            if (habitEntity.getTue() != null && habitEntity.getTue().equals(TYPE_1)) {
+                setMonitorDate(btnTue);
+            }
+            if (habitEntity.getWed() != null && habitEntity.getWed().equals(TYPE_1)) {
+                setMonitorDate(btnWed);
+            }
+            if (habitEntity.getThu() != null && habitEntity.getThu().equals(TYPE_1)) {
+                setMonitorDate(btnThu);
+            }
+            if (habitEntity.getFri() != null && habitEntity.getFri().equals(TYPE_1)) {
+                setMonitorDate(btnFri);
+            }
+            if (habitEntity.getSat() != null && habitEntity.getSat().equals(TYPE_1)) {
+                setMonitorDate(btnSat);
+            }
+            if (habitEntity.getSat() != null && habitEntity.getSun().equals(TYPE_1)) {
+                setMonitorDate(btnSun);
+            }
 
-                // habit target
-                switch (habitEntity.getHabitTarget()) {
-                    case TYPE_0:
-                        setHabitTarget(btnHabitBuild);
-                        break;
-                    case TYPE_1:
-                        setHabitTarget(btnHabitQuit);
-                        break;
-                }
+            // set habit name
+            editHabitName.setText(habitEntity.getHabitName());
 
-                // monitor date
-                if (habitEntity.getMon() != null && habitEntity.getMon().equals(TYPE_1)) {
-                    setMonitorDate(btnMon);
-                }
-                if (habitEntity.getTue() != null && habitEntity.getTue().equals(TYPE_1)) {
-                    setMonitorDate(btnTue);
-                }
-                if (habitEntity.getWed() != null && habitEntity.getWed().equals(TYPE_1)) {
-                    setMonitorDate(btnWed);
-                }
-                if (habitEntity.getThu() != null && habitEntity.getThu().equals(TYPE_1)) {
-                    setMonitorDate(btnThu);
-                }
-                if (habitEntity.getFri() != null && habitEntity.getFri().equals(TYPE_1)) {
-                    setMonitorDate(btnFri);
-                }
-                if (habitEntity.getSat() != null && habitEntity.getSat().equals(TYPE_1)) {
-                    setMonitorDate(btnSat);
-                }
-                if (habitEntity.getSat() != null && habitEntity.getSun().equals(TYPE_1)) {
-                    setMonitorDate(btnSun);
-                }
+            // set habit target
+            setHabitTarget(habitEntity.getHabitTarget().equals(TYPE_0) ? btnHabitBuild : btnHabitQuit);
 
-                // start and end date of habit
-                if (habitEntity.getStartDate() != null) {
-                    startHabitDate = habitEntity.getStartDate();
-                    setHabitDate(mStartDate);
-                    tvStartDate.setText(AppGenerator.format(startHabitDate, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT));
-                }
-                if (habitEntity.getEndDate() != null) {
-                    endHabitDate = habitEntity.getEndDate();
-                    setHabitDate(mEndDate);
-                    tvEndDate.setText(AppGenerator.format(endHabitDate, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT));
-                } else {
-                    tvEndDate.setText(AppGenerator.format(endHabitDate, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT));
-                }
+            // set start and end remindDate of habit
+            if (habitEntity.getStartDate() != null) {
+                startHabitDate = habitEntity.getStartDate();
+                setHabitDate(mStartDate);
+                tvStartDate.setText(AppGenerator.format(startHabitDate, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT));
+            }
+            if (habitEntity.getEndDate() != null) {
+                endHabitDate = habitEntity.getEndDate();
+                setHabitDate(mEndDate);
+                tvEndDate.setText(AppGenerator.format(endHabitDate, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT));
+            } else {
+                tvEndDate.setText(AppGenerator.format(endHabitDate, AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT));
+            }
 
-                // habit type
-                switch (habitEntity.getHabitType()) {
-                    case TYPE_0:
-                        setHabitType(btnDaily);
-                        break;
-                    case TYPE_1:
-                        setHabitType(btnWeekly);
-                        break;
-                    case TYPE_2:
-                        setHabitType(btnMonthly);
-                        break;
-                    case TYPE_3:
-                        setHabitType(btnYearly);
-                        break;
-                }
-                switch (habitEntity.getMonitorType()) {
-                    case TYPE_0:
-                        selectMonitorType(chkMonitorCheck);
-                        break;
-                    case TYPE_1:
-                        selectMonitorType(chkMonitorCount);
-                        break;
-                }
+            // set habit type
+            switch (habitEntity.getHabitType()) {
+                case TYPE_0:
+                    selectHabitType(btnDaily);
+                    break;
+                case TYPE_1:
+                    selectHabitType(btnWeekly);
+                    break;
+                case TYPE_2:
+                    selectHabitType(btnMonthly);
+                    break;
+                case TYPE_3:
+                    selectHabitType(btnYearly);
+                    break;
+            }
 
-                // habit monitor type
-                switch (habitEntity.getMonitorType()) {
-                    case TYPE_0:
-                        selectMonitorType(chkMonitorCheck);
-                        break;
-                    case TYPE_1:
-                        selectMonitorType(chkMonitorCount);
-                        break;
-                }
-                editCheckNumber.setText(habitEntity.getMonitorNumber());
-                editMonitorUnit.setText(habitEntity.getMonitorUnit());
+            // set habit monitor info
+            updateUIHabitType(habitEntity.getMonitorType().equals(TYPE_0) ? chkMonitorCheck : chkMonitorCount);
+            editCheckNumber.setText(habitEntity.getMonitorNumber());
+            editMonitorUnit.setText(!TextUtils.isEmpty(habitEntity.getMonitorUnit()) ? habitEntity.getMonitorUnit() : "lần");
 
-                // habit color
-                if (habitEntity.getHabitColor() != null) {
-                    for (int i = 0; i < colorsList.size(); i++) {
-                        String code = colorsList.get(i);
-                        if (habitEntity.getHabitColor().equals(code)) {
-                            switch (String.valueOf(i)) {
-                                case TYPE_0:
-                                    setHabitColor(color1);
-                                    break;
-                                case TYPE_1:
-                                    setHabitColor(color2);
-                                    break;
-                                case TYPE_2:
-                                    setHabitColor(color3);
-                                    break;
-                                case TYPE_3:
-                                    setHabitColor(color4);
-                                    break;
-                                case TYPE_4:
-                                    setHabitColor(color5);
-                                    break;
-                                case TYPE_5:
-                                    setHabitColor(color6);
-                                    break;
-                                case TYPE_6:
-                                    setHabitColor(color7);
-                                    break;
-                                case TYPE_7:
-                                    setHabitColor(color8);
-                                    break;
-                                case TYPE_8:
-                                    setHabitColor(color9);
-                                    break;
-                                case TYPE_9:
-                                    setHabitColor(color10);
-                                    break;
-                            }
+            // habit color
+            if (habitEntity.getHabitColor() != null) {
+                for (int i = 0; i < colorsList.size(); i++) {
+                    String code = colorsList.get(i);
+                    if (habitEntity.getHabitColor().equals(code)) {
+                        switch (String.valueOf(i)) {
+                            case TYPE_0:
+                                setHabitColor(color1);
+                                break;
+                            case TYPE_1:
+                                setHabitColor(color2);
+                                break;
+                            case TYPE_2:
+                                setHabitColor(color3);
+                                break;
+                            case TYPE_3:
+                                setHabitColor(color4);
+                                break;
+                            case TYPE_4:
+                                setHabitColor(color5);
+                                break;
+                            case TYPE_5:
+                                setHabitColor(color6);
+                                break;
+                            case TYPE_6:
+                                setHabitColor(color7);
+                                break;
+                            case TYPE_7:
+                                setHabitColor(color8);
+                                break;
+                            case TYPE_8:
+                                setHabitColor(color9);
+                                break;
+                            case TYPE_9:
+                                setHabitColor(color10);
+                                break;
                         }
                     }
                 }
-
-                // habit reminders
-                List<ReminderEntity> reminders = Database.reminderImpl.getRemindersByHabit(habitId);
-                Reminder reminder;
-                for (ReminderEntity entity : reminders) {
-                    reminder = new Reminder();
-                    reminder.setReminderId(entity.getReminderId());
-                    reminder.setHabitId(habitId);
-                    reminder.setRemindText(entity.getRemindText());
-                    reminder.setReminderTime(entity.getReminderTime());
-                    reminder.setRepeatType(entity.getRepeatType());
-                    reminder.setServerId(entity.getServerId());
-                    remindDisplayList.add(reminder);
-                }
-                remindAdapter.notifyDataSetChanged();
-
-                // habit description
-                editDescription.setText(habitEntity.getHabitDescription());
             }
+
+            // habit reminders
+            List<ReminderEntity> reminderEntityList = Database.getReminderDb().getRemindersByHabit(habitId);
+            Reminder reminder;
+            for (ReminderEntity entity : reminderEntityList) {
+                reminder = new Reminder();
+                reminder.setReminderId(entity.getReminderId());
+                reminder.setHabitId(habitId);
+                reminder.setRemindText(entity.getRemindText());
+                reminder.setRemindStartTime(entity.getReminderStartTime());
+                reminder.setRepeatType(entity.getRepeatType());
+                reminder.setServerId(entity.getServerId());
+                reminderDisplayList.add(reminder);
+            }
+            reminderUpdateList.addAll(reminderDisplayList);
+            reminderAdapter.notifyDataSetChanged();
+
+            // habit description
+            editDescription.setText(habitEntity.getHabitDescription());
+
             db.close();
         }
     }
@@ -654,6 +553,9 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
     @SuppressLint("ResourceType")
     @OnClick(R.id.btn_save)
     public void saveHabit(View v) {
+        Database db = new Database(HabitActivity.this);
+        db.open();
+
         // validate user input
         Validator validator = new Validator();
         validator.setErrorMsgListener(new Validator.ErrorMsg() {
@@ -668,7 +570,13 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         });
         String savedUserId = MySharedPreference.getUserId(this);
         String habitName = editHabitName.getText().toString();
-        String monitorNumber = this.editCheckNumber.getText().toString();
+        String monitorNumber;
+        if (monitorType == 1) {
+            monitorNumber = this.editCheckNumber.getText().toString();
+        } else {
+            monitorNumber = TYPE_1;
+        }
+
         if (!validator.checkEmpty("Tên thói quen", habitName)) {
             return;
         }
@@ -705,7 +613,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
             habit.setMonitorId(savedMonitorDateId);
         }
         habit.setUserId(savedUserId);
-        habit.setGroupId(savedGroupId);
+        habit.setGroupId(selectedGroupId);
 
         habit.setHabitName(habitName);
         habit.setHabitTarget(String.valueOf(habitTarget));
@@ -742,21 +650,23 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         }
 
         // set reminder list
-        for (Reminder reminder : remindAddNewList) {
+        for (Reminder reminder : reminderUpdateList) {
             reminder.setHabitId(habit.getHabitId());
             reminder.setHabitName(habit.getHabitName());
-            if (!TextUtils.isEmpty(habit.getEndDate())) {
-                reminder.setEndDate(habit.getEndDate());
-            }
+            reminder.setRemindEndTime(habit.getEndDate());
         }
-        habit.setReminderList(remindAddNewList);
+        habit.setReminderList(reminderUpdateList);
 
         // SAVE HABIT
-        Database db = new Database(HabitActivity.this);
-        db.open();
         if (Database.getHabitDb().saveUpdateHabit(Database.getHabitDb().convert(habit))) {
+            String reminderId;
             for (Reminder reminder : habit.getReminderList()) {
-                reminder.setReminderId(Database.getReminderDb().saveReminder(Database.getReminderDb().convert(reminder)));
+                if (reminder.isDelete()) {
+                    Database.getReminderDb().delete(reminder.getReminderId());
+                } else {
+                    reminderId = Database.getReminderDb().saveReminder(Database.getReminderDb().convert(reminder));
+                    reminder.setReminderId(reminderId);
+                }
             }
         }
 
@@ -814,38 +724,49 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
     public void cancel(View v) {
         if (createMode == MODE_CREATE) {
             finish();
-
         } else if (createMode == MODE_UPDATE) {
+            AppDialogHelper appDialogHelper = new AppDialogHelper();
 
-            // delete habit
-            Database db = new Database(this);
-            db.open();
-            Database.getHabitDb().deleteHabit(initHabitId);
-            db.close();
-
-            VnHabitApiService service = VnHabitApiUtils.getApiService();
-            service.deleteHabit(this.initHabitId).enqueue(new Callback<ResponseBody>() {
+            appDialogHelper.setPositiveListener(new DialogInterface.OnClickListener() {
                 @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    Toast.makeText(HabitActivity.this, "Đã xóa thói quen", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent();
-                    intent.putExtra("delete", true);
-                    HabitActivity.this.setResult(HabitActivity.RESULT_OK, intent);
-                    finish();
-                }
+                public void onClick(DialogInterface dialog, int which) {
+                    Database db = new Database(HabitActivity.this);
+                    db.open();
 
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    Toast.makeText(HabitActivity.this, "Đã xãy ra lỗi", Toast.LENGTH_LONG).show();
+                    HabitEntity item = Database.getHabitDb().getHabit(initHabitId);
+                    item.setDelete(true);
+
+                    mApiService.deleteHabit(initHabitId).enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            Toast.makeText(HabitActivity.this, "Đã xóa thói quen", Toast.LENGTH_SHORT).show();
+
+                            Database.getHabitDb().deleteHabit(initHabitId);
+
+                            Intent intent = new Intent();
+                            intent.putExtra("delete", true);
+
+                            HabitActivity.this.setResult(HabitActivity.RESULT_OK, intent);
+                            finish();
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                            Toast.makeText(HabitActivity.this, "Đã xãy ra lỗi", Toast.LENGTH_LONG).show();
+                        }
+                    });
+
+                    db.close();
                 }
             });
+            appDialogHelper.getDialog(this, "Bạn có chắc muốn xóa thói quen này?", "Có", "Không").show();
         }
     }
+    
 
     @OnClick(R.id.btn_addReminder)
     public void addReminder(View v) {
         Intent intent = new Intent(this, ReminderCreateActivity.class);
-        intent.putExtra(DAY_OF_WEEK, monitorDate);
         startActivityForResult(intent, ADD_REMINDER);
     }
 
@@ -865,29 +786,35 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
     }
 
     @OnClick({R.id.btn_TypeDaily, R.id.btn_TypeWeekly, R.id.btn_TypeMonthly, R.id.btn_TypeYearly})
-    public void setHabitType(View view) {
+    public void selectHabitType(View view) {
         setWhiteBg(btnHabitType);
         setGreenBg(view);
         btnHabitType = view;
         habitType = Integer.parseInt(view.getTag().toString());
         switch (view.getId()) {
             case R.id.btn_TypeDaily:
+                endHabitDate = AppGenerator.getNextDate(startHabitDate, AppGenerator.YMD_SHORT);
                 tvCountUnit.setText("một ngày");
                 break;
             case R.id.btn_TypeWeekly:
+
+                endHabitDate = AppGenerator.getFirstDateNextWeek(startHabitDate, AppGenerator.YMD_SHORT, AppGenerator.YMD_SHORT);
                 tvCountUnit.setText("một tuần");
                 break;
             case R.id.btn_TypeMonthly:
+                endHabitDate = AppGenerator.getFirstDateNextMonth(startHabitDate, AppGenerator.YMD_SHORT, AppGenerator.YMD_SHORT);
                 tvCountUnit.setText("một tháng");
                 break;
             case R.id.btn_TypeYearly:
+                endHabitDate = AppGenerator.getFirstDateNextYear(startHabitDate, AppGenerator.YMD_SHORT, AppGenerator.YMD_SHORT);
                 tvCountUnit.setText("một năm");
                 break;
         }
+        tvEndDate.setText(endHabitDate);
     }
 
     @OnClick({R.id.ll_checkDone, R.id.ll_checkCount})
-    public void selectMonitorType(View view) {
+    public void updateUIHabitType(View view) {
         if (view.getId() == R.id.ll_checkDone) {
             uncheck(imgTypeCount);
             check(imgTypeCheck);

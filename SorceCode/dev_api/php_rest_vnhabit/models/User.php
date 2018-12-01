@@ -12,13 +12,11 @@ include_once '../../models/Model.php';
         // user
         public $user_id;
         public $username;
-        public $phone;
         public $password;
         public $email;
         public $date_of_birth;
         public $gender;
-        public $user_icon;
-        public $avatar;
+        public $real_name;
         public $user_description;
         public $created_date;
         public $last_login_time;
@@ -31,6 +29,23 @@ include_once '../../models/Model.php';
             $this->conn = $db;
             $this->cols = $this->get_read_param(NULL, NULL);
             $this->params = $this->get_query_param(array('user_id'));
+        }
+
+        private function copy($user) {
+            $this->user_id = $user['user_id'];
+            $this->username = $user['username'];
+            $this->password = $user['password'];
+            $this->email = $user['email'];
+            $this->date_of_birth = $user['date_of_birth'];
+            $this->gender = $user['gender'];
+            $this->real_name = $user['real_name'];
+            $this->user_description = $user['user_description'];
+            $this->created_date = $user['created_date'];
+            $this->last_login_time = $user['last_login_time'];
+            $this->continue_using_count = $user['continue_using_count'];
+            $this->current_continue_using_count = $user['current_continue_using_count'];
+            $this->best_continue_using_count = $user['best_continue_using_count'];
+            $this->user_score = $user['user_score'];
         }
 
         // Get all User
@@ -95,25 +110,6 @@ include_once '../../models/Model.php';
             }
         }
 
-        private function copy($user) {
-            $this->user_id = $user['user_id'];
-            $this->username = $user['username'];
-            $this->phone = $user['phone'];
-            $this->password = $user['password'];
-            $this->email = $user['email'];
-            $this->date_of_birth = $user['date_of_birth'];
-            $this->gender = $user['gender'];
-            $this->user_icon = $user['user_icon'];
-            $this->avatar = $user['avatar'];
-            $this->user_description = $user['user_description'];
-            $this->created_date = $user['created_date'];
-            $this->last_login_time = $user['last_login_time'];
-            $this->continue_using_count = $user['continue_using_count'];
-            $this->current_continue_using_count = $user['current_continue_using_count'];
-            $this->best_continue_using_count = $user['best_continue_using_count'];
-            $this->user_score = $user['user_score'];
-        }
-
         public function find_by_username() {
             // Create query
             $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . 
@@ -155,16 +151,14 @@ include_once '../../models/Model.php';
 
         // Update user
         public function update() {
-            // create query
-            $query = 'UPDATE ' . $this->table . ' SET ' . $this->get_query_param(array('user_id')) . ' WHERE user_id = :user_id';
-            // Prepare statement
+            $excludeArr = array('user_id', 'created_date', 'last_login_time', 'continue_using_count', 'current_continue_using_count', 'best_continue_using_count', 'user_score');
+            $excludeArr2 = array('created_date', 'last_login_time', 'continue_using_count', 'current_continue_using_count', 'best_continue_using_count', 'user_score');
+            $query = 'UPDATE ' . $this->table . ' SET ' . $this->get_query_param($excludeArr) . ' WHERE user_id = :user_id';
             $stmt = $this->conn->prepare($query);
-            $stmt = $this->bind_param_exc($stmt, NULL);
-            // Execute query
+            $stmt = $this->bind_param_exc($stmt, $excludeArr2);
             if ($stmt->execute()) {
                 return true;
             }
-            // Print error if something goes wrong
             printf("Error: %s.\n", $stmt->error);
             return false;
         }

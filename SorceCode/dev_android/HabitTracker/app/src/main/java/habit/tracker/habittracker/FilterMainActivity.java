@@ -22,10 +22,13 @@ import habit.tracker.habittracker.api.VnHabitApiUtils;
 import habit.tracker.habittracker.api.model.group.Group;
 import habit.tracker.habittracker.api.model.group.GroupResponse;
 import habit.tracker.habittracker.api.service.VnHabitApiService;
+import habit.tracker.habittracker.common.util.MySharedPreference;
 import habit.tracker.habittracker.repository.Database;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static habit.tracker.habittracker.common.AppConstant.STATUS_OK;
 
 public class FilterMainActivity extends AppCompatActivity implements GroupRecyclerViewAdapter.ItemClickListener {
 
@@ -65,11 +68,12 @@ public class FilterMainActivity extends AppCompatActivity implements GroupRecycl
     @BindView(R.id.btnApply)
     Button btnApply;
 
+    VnHabitApiService mService = VnHabitApiUtils.getApiService();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_filter_main);
         ButterKnife.bind(this);
 
@@ -80,23 +84,28 @@ public class FilterMainActivity extends AppCompatActivity implements GroupRecycl
         vType = btnTypeAll;
         vTarget = btnTargetAll;
 
-        VnHabitApiService mService = VnHabitApiUtils.getApiService();
-        mService.getGroupItems().enqueue(new Callback<GroupResponse>() {
+        String userId = MySharedPreference.getUserId(this);
+
+        mService.getGroups(userId).enqueue(new Callback<GroupResponse>() {
             @Override
             public void onResponse(Call<GroupResponse> call, Response<GroupResponse> response) {
-                if (response.body().getResult().equals("1")) {
-                    data.addAll(response.body().getGroupList());
+                if (response.body().getResult().equals(STATUS_OK)) {
                     Database db = new Database(FilterMainActivity.this);
                     db.open();
-                    for (Group g : data) {
-                        Database.groupDaoImpl.save(g);
+
+                    data.addAll(response.body().getGroupList());
+
+                    for (Group group : data) {
+                        Database.getGroupDb().save(group);
                     }
-                    db.close();
+
                     rvGroupItem = findViewById(R.id.rv_group);
                     rvGroupItem.setLayoutManager(new LinearLayoutManager(FilterMainActivity.this));
                     recyclerViewAdapter = new GroupRecyclerViewAdapter(FilterMainActivity.this, data);
                     recyclerViewAdapter.setClickListener(FilterMainActivity.this);
                     rvGroupItem.setAdapter(recyclerViewAdapter);
+
+                    db.close();
                 }
             }
 
@@ -112,6 +121,7 @@ public class FilterMainActivity extends AppCompatActivity implements GroupRecycl
         if (pos != -1) {
             data.get(pos).setSelected(false);
         }
+
         data.get(newPos).setSelected(true);
         group = data.get(newPos).getGroupId();
         recyclerViewAdapter.notifyItemChanged(pos);

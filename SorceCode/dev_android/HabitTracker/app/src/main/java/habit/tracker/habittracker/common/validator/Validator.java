@@ -2,7 +2,10 @@ package habit.tracker.habittracker.common.validator;
 
 import android.text.TextUtils;
 
+import java.util.Date;
 import java.util.regex.Pattern;
+
+import habit.tracker.habittracker.common.util.AppGenerator;
 
 public class Validator {
     private ErrorMsg mErrorMsgListener;
@@ -22,6 +25,15 @@ public class Validator {
         return true;
     }
 
+    public boolean checkDate(String date, String format, String key) {
+        Date time = AppGenerator.getDate(date, format);
+        if (time == null) {
+            mErrorMsgListener.showError(ValidatorType.DATE, key);
+            return false;
+        }
+        return true;
+    }
+
     public boolean checkEmail(String email) {
         final String regex = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$";
         Pattern pattern = Pattern.compile(regex);
@@ -35,6 +47,22 @@ public class Validator {
     public boolean checkEqual(String str, String str1, String key) {
         if (!str.equals(str1)) {
             mErrorMsgListener.showError(ValidatorType.EQUAL, key);
+            return false;
+        }
+        return true;
+    }
+
+    public boolean checkDiff(String str, String str1, String key) {
+        if (str.equals(str1)) {
+            mErrorMsgListener.showError(ValidatorType.DIFF, key);
+            return false;
+        }
+        return true;
+    }
+
+    public boolean checkLength(String str, int length, String key) {
+        if (str.length() < length) {
+            mErrorMsgListener.showError(ValidatorType.LENGTH, key);
             return false;
         }
         return true;
