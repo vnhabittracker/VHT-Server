@@ -89,6 +89,8 @@ public class NoteActivity extends BaseActivity implements RecyclerViewItemClickL
     private int timeLine = 0;
     private boolean[] availDaysInWeek = new boolean[7];
 
+    VnHabitApiService service = VnHabitApiUtils.getApiService();
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == HabitActivity.REQUEST_UPDATE) {
@@ -135,7 +137,10 @@ public class NoteActivity extends BaseActivity implements RecyclerViewItemClickL
 
         habitEntity = Database.getHabitDb().getHabit(habitId);
         isCountHabitType = habitEntity.getMonitorType().equals(TYPE_1);
+
+        // get all tracking record of this habit
         defaultTrackingList = Database.getTrackingDb().getTrackingListByHabit(habitId);
+
         TrackingEntity todayTracking = Database.getTrackingDb().getTracking(habitEntity.getHabitId(), currentDate);
 
         availDaysInWeek[0] = habitEntity.getMon().equals("1");
@@ -150,7 +155,9 @@ public class NoteActivity extends BaseActivity implements RecyclerViewItemClickL
         if (todayTracking != null) {
             curTrackingCount = Integer.parseInt(todayTracking.getCount());
         }
+
         displayItemList.clear();
+
         if (defaultTrackingList != null) {
             for (TrackingEntity entity : defaultTrackingList) {
                 if (!TextUtils.isEmpty(entity.getDescription())) {
@@ -293,54 +300,70 @@ public class NoteActivity extends BaseActivity implements RecyclerViewItemClickL
                 return;
             }
         }
+
         updateData(newNote, AppGenerator.getNewId());
     }
 
     private void updateNote(String newNote, int position) {
         NoteItem noteItem = displayItemList.get(position);
+
         if (TextUtils.isEmpty(newNote)) {
             displayItemList.remove(position);
         } else {
-            displayItemList.get(position).setNote(newNote);
+            noteItem.setNote(newNote);
         }
         noteRecyclerViewAdapter.notifyDataSetChanged();
+
         updateData(newNote, noteItem.getTrackingId());
     }
 
     private void updateData(String newNote, String trackId) {
         Database db = Database.getInstance(this);
         db.open();
+
         TrackingEntity trackingEntity = Database.getTrackingDb().getTracking(trackId);
+
         if (trackingEntity == null) {
             trackingEntity = new TrackingEntity();
             trackingEntity.setTrackingId(trackId);
             trackingEntity.setHabitId(habitId);
-            trackingEntity.setCount(TYPE_0);
+            trackingEntity.setCount("0");
             trackingEntity.setCurrentDate(currentDate);
             trackingEntity.setDescription(newNote);
+
             displayItemList.add(new NoteItem(trackId, trackingEntity.getCurrentDate(),
                     AppGenerator.format(trackingEntity.getCurrentDate(), AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT),
                     newNote));
-        }
-        else if (TextUtils.isEmpty(trackingEntity.getDescription())) {
+
+        } else if (TextUtils.isEmpty(trackingEntity.getDescription())) {
+
             trackingEntity.setDescription(newNote);
             displayItemList.add(new NoteItem(trackId, trackingEntity.getCurrentDate(),
                     AppGenerator.format(trackingEntity.getCurrentDate(), AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT),
                     newNote));
+
         } else {
             trackingEntity.setDescription(newNote);
         }
+        // update list note after modified displayItemList
         noteRecyclerViewAdapter.notifyDataSetChanged();
+
+        // save to local
         Database.getTrackingDb().saveTracking(trackingEntity);
+
+        // object to save to server
         TrackingList trackingData = new TrackingList();
+
+        // new tracking record
         Tracking tracking = new Tracking();
         tracking.setTrackingId(trackingEntity.getTrackingId());
         tracking.setHabitId(trackingEntity.getHabitId());
         tracking.setCount(String.valueOf(trackingEntity.getCount()));
         tracking.setCurrentDate(trackingEntity.getCurrentDate());
         tracking.setDescription(trackingEntity.getDescription());
+
         trackingData.getTrackingList().add(tracking);
-        VnHabitApiService service = VnHabitApiUtils.getApiService();
+
         service.updateTracking(trackingData).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -350,6 +373,7 @@ public class NoteActivity extends BaseActivity implements RecyclerViewItemClickL
             public void onFailure(Call<ResponseBody> call, Throwable t) {
             }
         });
+
         db.close();
     }
 

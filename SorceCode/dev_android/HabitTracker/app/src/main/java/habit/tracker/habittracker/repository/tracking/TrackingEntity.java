@@ -8,6 +8,7 @@ public class TrackingEntity {
     private String currentDate;
     private String count;
     private String description;
+    private boolean isUpdated = false;
 
     public String getTrackingId() {
         return trackingId;
@@ -36,6 +37,10 @@ public class TrackingEntity {
         return description;
     }
 
+    public boolean isUpdated() {
+        return isUpdated;
+    }
+
     public void setTrackingId(String trackingId) {
         this.trackingId = trackingId;
     }
@@ -54,5 +59,9 @@ public class TrackingEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setUpdated(boolean updated) {
+        isUpdated = updated;
     }
 }

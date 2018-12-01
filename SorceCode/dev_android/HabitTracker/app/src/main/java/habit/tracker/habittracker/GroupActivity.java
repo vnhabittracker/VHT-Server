@@ -98,14 +98,20 @@ public class GroupActivity extends AppCompatActivity implements GroupRecyclerVie
                     }
 
                     List<GroupEntity> groupEntities = Database.getGroupDb().getGroupsByUser(userId);
-                    Group group;
-                    for (GroupEntity item : groupEntities) {
-                        if (!item.isDelete()) {
-                            group = new Group(item.getGroupId(), item.getUserId(), item.getGroupName(), item.getDescription(), item.isDefault());
-                            groupList.add(group);
+                    if (groupEntities == null || groupEntities.size() > 0) {
+                        // get only default group
+                        groupEntities = Database.getGroupDb().getAll();
+                    }
+                    if (groupEntities != null && groupEntities.size() > 0) {
+                        Group group;
+                        for (GroupEntity item : groupEntities) {
+                            if (!item.isDelete()) {
+                                group = new Group(item.getGroupId(), item.getUserId(), item.getGroupName(), item.getDescription(), item.isDefault());
+                                groupList.add(group);
 
-                            if (!mapGroupFromServer.containsKey(item.getGroupId())) {
-                                callAddGroupApi(group);
+                                if (!mapGroupFromServer.containsKey(item.getGroupId())) {
+                                    callAddGroupApi(group);
+                                }
                             }
                         }
                     }

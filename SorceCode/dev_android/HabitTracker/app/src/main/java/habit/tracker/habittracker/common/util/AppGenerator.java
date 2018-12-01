@@ -290,11 +290,11 @@ public class AppGenerator {
         return daysInMonth;
     }
 
-    public static String format(String dateTime, String fm1, String fm2) {
+    public static String format(String dateTime, String fmIn, String fmOut) {
         try {
-            SimpleDateFormat fm = new SimpleDateFormat(fm1, Locale.getDefault());
+            SimpleDateFormat fm = new SimpleDateFormat(fmIn, Locale.getDefault());
             Date d = fm.parse(dateTime);
-            fm = new SimpleDateFormat(fm2, Locale.getDefault());
+            fm = new SimpleDateFormat(fmOut, Locale.getDefault());
             return fm.format(d);
         } catch (ParseException e) {
             e.printStackTrace();

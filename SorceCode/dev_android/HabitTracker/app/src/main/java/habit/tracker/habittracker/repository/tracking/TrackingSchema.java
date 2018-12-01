@@ -7,16 +7,15 @@ public interface TrackingSchema {
     String CURRENT_DATE = "tracking_current_date";
     String COUNT = "count";
     String TRACKING_DESCRIPTION = "tracking_description";
-
-    String SUM_COUNT = "sum_count";
-
+    String IS_UPDATED = "is_updated";
     String CREATE_TRACKING_TABLE =
             "CREATE TABLE IF NOT EXISTS " + TRACKING_TABLE + " ("
                     + TRACKING_ID + " TEXT PRIMARY KEY NOT NULL, "
                     + HABIT_ID + " TEXT, "
                     + CURRENT_DATE + " TEXT, "
                     + COUNT + " TEXT, "
-                    + TRACKING_DESCRIPTION + " TEXT"
+                    + TRACKING_DESCRIPTION + " TEXT, "
+                    + IS_UPDATED + " TEXT DEFAULT 0"
                     + ")";
-    String[] TRACKING_COLUMNS = new String[]{TRACKING_ID, HABIT_ID, CURRENT_DATE, COUNT, TRACKING_DESCRIPTION};
+    String[] TRACKING_COLUMNS = new String[]{TRACKING_ID, HABIT_ID, CURRENT_DATE, COUNT, TRACKING_DESCRIPTION, IS_UPDATED};
 }

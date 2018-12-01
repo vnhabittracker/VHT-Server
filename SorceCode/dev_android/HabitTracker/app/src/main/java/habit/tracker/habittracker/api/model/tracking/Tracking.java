@@ -18,7 +18,8 @@ public class Tracking {
     private String count;
     @SerializedName("tracking_description")
     @Expose
-    private String trackingDescription;
+    private String description;
+    private boolean isUpdated = false;
 
     public String getTrackingId() {
         return trackingId;
@@ -37,7 +38,11 @@ public class Tracking {
     }
 
     public String getDescription() {
-        return trackingDescription;
+        return description;
+    }
+
+    public boolean isUpdated() {
+        return isUpdated;
     }
 
     public void setTrackingId(String trackingId) {
@@ -57,6 +62,10 @@ public class Tracking {
     }
 
     public void setDescription(String trackingDescription) {
-        this.trackingDescription = trackingDescription;
+        this.description = trackingDescription;
+    }
+
+    public void setUpdated(boolean updated) {
+        isUpdated = updated;
     }
 }

@@ -54,13 +54,15 @@ public class HabitReminderServiceReceiver extends BroadcastReceiver {
 
             String defaultId = "habittracker";
             Notification notification = null;
+            long[] pattern = {100, 200, 300, 400, 500, 400, 300, 200, 400};
+
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
 
                 NotificationChannel mChannel = notificationManager.getNotificationChannel(defaultId);
                 if (mChannel == null) {
                     mChannel = new NotificationChannel(defaultId, remindTitle, NotificationManager.IMPORTANCE_HIGH);
-//                    mChannel.enableVibration(true);
-//                    mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+                    mChannel.enableVibration(true);
+                    mChannel.setVibrationPattern(pattern);
                     notificationManager.createNotificationChannel(mChannel);
                 }
 
@@ -69,9 +71,11 @@ public class HabitReminderServiceReceiver extends BroadcastReceiver {
                                 .setContentTitle("VN Habit Tracker: " + remindTitle)
                                 .setContentText(remindText).build();
             } else {
+
                 notification = new NotificationCompat.Builder(context, defaultId)
                         .setSmallIcon(R.drawable.app_launcher)
                         .setContentTitle("VN Habit Tracker: " + remindTitle)
+                        .setVibrate(pattern)
                         .setContentText(remindText).build();
             }
 

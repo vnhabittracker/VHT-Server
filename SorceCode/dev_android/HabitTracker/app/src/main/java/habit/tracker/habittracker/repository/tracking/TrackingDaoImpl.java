@@ -53,12 +53,25 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
             if (cursor.getColumnIndex(TRACKING_DESCRIPTION) != -1) {
                 entity.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(TRACKING_DESCRIPTION)));
             }
+            if (cursor.getColumnIndex(IS_UPDATED) != -1) {
+                entity.setUpdated(cursor.getString(cursor.getColumnIndexOrThrow(IS_UPDATED)).equals("1"));
+            }
         }
         return entity;
     }
 
     private ContentValues getContentValue() {
         return initialValues;
+    }
+
+    private void setContentValue(TrackingEntity entity) {
+        initialValues = new ContentValues();
+        initialValues.put(TRACKING_ID, entity.getTrackingId());
+        initialValues.put(HABIT_ID, entity.getHabitId());
+        initialValues.put(CURRENT_DATE, entity.getCurrentDate());
+        initialValues.put(COUNT, entity.getCount());
+        initialValues.put(TRACKING_DESCRIPTION, entity.getDescription());
+        initialValues.put(IS_UPDATED, entity.isUpdated() ? "1" : "0");
     }
 
     public TrackingEntity convert(Tracking tracking) {
@@ -68,6 +81,7 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
         entity.setCount(tracking.getCount());
         entity.setCurrentDate(tracking.getCurrentDate());
         entity.setDescription(tracking.getDescription());
+        entity.setUpdated(tracking.isUpdated());
         return entity;
     }
 
@@ -210,27 +224,6 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
             return false;
         }
     }
-
-    private void setContentValue(TrackingEntity entity) {
-        initialValues = new ContentValues();
-        if (entity.getTrackingId() != null) {
-            initialValues.put(TRACKING_ID, entity.getTrackingId());
-        }
-        if (entity.getHabitId() != null) {
-            initialValues.put(HABIT_ID, entity.getHabitId());
-        }
-        if (entity.getCurrentDate() != null) {
-            initialValues.put(CURRENT_DATE, entity.getCurrentDate());
-        }
-        if (entity.getCount() != null) {
-            initialValues.put(COUNT, entity.getCount());
-        }
-        if (entity.getDescription() != null) {
-            initialValues.put(TRACKING_DESCRIPTION, entity.getDescription());
-        }
-    }
-
-
 
     public String getParams(String[] columns, String alias, boolean removeEnd) {
         String str = "";
