@@ -2,16 +2,16 @@
 
     class Database {
         // DB params
-        private $host = 'us-cdbr-iron-east-01.cleardb.net';
-        private $db_name = 'heroku_7fcf4b302659005';
-        private $username = 'b6c50987d4ce83';
-        private $password = '51830534';
+        // private $host = 'us-cdbr-iron-east-01.cleardb.net';
+        // private $db_name = 'heroku_7fcf4b302659005';
+        // private $username = 'b6c50987d4ce83';
+        // private $password = '51830534';
 
-        // private $host = 'localhost';
-        // private $db_name = 'vnhabit';
-        // private $username = 'root';
-        // private $password = '';
-        // private $conn;
+        private $host = 'localhost';
+        private $db_name = 'vnhabit';
+        private $username = 'root';
+        private $password = '';
+        private $conn;
 
         public function connect() {
             $this->conn = null;
