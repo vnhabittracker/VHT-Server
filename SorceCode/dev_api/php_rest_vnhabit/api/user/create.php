@@ -40,6 +40,12 @@ if ($user->find_by_username()) {
             'result' => '2'
         )
     );
+} else if ($user->find_by_email()) {
+    echo json_encode(
+        array(
+            'result' => '3'
+        )
+    );
 } else {
     // Create user
     if ($user->create()) {

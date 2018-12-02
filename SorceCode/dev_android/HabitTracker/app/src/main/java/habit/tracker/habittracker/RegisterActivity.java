@@ -70,12 +70,12 @@ public class RegisterActivity extends BaseActivity {
                 String username = edUsername.getText().toString();
                 String password = edPassword.getText().toString();
                 String email = edEmail.getText().toString();
-                String passwordConf = edPasswordConfirm.getText().toString();
+                String passwordConfirm = edPasswordConfirm.getText().toString();
                 User newUser = new User();
                 Validator validator = new Validator();
                 validator.setErrorMsgListener(new Validator.ErrorMsg() {
                     @Override
-                    public void showError(ValidatorType type, String key) {
+                    public void showError(ValidatorType type, String key, String cond) {
                         switch (type) {
                             case EMPTY:
                                 Toast.makeText(RegisterActivity.this, key + " không được rỗng", Toast.LENGTH_SHORT).show();
@@ -95,13 +95,16 @@ public class RegisterActivity extends BaseActivity {
                 if (!validator.checkEmpty("Tên tài khoản", username)
                         || !validator.checkEmpty("Email", email)
                         || !validator.checkEmpty("Mật khẩu", password)
-                        || !validator.checkEmpty("Mật khẩu", passwordConf)) {
+                        || !validator.checkEmpty("Mật khẩu", passwordConfirm)) {
                     return;
                 }
                 if (!validator.checkEmail(email)) {
                     return;
                 }
-                if (!validator.checkEqual(password, passwordConf, "Mật khẩu")) {
+                if (!validator.checkLength(password, 6, "Mật khẩu")) {
+                    return;
+                }
+                if (!validator.checkEqual(password, passwordConfirm, "Mật khẩu")) {
                     return;
                 }
                 newUser.setUserId(AppGenerator.getNewId());
@@ -114,7 +117,9 @@ public class RegisterActivity extends BaseActivity {
                 newUser.setCurrentContinueUsingCount("1");
                 newUser.setBestContinueUsingCount("1");
                 newUser.setUserScore("2");
+
                 register(newUser);
+
                 break;
             case R.id.btn_fb_login:
                 showEmptyScreen();
@@ -142,6 +147,8 @@ public class RegisterActivity extends BaseActivity {
                     finish();
                 } else if (response.body().getResult().equals("2")) {
                     Toast.makeText(RegisterActivity.this, "Tài khoản đã tồn tại", Toast.LENGTH_SHORT).show();
+                } else if (response.body().getResult().equals("3")) {
+                    Toast.makeText(RegisterActivity.this, "Email đã tồn tại", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(RegisterActivity.this, "Đăng ký không thành công", Toast.LENGTH_SHORT).show();
                 }

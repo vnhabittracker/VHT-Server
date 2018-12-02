@@ -54,16 +54,14 @@ $arr_tracking = $data->tracking_list;
 $habitSuggestion->habit_name_id = $data->habit_name_id;
 $habitSuggestion->habit_name_uni = $data->habit_name;
 $habitSuggestion->habit_name_ascii = $data->habit_name_ascii;
-$habitSuggestion->total_track = 0;
-$habitSuggestion->success_track = 0;
 
-if (!$habitSuggestion->isUpdate()) {
+if ($habitSuggestion->findNameAscii()) {
+    $habitSuggestion->updateCount();
+} else {
     $habitSuggestion->habit_name_count = 1;
     $habitSuggestion->total_track = 0;
     $habitSuggestion->success_track = 0;
     $habitSuggestion->create();
-} else {
-    $habitSuggestion->updateCount();
 }
 
 // save new habit

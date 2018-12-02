@@ -55,14 +55,13 @@ class HabitSuggestion extends Model {
 
     public function find($habit_name_ascii) {
         $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . ' WHERE habit_name_ascii = "' . $habit_name_ascii . '"';
-        // var_dump($query);
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
     }
 
-    public function isUpdate() {
-        $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . ' WHERE habit_name_id = "' . $this->habit_name_id . '"';
+    public function findNameAscii () {
+        $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . ' WHERE habit_name_ascii = "' . $this->habit_name_ascii . '"';
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->rowCount() > 0;

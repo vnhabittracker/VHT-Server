@@ -109,7 +109,6 @@ public class ReportCalendarActivity extends BaseActivity implements TrackingCale
     List<TrackingEntity> bestTrackingChain = new ArrayList<>();
 
     Database appDatabase = Database.getInstance(this);
-    boolean isDbOpen = false;
 
     float touchX = 0;
     float touchY = 0;
@@ -154,7 +153,6 @@ public class ReportCalendarActivity extends BaseActivity implements TrackingCale
     @SuppressLint("ResourceType")
     private void initializeScreen(String habitId) {
         appDatabase.open();
-        isDbOpen = true;
 
         currentDate = AppGenerator.getCurrentDate(AppGenerator.YMD_SHORT);
         defaultCurrentDate = currentDate;
@@ -251,9 +249,7 @@ public class ReportCalendarActivity extends BaseActivity implements TrackingCale
     @Override
     protected void onStart() {
         super.onStart();
-        if (!isDbOpen) {
-            appDatabase.open();
-        }
+        appDatabase.open();
     }
 
     private void loadCalendar(String currentDate) {
@@ -454,6 +450,8 @@ public class ReportCalendarActivity extends BaseActivity implements TrackingCale
 
     @Override
     public void onItemClick(View v, int position) {
+        appDatabase.open();
+
         TrackingCalendarItem item = calendarItemList.get(position);
         currentDate = item.getDate();
 
@@ -607,7 +605,6 @@ public class ReportCalendarActivity extends BaseActivity implements TrackingCale
     @Override
     protected void onStop() {
         appDatabase.close();
-        isDbOpen = false;
         super.onStop();
     }
 }

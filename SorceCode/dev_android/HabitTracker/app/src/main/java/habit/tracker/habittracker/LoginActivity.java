@@ -108,7 +108,7 @@ public class LoginActivity extends BaseActivity {
                 Validator validator = new Validator();
                 validator.setErrorMsgListener(new Validator.ErrorMsg() {
                     @Override
-                    public void showError(ValidatorType type, String key) {
+                    public void showError(ValidatorType type, String key, String conf) {
                         Toast.makeText(LoginActivity.this, key + " rỗng", Toast.LENGTH_SHORT).show();
                     }
                 });

@@ -19,7 +19,7 @@ public class Validator {
             value = value.trim();
         }
         if (TextUtils.isEmpty(value)) {
-            mErrorMsgListener.showError(ValidatorType.EMPTY, key);
+            mErrorMsgListener.showError(ValidatorType.EMPTY, key, null);
             return false;
         }
         return true;
@@ -28,7 +28,7 @@ public class Validator {
     public boolean checkDate(String date, String format, String key) {
         Date time = AppGenerator.getDate(date, format);
         if (time == null) {
-            mErrorMsgListener.showError(ValidatorType.DATE, key);
+            mErrorMsgListener.showError(ValidatorType.DATE, key, null);
             return false;
         }
         return true;
@@ -38,7 +38,7 @@ public class Validator {
         final String regex = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$";
         Pattern pattern = Pattern.compile(regex);
         if(!pattern.matcher(email).matches()){
-            mErrorMsgListener.showError(ValidatorType.EMAIL, "email");
+            mErrorMsgListener.showError(ValidatorType.EMAIL, "email", null);
             return false;
         }
         return true;
@@ -46,7 +46,7 @@ public class Validator {
 
     public boolean checkEqual(String str, String str1, String key) {
         if (!str.equals(str1)) {
-            mErrorMsgListener.showError(ValidatorType.EQUAL, key);
+            mErrorMsgListener.showError(ValidatorType.EQUAL, key, null);
             return false;
         }
         return true;
@@ -54,7 +54,7 @@ public class Validator {
 
     public boolean checkDiff(String str, String str1, String key) {
         if (str.equals(str1)) {
-            mErrorMsgListener.showError(ValidatorType.DIFF, key);
+            mErrorMsgListener.showError(ValidatorType.DIFF, key, null);
             return false;
         }
         return true;
@@ -62,7 +62,7 @@ public class Validator {
 
     public boolean checkLength(String str, int length, String key) {
         if (str.length() < length) {
-            mErrorMsgListener.showError(ValidatorType.LENGTH, key);
+            mErrorMsgListener.showError(ValidatorType.LENGTH, key, String.valueOf(length));
             return false;
         }
         return true;
@@ -74,7 +74,7 @@ public class Validator {
         if(phone == null || phone.length() < 10
                 || phone.length() > 15
                 || !pattern.matcher(phone).matches()){
-            mErrorMsgListener.showError(ValidatorType.PHONE, "Số điện thoại");
+            mErrorMsgListener.showError(ValidatorType.PHONE, "Số điện thoại", null);
             return false;
         }
         return true;
@@ -94,6 +94,6 @@ public class Validator {
     }
 
     public interface ErrorMsg {
-        void showError(ValidatorType type, String key);
+        void showError(ValidatorType type, String key, String cond);
     }
 }

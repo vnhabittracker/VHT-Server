@@ -92,7 +92,6 @@ public class MainActivity extends BaseActivity implements HabitRecyclerViewAdapt
             if (resultCode == RESULT_OK) {
                 backToCurrent();
             }
-
         } else if (requestCode == USE_FILTER) {
             if (resultCode == RESULT_OK) {
                 Bundle filter = data.getExtras();
@@ -112,7 +111,6 @@ public class MainActivity extends BaseActivity implements HabitRecyclerViewAdapt
                 trackingAdapter.setData(filteredList);
                 trackingAdapter.notifyDataSetChanged();
             }
-
         } else if (requestCode == REPORT_DETAIL || requestCode == REPORT_CALENDAR) {
             backToCurrent();
         } else if (resultCode == RESULT_OK && (requestCode == SHOW_STATICS || requestCode == SHOW_PROFILE)) {

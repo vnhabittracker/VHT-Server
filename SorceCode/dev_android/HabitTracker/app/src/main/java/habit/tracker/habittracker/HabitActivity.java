@@ -456,6 +456,9 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                 setMonitorDate(btnSun);
             }
 
+            suggestHabitName = habitEntity.getHabitName();
+            suggestHabitNameId = habitEntity.getHabitNameId();
+
             // set habit name
             editHabitName.setText(habitEntity.getHabitName());
 
@@ -571,7 +574,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         Validator validator = new Validator();
         validator.setErrorMsgListener(new Validator.ErrorMsg() {
             @Override
-            public void showError(ValidatorType type, String key) {
+            public void showError(ValidatorType type, String key, String cond) {
                 switch (type) {
                     case EMPTY:
                         Toast.makeText(HabitActivity.this, key + " không được trống", Toast.LENGTH_SHORT).show();
@@ -651,7 +654,6 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
 
         // suggestions
         habit.setHabitNameAscii(AppGenerator.getSearchKey(habit.getHabitName()));
-
         // user create new Habit Name
         if (TextUtils.isEmpty(suggestHabitName) || !suggestHabitName.equals(habit.getHabitName())) {
             habit.setHabitNameId(AppGenerator.getNewId());

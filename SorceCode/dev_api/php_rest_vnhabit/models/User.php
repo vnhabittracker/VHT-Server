@@ -112,15 +112,30 @@ include_once '../../models/Model.php';
 
         public function find_by_username() {
             // Create query
-            $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . 
-                ' WHERE
-                    username = :username 
-                    LIMIT 0,1';
-
+            $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . ' WHERE username = :username LIMIT 0,1';
             // Prepare statement
             $stmt = $this->conn->prepare($query);
             // Bind params
             $stmt = $this->bind_param($stmt, array('username' => $this->username));
+            // Execute query
+            $stmt->execute();
+            // get row count
+            $num = $stmt->rowCount();
+            if ($num == 1) {
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                return $row;
+            } else {
+                return NULL;
+            }
+        }
+
+        public function find_by_email() {
+            // Create query
+            $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . ' WHERE email = :email LIMIT 0,1';
+            // Prepare statement
+            $stmt = $this->conn->prepare($query);
+            // Bind params
+            $stmt = $this->bind_param($stmt, array('email' => $this->email));
             // Execute query
             $stmt->execute();
             // get row count

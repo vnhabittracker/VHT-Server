@@ -61,6 +61,7 @@ public class PersonalActivity extends AppCompatActivity {
     private UserEntity userEntity;
     private boolean isMale = true;
 
+    Database mDb = Database.getInstance(this);
     VnHabitApiService mService = VnHabitApiUtils.getApiService();
 
     @Override
@@ -70,20 +71,17 @@ public class PersonalActivity extends AppCompatActivity {
         setContentView(R.layout.activity_personal);
         ButterKnife.bind(this);
 
-        Database db = Database.getInstance(this);
-        db.open();
+        mDb.open();
         userEntity = Database.getUserDb().getUser(MySharedPreference.getUserId(this));
-        db.close();
 
         Calendar ca = Calendar.getInstance();
-
         if (userEntity != null) {
 
             if (userEntity.getDateOfBirth() != null) {
                 ca.setTime(AppGenerator.getDate(userEntity.getDateOfBirth(), AppGenerator.YMD_SHORT));
-                editDay.setText(String.valueOf(ca.get(Calendar.DAY_OF_MONTH)));
-                editMonth.setText(String.valueOf(ca.get(Calendar.MONTH) + 1));
-                editYear.setText(String.valueOf(ca.get(Calendar.YEAR)));
+                editDay.setText(String.format("%02d", ca.get(Calendar.DAY_OF_MONTH)));
+                editMonth.setText(String.format("%02d", ca.get(Calendar.MONTH) + 1));
+                editYear.setText(String.format("%02d", ca.get(Calendar.YEAR)));
             }
 
             if (userEntity.getGender() != null && userEntity.getGender().equals("0")) {
@@ -104,6 +102,8 @@ public class PersonalActivity extends AppCompatActivity {
 
     @OnClick(R.id.btnSave)
     public void saveInfo(View v) {
+        mDb.open();
+
         String username = editUsername.getText().toString();
         final String date = editDay.getText().toString();
         String month = editMonth.getText().toString();
@@ -118,7 +118,7 @@ public class PersonalActivity extends AppCompatActivity {
         Validator validator = new Validator();
         validator.setErrorMsgListener(new Validator.ErrorMsg() {
             @Override
-            public void showError(ValidatorType type, String key) {
+            public void showError(ValidatorType type, String key, String cond) {
                 switch (type) {
                     case EMPTY:
                         Toast.makeText(PersonalActivity.this, key + " không được rỗng", Toast.LENGTH_SHORT).show();
@@ -133,7 +133,7 @@ public class PersonalActivity extends AppCompatActivity {
                         Toast.makeText(PersonalActivity.this, key + " không hợp lệ", Toast.LENGTH_SHORT).show();
                         break;
                     case LENGTH:
-                        Toast.makeText(PersonalActivity.this, "Chiều dài " + key + " tối thiểu là 8", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PersonalActivity.this, "Chiều dài " + key + " tối thiểu là " + cond, Toast.LENGTH_SHORT).show();
                         break;
                     case EQUAL:
                         Toast.makeText(PersonalActivity.this, key + " không đúng", Toast.LENGTH_SHORT).show();
@@ -144,6 +144,8 @@ public class PersonalActivity extends AppCompatActivity {
                 }
             }
         });
+        String[] loginInfo = MySharedPreference.getUser(this);
+
         if (!validator.checkEmpty("Tên tài khoản", username)
                 || !validator.checkEmpty("Ngày", date)
                 || !validator.checkEmpty("Tháng", month)
@@ -159,21 +161,20 @@ public class PersonalActivity extends AppCompatActivity {
         if (!validator.checkEmail(email)) {
             return;
         }
-        if (!validator.checkLength(oldPassword, 8, "Mật khẩu")) {
+        if (!validator.checkLength(oldPassword, 6, "Mật khẩu")) {
             return;
         }
-        String[] loginInfo = MySharedPreference.getUser(this);
         if (!validator.checkEqual(oldPassword, loginInfo[2], "Mật khẩu cũ")) {
             return;
         }
         if (!TextUtils.isEmpty(newPassword)) {
+            if (!validator.checkLength(newPassword, 6, "Mật khẩu")) {
+                return;
+            }
             if (!validator.checkDiff(oldPassword, newPassword, "Mật khẩu")) {
                 return;
             }
         }
-
-        Database db = Database.getInstance(this);
-        db.open();
 
         final User user = new User();
         user.setUserId(MySharedPreference.getUserId(this));
@@ -182,33 +183,20 @@ public class PersonalActivity extends AppCompatActivity {
         user.setDateOfBirth(dob);
         user.setGender(isMale ? "1" : "0");
         user.setEmail(email);
-        user.setPassword(newPassword);
+        user.setPassword(TextUtils.isEmpty(newPassword) ? oldPassword : newPassword);
         user.setDescription(description);
         user.setUpdate(true);
 
-        userEntity.setUsername(user.getUsername());
-        userEntity.setRealName(user.getRealName());
-        userEntity.setDateOfBirth(user.getDateOfBirth());
-        userEntity.setGender(user.getGender());
-        userEntity.setEmail(user.getEmail());
-        userEntity.setPassword(user.getPassword());
-        userEntity.setDescription(user.getDescription());
-        userEntity.setUpdate(user.isUpdate());
-
-        Database.getUserDb().saveUser(userEntity);
-        db.close();
-
+        Database.getUserDb().saveUser(user.toEntity());
         MySharedPreference.saveUser(this, user.getUserId(), user.getUsername(), user.getPassword());
         finish();
 
         mService.updateUser(user).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                mDb.open();
                 Toast.makeText(PersonalActivity.this, "Cập nhật thành công", Toast.LENGTH_LONG).show();
-                Database db = Database.getInstance(PersonalActivity.this);
-                db.open();
                 Database.getUserDb().saveUpdate(user.getUserId(), false);
-                db.close();
             }
 
             @Override
@@ -231,5 +219,11 @@ public class PersonalActivity extends AppCompatActivity {
                     isMale = false;
                 break;
         }
+    }
+
+    @Override
+    protected void onStop() {
+        mDb.close();
+        super.onStop();
     }
 }
