@@ -123,10 +123,12 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
         return count;
     }
 
-    public List<HabitEntity> getTodayHabit(TrackingDateInWeek date, String currentDate) {
+    public List<HabitEntity> getTodayHabit(TrackingDateInWeek date, String currentDate, String userId) {
         List<HabitEntity> list = new ArrayList<>();
 
-        final String sql = "SELECT * FROM " + HabitSchema.HABIT_TABLE + " WHERE ( '" + currentDate + "' >= " + HabitSchema.START_DATE + ")"
+        final String sql = "SELECT * FROM " + HabitSchema.HABIT_TABLE
+                + " WHERE " + USER_ID + " = '" + userId + "'"
+                + " AND ( '" + currentDate + "' >= " + HabitSchema.START_DATE + ")"
                 + " AND ( " + HabitSchema.END_DATE + " IS NULL OR '" + currentDate + "' <= " + HabitSchema.END_DATE + ")"
                 + " AND " + getTodayCond(date);
 
@@ -167,9 +169,12 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
     public HabitEntity getHabit(String habitId) {
         final String selectionArgs[] = {habitId};
         final String selection = HabitSchema.HABIT_ID + " = ?";
+
         HabitEntity habitEntity = new HabitEntity();
+
         cursor = super.query(HABIT_TABLE, HABIT_COLUMNS, selection, selectionArgs, HabitSchema.HABIT_ID);
-        if (cursor != null) {
+
+        if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 habitEntity = cursorToEntity(cursor);
@@ -192,21 +197,28 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
     }
 
     @Override
-    public boolean deleteHabit(String habitId) {
+    public int delete(String habitId) {
         try {
             final String selectionArgs[] = {habitId};
             final String selection = HabitSchema.HABIT_ID + " = ?";
-            int count = super.mDb.delete(HABIT_TABLE, selection, selectionArgs)
+            return super.mDb.delete(HABIT_TABLE, selection, selectionArgs)
                     + super.mDb.delete(TRACKING_TABLE, selection, selectionArgs);
-            return count > 0;
         } catch (SQLiteConstraintException ex) {
         }
-        return false;
+        return 0;
     }
 
-    @Override
-    public int delete(String id) {
-        return 0;
+    public boolean setUpdate(String habitId, boolean isUpdate) {
+        final String sql = "UPDATE " + HABIT_TABLE + " SET " + HabitSchema.IS_UPDATED + " = " + (isUpdate ? "1" : "0")
+                + " WHERE " + HabitSchema.HABIT_ID + " = '" + habitId + "'";
+
+        cursor = super.rawQuery(sql, null);
+
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.close();
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -256,7 +268,7 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
                 habitEntity.setHabitColor(cursor.getString(cursor.getColumnIndexOrThrow(HABIT_COLOR)));
             }
             if (cursor.getColumnIndex(HABIT_DESCRIPTION) != -1) {
-                habitEntity.setHabitDescription(cursor.getString(cursor.getColumnIndexOrThrow(HABIT_DESCRIPTION)));
+                habitEntity.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(HABIT_DESCRIPTION)));
             }
             if (cursor.getColumnIndex(MON) != 1) {
                 habitEntity.setMon(cursor.getString(cursor.getColumnIndexOrThrow(MON)));
@@ -279,44 +291,23 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
             if (cursor.getColumnIndex(SUN) != 1) {
                 habitEntity.setSun(cursor.getString(cursor.getColumnIndexOrThrow(SUN)));
             }
+            if (cursor.getColumnIndex(HABIT_NAME_ID) != 1) {
+                habitEntity.setHabitNameId(cursor.getString(cursor.getColumnIndexOrThrow(HABIT_NAME_ID)));
+            }
+            if (cursor.getColumnIndex(HABIT_NAME_ASCII) != 1) {
+                habitEntity.setHabitNameAscii(cursor.getString(cursor.getColumnIndexOrThrow(HABIT_NAME_ASCII)));
+            }
             if (cursor.getColumnIndex(LAST_DATE_SYN) != 1) {
                 habitEntity.setLastDateSyn(cursor.getString(cursor.getColumnIndexOrThrow(LAST_DATE_SYN)));
             }
             if (cursor.getColumnIndex(IS_DELETE) != 1) {
                 habitEntity.setDelete(cursor.getString(cursor.getColumnIndexOrThrow(IS_DELETE)).equals("1"));
             }
+            if (cursor.getColumnIndex(HabitSchema.IS_UPDATED) != 1) {
+                habitEntity.setUpdate(cursor.getString(cursor.getColumnIndexOrThrow(HabitSchema.IS_UPDATED)).equals("1"));
+            }
         }
         return habitEntity;
-    }
-
-    public HabitEntity convert(Habit habit) {
-        if (habit != null) {
-            HabitEntity entity = new HabitEntity();
-            entity.setHabitId(habit.getHabitId());
-            entity.setUserId(habit.getUserId());
-            entity.setGroupId(habit.getGroupId());
-            entity.setMonitorId(habit.getMonitorId());
-            entity.setHabitName(habit.getHabitName());
-            entity.setHabitTarget(habit.getHabitTarget());
-            entity.setHabitType(habit.getHabitType());
-            entity.setMonitorType(habit.getMonitorType());
-            entity.setMonitorUnit(habit.getMonitorUnit());
-            entity.setMonitorNumber(habit.getMonitorNumber());
-            entity.setStartDate(habit.getStartDate());
-            entity.setEndDate(habit.getEndDate());
-            entity.setHabitColor(habit.getHabitColor());
-            entity.setHabitDescription(habit.getHabitDescription());
-            entity.setMon(habit.getMon());
-            entity.setTue(habit.getTue());
-            entity.setWed(habit.getWed());
-            entity.setThu(habit.getThu());
-            entity.setFri(habit.getFri());
-            entity.setSat(habit.getSat());
-            entity.setSun(habit.getSun());
-            entity.setDelete(habit.isDelete());
-            return entity;
-        }
-        return null;
     }
 
     @Override
@@ -336,7 +327,7 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
         initialValues.put(END_DATE, habitEntity.getEndDate());
         initialValues.put(CREATED_DATE, habitEntity.getCreatedDate());
         initialValues.put(HABIT_COLOR, habitEntity.getHabitColor());
-        initialValues.put(HABIT_DESCRIPTION, habitEntity.getHabitDescription());
+        initialValues.put(HABIT_DESCRIPTION, habitEntity.getDescription());
         initialValues.put(MON, habitEntity.getMon());
         initialValues.put(TUE, habitEntity.getTue());
         initialValues.put(WED, habitEntity.getWed());
@@ -344,8 +335,11 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
         initialValues.put(FRI, habitEntity.getFri());
         initialValues.put(SAT, habitEntity.getSat());
         initialValues.put(SUN, habitEntity.getSun());
+        initialValues.put(HABIT_NAME_ID, habitEntity.getHabitNameId());
+        initialValues.put(HABIT_NAME_ASCII, habitEntity.getHabitNameAscii());
         initialValues.put(LAST_DATE_SYN, habitEntity.getLastDateSyn());
         initialValues.put(IS_DELETE, habitEntity.isDelete() ? "1" : "0");
+        initialValues.put(HabitSchema.IS_UPDATED, habitEntity.isUpdate() ? "1" : "0");
     }
 
     @Override

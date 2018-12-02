@@ -12,7 +12,6 @@ public interface HabitDao {
     List<HabitEntity> getHabitByUser(String userId);
     HabitEntity getHabit(String habitId);
     boolean saveUpdateHabit(HabitEntity habitEntity);
-    boolean deleteHabit(String habitId);
     void setContentValue(HabitEntity habitEntity);
     ContentValues getContentValue();
 }

@@ -105,7 +105,7 @@ public class PersonalActivity extends AppCompatActivity {
     @OnClick(R.id.btnSave)
     public void saveInfo(View v) {
         String username = editUsername.getText().toString();
-        String date = editDay.getText().toString();
+        final String date = editDay.getText().toString();
         String month = editMonth.getText().toString();
         String year = editYear.getText().toString();
         String dob = year + "-" + month + "-" + date;
@@ -175,7 +175,7 @@ public class PersonalActivity extends AppCompatActivity {
         Database db = Database.getInstance(this);
         db.open();
 
-        User user = new User();
+        final User user = new User();
         user.setUserId(MySharedPreference.getUserId(this));
         user.setUsername(username);
         user.setRealName(realName);
@@ -184,6 +184,7 @@ public class PersonalActivity extends AppCompatActivity {
         user.setEmail(email);
         user.setPassword(newPassword);
         user.setDescription(description);
+        user.setUpdate(true);
 
         userEntity.setUsername(user.getUsername());
         userEntity.setRealName(user.getRealName());
@@ -192,18 +193,22 @@ public class PersonalActivity extends AppCompatActivity {
         userEntity.setEmail(user.getEmail());
         userEntity.setPassword(user.getPassword());
         userEntity.setDescription(user.getDescription());
+        userEntity.setUpdate(user.isUpdate());
 
         Database.getUserDb().saveUser(userEntity);
-
         db.close();
 
         MySharedPreference.saveUser(this, user.getUserId(), user.getUsername(), user.getPassword());
+        finish();
 
         mService.updateUser(user).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 Toast.makeText(PersonalActivity.this, "Cập nhật thành công", Toast.LENGTH_LONG).show();
-                finish();
+                Database db = Database.getInstance(PersonalActivity.this);
+                db.open();
+                Database.getUserDb().saveUpdate(user.getUserId(), false);
+                db.close();
             }
 
             @Override

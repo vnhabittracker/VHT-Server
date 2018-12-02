@@ -162,7 +162,7 @@ public class ReportCalendarActivity extends BaseActivity implements TrackingCale
         isCountHabitType = defaultHabitEntity.getMonitorType().equals(TYPE_1);
         String habitColor = defaultHabitEntity.getHabitColor();
         TrackingEntity trackingEntity = Database.getTrackingDb().getTracking(habitId, currentDate);
-        List<TrackingEntity> totalList = Database.getTrackingDb().getTrackingListByHabit(habitId);
+        List<TrackingEntity> totalList = Database.getTrackingDb().getTrackingRecordsByHabit(habitId);
 
         if (trackingEntity != null) {
             curTrackingCount = Integer.parseInt(trackingEntity.getCount());
@@ -427,7 +427,7 @@ public class ReportCalendarActivity extends BaseActivity implements TrackingCale
             trackingEntity.setCurrentDate(currentDate);
         }
         trackingEntity.setCount(String.valueOf(curTrackingCount));
-        Database.getTrackingDb().saveTracking(trackingEntity);
+        Database.getTrackingDb().saveUpdateRecord(trackingEntity);
 
         updateUI();
 
@@ -441,7 +441,7 @@ public class ReportCalendarActivity extends BaseActivity implements TrackingCale
         trackingData.getTrackingList().add(tracking);
 
         VnHabitApiService service = VnHabitApiUtils.getApiService();
-        service.updateTracking(trackingData).enqueue(new Callback<ResponseBody>() {
+        service.saveUpdateTracking(trackingData).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
             }

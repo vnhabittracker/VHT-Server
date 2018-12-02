@@ -3,9 +3,8 @@ package habit.tracker.habittracker.api.model.habit;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.text.Normalizer;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import habit.tracker.habittracker.api.model.reminder.Reminder;
 import habit.tracker.habittracker.api.model.tracking.Tracking;
@@ -58,7 +57,7 @@ public class Habit implements TrackingDateInWeek {
     private String habitColor;
     @SerializedName("habit_description")
     @Expose
-    private String habitDescription;
+    private String description;
     @SerializedName("mon")
     @Expose
     private String mon;
@@ -80,23 +79,22 @@ public class Habit implements TrackingDateInWeek {
     @SerializedName("sun")
     @Expose
     private String sun;
-    @SerializedName("reminder_list")
-    @Expose
-    private List<Reminder> reminderList;
     @SerializedName("tracking_list")
     @Expose
-    private List<Tracking> tracksList;
+    private List<Tracking> tracksList = new ArrayList<>();
+    @SerializedName("reminder_list")
+    @Expose
+    private List<Reminder> reminderList = new ArrayList<>();
     @SerializedName("habit_name_id")
     @Expose
-    private String habitSearchNameId;
+    private String habitNameId;
+
     @SerializedName("habit_name_ascii")
     @Expose
     private String habitNameAscii;
-    @SerializedName("habit_name_count")
-    @Expose
-    private int habitNameCount;
 
     private boolean isDelete = false;
+    private boolean isUpdate = false;
 
     public String getHabitId() {
         return habitId;
@@ -154,16 +152,16 @@ public class Habit implements TrackingDateInWeek {
         return habitColor;
     }
 
-    public String getHabitDescription() {
-        return habitDescription;
-    }
-
-    public int getHabitNameCount() {
-        return habitNameCount;
+    public String getDescription() {
+        return description;
     }
 
     public boolean isDelete() {
         return isDelete;
+    }
+
+    public boolean isUpdate() {
+        return isUpdate;
     }
 
     public String getMon() {
@@ -202,8 +200,8 @@ public class Habit implements TrackingDateInWeek {
         return tracksList;
     }
 
-    public String getHabitSearchNameId() {
-        return habitSearchNameId;
+    public String getHabitNameId() {
+        return habitNameId;
     }
 
     public String getHabitNameAscii() {
@@ -266,8 +264,8 @@ public class Habit implements TrackingDateInWeek {
         this.habitColor = habitColor;
     }
 
-    public void setHabitDescription(String habitDescription) {
-        this.habitDescription = habitDescription;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public void setMon(String mon) {
@@ -306,49 +304,49 @@ public class Habit implements TrackingDateInWeek {
         this.tracksList = tracksList;
     }
 
-    public void setHabitSearchNameId(String habitNameId) {
-        this.habitSearchNameId = habitNameId;
+    public void setHabitNameId(String habitNameId) {
+        this.habitNameId = habitNameId;
     }
 
     public void setHabitNameAscii(String habitName) {
         habitNameAscii = habitName;
     }
 
-    public void setHabitNameCount(int habitNameCount) {
-        this.habitNameCount = habitNameCount;
-    }
-
     public void setDelete(boolean delete) {
         isDelete = delete;
     }
 
-    public static Habit convert(HabitEntity entity) {
-        if (entity != null) {
-            Habit habit = new Habit();
-            habit.setHabitId(habit.getHabitId());
-            habit.setUserId(habit.getUserId());
-            habit.setGroupId(habit.getGroupId());
-            habit.setMonitorId(habit.getMonitorId());
-            habit.setHabitName(habit.getHabitName());
-            habit.setHabitTarget(habit.getHabitTarget());
-            habit.setHabitType(habit.getHabitType());
-            habit.setMonitorType(habit.getMonitorType());
-            habit.setMonitorUnit(habit.getMonitorUnit());
-            habit.setMonitorNumber(habit.getMonitorNumber());
-            habit.setStartDate(habit.getStartDate());
-            habit.setEndDate(habit.getEndDate());
-            habit.setHabitColor(habit.getHabitColor());
-            habit.setHabitDescription(habit.getHabitDescription());
-            habit.setMon(habit.getMon());
-            habit.setTue(habit.getTue());
-            habit.setWed(habit.getWed());
-            habit.setThu(habit.getThu());
-            habit.setFri(habit.getFri());
-            habit.setSat(habit.getSat());
-            habit.setSun(habit.getSun());
-            habit.setDelete(entity.isDelete());
-            return habit;
-        }
-        return null;
+    public void setUpdate(boolean update) {
+        isUpdate = update;
+    }
+
+    public HabitEntity toEntity() {
+        HabitEntity entity = new HabitEntity();
+        entity.setHabitId(habitId);
+        entity.setUserId(userId);
+        entity.setGroupId(groupId);
+        entity.setMonitorId(monitorId);
+        entity.setHabitName(habitName);
+        entity.setHabitTarget(habitTarget);
+        entity.setHabitType(habitType);
+        entity.setMonitorType(monitorType);
+        entity.setMonitorUnit(monitorUnit);
+        entity.setMonitorNumber(monitorNumber);
+        entity.setStartDate(startDate);
+        entity.setEndDate(endDate);
+        entity.setHabitColor(habitColor);
+        entity.setDescription(description);
+        entity.setMon(mon);
+        entity.setTue(tue);
+        entity.setWed(wed);
+        entity.setThu(thu);
+        entity.setFri(fri);
+        entity.setSat(sat);
+        entity.setSun(sun);
+        entity.setHabitNameId(habitNameId);
+        entity.setHabitNameAscii(habitNameAscii);
+        entity.setDelete(isDelete);
+        entity.setUpdate(isUpdate);
+        return entity;
     }
 }

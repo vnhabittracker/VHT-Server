@@ -43,7 +43,7 @@ public class HabitTextWatcher implements TextWatcher {
     }
 
     @Override
-    public void onTextChanged(CharSequence searchKey, int start, int before, int count) {
+    public void onTextChanged(final CharSequence searchKey, int start, int before, int count) {
         if (TextUtils.isEmpty(searchKey.toString())) {
             searchResultList.clear();
             habitSuggestionAdapter.notifyDataSetChanged();
@@ -102,23 +102,22 @@ public class HabitTextWatcher implements TextWatcher {
                                 }
                             }
                         }
-                        sortedHabitList.addAll(easyHabitList);
-                        sortedHabitList.addAll(mediumHabitList);
-                        sortedHabitList.addAll(hardHabitList);
+
+
                         if (userLevel <= 3) {
-                            searchResultList.addAll(sortedHabitList.size() >= 5 ? sortedHabitList.subList(0, 5) : sortedHabitList);
+                            sortedHabitList.addAll(easyHabitList);
+                            sortedHabitList.addAll(mediumHabitList);
+                            sortedHabitList.addAll(hardHabitList);
                         } else if (userLevel < 6) {
-                            int size = easyHabitList.size() + mediumHabitList.size();
-                            searchResultList.addAll(sortedHabitList.subList(0, size));
-                            Collections.reverse(searchResultList);
-                            if (searchResultList.size() < 5) {
-                                size = 5 - searchResultList.size();
-                                searchResultList.addAll(hardHabitList.size() >= size ? hardHabitList.subList(0, size) : hardHabitList);
-                            }
+                            sortedHabitList.addAll(mediumHabitList);
+                            sortedHabitList.addAll(easyHabitList);
+                            sortedHabitList.addAll(hardHabitList);
                         } else {
-                            Collections.reverse(sortedHabitList);
-                            searchResultList.addAll(sortedHabitList.size() >= 5 ? sortedHabitList.subList(0, 5) : sortedHabitList);
+                            sortedHabitList.addAll(hardHabitList);
+                            sortedHabitList.addAll(mediumHabitList);
+                            sortedHabitList.addAll(easyHabitList);
                         }
+                        searchResultList.addAll(sortedHabitList.size() >= 5 ? sortedHabitList.subList(0, 5) : sortedHabitList);
                     }
                     db.close();
                 }

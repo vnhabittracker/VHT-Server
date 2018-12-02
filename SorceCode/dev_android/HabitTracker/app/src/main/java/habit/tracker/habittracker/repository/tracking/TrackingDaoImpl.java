@@ -54,7 +54,7 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
                 entity.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(TRACKING_DESCRIPTION)));
             }
             if (cursor.getColumnIndex(IS_UPDATED) != -1) {
-                entity.setUpdated(cursor.getString(cursor.getColumnIndexOrThrow(IS_UPDATED)).equals("1"));
+                entity.setUpdate(cursor.getString(cursor.getColumnIndexOrThrow(IS_UPDATED)).equals("1"));
             }
         }
         return entity;
@@ -71,7 +71,7 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
         initialValues.put(CURRENT_DATE, entity.getCurrentDate());
         initialValues.put(COUNT, entity.getCount());
         initialValues.put(TRACKING_DESCRIPTION, entity.getDescription());
-        initialValues.put(IS_UPDATED, entity.isUpdated() ? "1" : "0");
+        initialValues.put(IS_UPDATED, entity.isUpdate() ? "1" : "0");
     }
 
     public TrackingEntity convert(Tracking tracking) {
@@ -81,7 +81,7 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
         entity.setCount(tracking.getCount());
         entity.setCurrentDate(tracking.getCurrentDate());
         entity.setDescription(tracking.getDescription());
-        entity.setUpdated(tracking.isUpdated());
+        entity.setUpdate(tracking.isUpdate());
         return entity;
     }
 
@@ -152,7 +152,7 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
     }
 
     @Override
-    public List<TrackingEntity> getTrackingListByHabit(String habitId) {
+    public List<TrackingEntity> getTrackingRecordsByHabit(String habitId) {
         List<TrackingEntity> list = new ArrayList<>();
         final String selectionArgs[] = {String.valueOf(habitId)};
         final String selection = HABIT_ID + " = ?";
@@ -165,10 +165,7 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
             }
             cursor.close();
         }
-        if (list.size() > 0) {
-            return list;
-        }
-        return null;
+        return list;
     }
 
     public TrackingEntity getTracking(String trackId) {
@@ -204,7 +201,7 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
     }
 
     @Override
-    public boolean saveTracking(TrackingEntity entity) {
+    public boolean saveUpdateRecord(TrackingEntity entity) {
         setContentValue(entity);
         try {
             boolean res = super.replace(TRACKING_TABLE, getContentValue()) > 0;
@@ -214,15 +211,17 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
         }
     }
 
-    @Override
-    public boolean updateTracking(TrackingEntity entity) {
-        setContentValue(entity);
-        try {
-            boolean res = super.replace(TRACKING_TABLE, getContentValue()) > 0;
-            return res;
-        } catch (SQLiteConstraintException ex) {
-            return false;
+    public boolean setUpdate(String trackId, boolean isUpdate) {
+        final String sql = "UPDATE " + TRACKING_TABLE + " SET " + IS_UPDATED + " = " + (isUpdate ? "1" : "0")
+                + " WHERE " + TRACKING_ID + " = '" + trackId + "'";
+
+        cursor = super.rawQuery(sql, null);
+
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.close();
+            return true;
         }
+        return false;
     }
 
     public String getParams(String[] columns, String alias, boolean removeEnd) {

@@ -145,8 +145,6 @@ include_once '../../models/Model.php';
                                     'current_date' => $current_date,
                                     'count' => $count, 
                                     'tracking_description' => $tracking_description));
-
-            // $stmt->debugDumpParams();
             
             // Execute query
             if ($stmt->execute()) {

@@ -26,6 +26,7 @@ import habit.tracker.habittracker.common.validator.ValidatorType;
 import habit.tracker.habittracker.common.util.MySharedPreference;
 import habit.tracker.habittracker.repository.Database;
 import habit.tracker.habittracker.repository.user.UserEntity;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -115,7 +116,9 @@ public class LoginActivity extends BaseActivity {
                         || !validator.checkEmpty("Mật khẩu", password)) {
                     return;
                 }
+
                 getUser(username, password, true);
+
                 break;
             case R.id.btn_fb_login:
                 showEmptyScreen();
@@ -138,23 +141,30 @@ public class LoginActivity extends BaseActivity {
                     Database db = new Database(LoginActivity.this);
                     db.open();
                     User user = response.body().getData();
+
                     UserEntity userEntity = Database.getUserDb().getUser(user.getUserId());
-                    userEntity.setUserId(user.getUserId());
-                    userEntity.setUsername(user.getUsername());
-                    userEntity.setEmail(user.getEmail());
-                    userEntity.setGender(user.getGender());
-                    userEntity.setDateOfBirth(user.getDateOfBirth());
-                    userEntity.setPassword(user.getPassword());
-                    userEntity.setRealName(user.getRealName());
-                    userEntity.setDescription(user.getDescription());
-                    userEntity.setCreatedDate(user.getCreatedDate());
-                    userEntity.setLastLoginTime(user.getLastLoginTime());
-                    userEntity.setContinueUsingCount(user.getContinueUsingCount());
-                    userEntity.setCurrentContinueUsingCount(user.getCurrentContinueUsingCount());
-                    userEntity.setBestContinueUsingCount(user.getBestContinueUsingCount());
-                    userEntity.setUserScore(user.getUserScore());
-                    Database.getUserDb().saveUser(userEntity);
+                    if (userEntity.isUpdate()) {
+                        callUpdateUserApi(userEntity.toModel());
+                    }
+                    else {
+                        userEntity.setUserId(user.getUserId());
+                        userEntity.setUsername(user.getUsername());
+                        userEntity.setEmail(user.getEmail());
+                        userEntity.setGender(user.getGender());
+                        userEntity.setDateOfBirth(user.getDateOfBirth());
+                        userEntity.setPassword(user.getPassword());
+                        userEntity.setRealName(user.getRealName());
+                        userEntity.setDescription(user.getDescription());
+                        userEntity.setCreatedDate(user.getCreatedDate());
+                        userEntity.setLastLoginTime(user.getLastLoginTime());
+                        userEntity.setContinueUsingCount(user.getContinueUsingCount());
+                        userEntity.setCurrentContinueUsingCount(user.getCurrentContinueUsingCount());
+                        userEntity.setBestContinueUsingCount(user.getBestContinueUsingCount());
+                        userEntity.setUserScore(user.getUserScore());
+                        Database.getUserDb().saveUser(userEntity);
+                    }
                     db.close();
+
                     if (isLogin) {
                         showMainScreen(user.getUserId(), user.getUsername(), user.getPassword());
                     }
@@ -175,6 +185,23 @@ public class LoginActivity extends BaseActivity {
                 } else {
                     Toast.makeText(LoginActivity.this, "Đăng nhập không thành công!", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+    }
+
+    private void callUpdateUserApi(final User user) {
+        mService.updateUser(user).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Toast.makeText(LoginActivity.this, "Cập nhật thành công", Toast.LENGTH_LONG).show();
+                Database db = Database.getInstance(LoginActivity.this);
+                db.open();
+                Database.getUserDb().saveUpdate(user.getUserId(), false);
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, "Đã xãy ra lỗi", Toast.LENGTH_LONG).show();
             }
         });
     }

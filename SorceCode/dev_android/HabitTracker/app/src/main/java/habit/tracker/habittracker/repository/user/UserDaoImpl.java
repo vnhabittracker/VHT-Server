@@ -28,52 +28,53 @@ public class UserDaoImpl extends MyDatabaseHelper implements UserDao, UserSchema
     @Override
     protected UserEntity cursorToEntity(Cursor cursor) {
         UserEntity userEntity = new UserEntity();
-        if (cursor != null) {
-            if (cursor.getColumnIndex(USER_ID) != -1) {
-                userEntity.setUserId(cursor.getString(cursor.getColumnIndexOrThrow(USER_ID)));
-            }
-            if (cursor.getColumnIndex(USERNAME) != -1) {
-                userEntity.setUsername(cursor.getString(cursor.getColumnIndexOrThrow(USERNAME)));
-            }
-            if (cursor.getColumnIndex(PASSWORD) != -1) {
-                userEntity.setPassword(cursor.getString(cursor.getColumnIndexOrThrow(PASSWORD)));
-            }
-            if (cursor.getColumnIndex(EMAIL) != -1) {
-                userEntity.setEmail(cursor.getString(cursor.getColumnIndexOrThrow(EMAIL)));
-            }
-            if (cursor.getColumnIndex(GENDER) != -1) {
-                userEntity.setGender(cursor.getString(cursor.getColumnIndexOrThrow(GENDER)));
-            }
-            if (cursor.getColumnIndex(DATE_OF_BIRTH) != -1) {
-                userEntity.setDateOfBirth(cursor.getString(cursor.getColumnIndexOrThrow(DATE_OF_BIRTH)));
-            }
-            if (cursor.getColumnIndex(REAL_NAME) != -1) {
-                userEntity.setRealName(cursor.getString(cursor.getColumnIndexOrThrow(REAL_NAME)));
-            }
-            if (cursor.getColumnIndex(AVATAR) != -1) {
-                userEntity.setAvatar(cursor.getString(cursor.getColumnIndexOrThrow(AVATAR)));
-            }
-            if (cursor.getColumnIndex(USER_DESCRIPTION) != -1) {
-                userEntity.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(USER_DESCRIPTION)));
-            }
-            if (cursor.getColumnIndex(USER_CREATED_DATE) != -1) {
-                userEntity.setCreatedDate(cursor.getString(cursor.getColumnIndexOrThrow(USER_CREATED_DATE)));
-            }
-            if (cursor.getColumnIndex(LAST_LOGIN_TIME) != -1) {
-                userEntity.setLastLoginTime(cursor.getString(cursor.getColumnIndexOrThrow(LAST_LOGIN_TIME)));
-            }
-            if (cursor.getColumnIndex(CONTINUE_USING_COUNT) != -1) {
-                userEntity.setContinueUsingCount(cursor.getString(cursor.getColumnIndexOrThrow(CONTINUE_USING_COUNT)));
-            }
-            if (cursor.getColumnIndex(CURRENT_CONTINUE_USING_COUNT) != -1) {
-                userEntity.setCurrentContinueUsingCount(cursor.getString(cursor.getColumnIndexOrThrow(CURRENT_CONTINUE_USING_COUNT)));
-            }
-            if (cursor.getColumnIndex(BEST_CONTINUE_USING_COUNT) != -1) {
-                userEntity.setBestContinueUsingCount(cursor.getString(cursor.getColumnIndexOrThrow(BEST_CONTINUE_USING_COUNT)));
-            }
-            if (cursor.getColumnIndex(USER_SCORE) != -1) {
-                userEntity.setUserScore(cursor.getString(cursor.getColumnIndexOrThrow(USER_SCORE)));
-            }
+        if (cursor.getColumnIndex(USER_ID) != -1) {
+            userEntity.setUserId(cursor.getString(cursor.getColumnIndexOrThrow(USER_ID)));
+        }
+        if (cursor.getColumnIndex(USERNAME) != -1) {
+            userEntity.setUsername(cursor.getString(cursor.getColumnIndexOrThrow(USERNAME)));
+        }
+        if (cursor.getColumnIndex(PASSWORD) != -1) {
+            userEntity.setPassword(cursor.getString(cursor.getColumnIndexOrThrow(PASSWORD)));
+        }
+        if (cursor.getColumnIndex(EMAIL) != -1) {
+            userEntity.setEmail(cursor.getString(cursor.getColumnIndexOrThrow(EMAIL)));
+        }
+        if (cursor.getColumnIndex(GENDER) != -1) {
+            userEntity.setGender(cursor.getString(cursor.getColumnIndexOrThrow(GENDER)));
+        }
+        if (cursor.getColumnIndex(DATE_OF_BIRTH) != -1) {
+            userEntity.setDateOfBirth(cursor.getString(cursor.getColumnIndexOrThrow(DATE_OF_BIRTH)));
+        }
+        if (cursor.getColumnIndex(REAL_NAME) != -1) {
+            userEntity.setRealName(cursor.getString(cursor.getColumnIndexOrThrow(REAL_NAME)));
+        }
+        if (cursor.getColumnIndex(AVATAR) != -1) {
+            userEntity.setAvatar(cursor.getString(cursor.getColumnIndexOrThrow(AVATAR)));
+        }
+        if (cursor.getColumnIndex(USER_DESCRIPTION) != -1) {
+            userEntity.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(USER_DESCRIPTION)));
+        }
+        if (cursor.getColumnIndex(USER_CREATED_DATE) != -1) {
+            userEntity.setCreatedDate(cursor.getString(cursor.getColumnIndexOrThrow(USER_CREATED_DATE)));
+        }
+        if (cursor.getColumnIndex(LAST_LOGIN_TIME) != -1) {
+            userEntity.setLastLoginTime(cursor.getString(cursor.getColumnIndexOrThrow(LAST_LOGIN_TIME)));
+        }
+        if (cursor.getColumnIndex(CONTINUE_USING_COUNT) != -1) {
+            userEntity.setContinueUsingCount(cursor.getString(cursor.getColumnIndexOrThrow(CONTINUE_USING_COUNT)));
+        }
+        if (cursor.getColumnIndex(CURRENT_CONTINUE_USING_COUNT) != -1) {
+            userEntity.setCurrentContinueUsingCount(cursor.getString(cursor.getColumnIndexOrThrow(CURRENT_CONTINUE_USING_COUNT)));
+        }
+        if (cursor.getColumnIndex(BEST_CONTINUE_USING_COUNT) != -1) {
+            userEntity.setBestContinueUsingCount(cursor.getString(cursor.getColumnIndexOrThrow(BEST_CONTINUE_USING_COUNT)));
+        }
+        if (cursor.getColumnIndex(USER_SCORE) != -1) {
+            userEntity.setUserScore(cursor.getString(cursor.getColumnIndexOrThrow(USER_SCORE)));
+        }
+        if (cursor.getColumnIndex(IS_UPDATE) != -1) {
+            userEntity.setUpdate(cursor.getString(cursor.getColumnIndexOrThrow(IS_UPDATE)).equals("1"));
         }
         return userEntity;
     }
@@ -95,6 +96,7 @@ public class UserDaoImpl extends MyDatabaseHelper implements UserDao, UserSchema
         initialValues.put(CURRENT_CONTINUE_USING_COUNT, userEntity.getCurrentContinueUsingCount());
         initialValues.put(BEST_CONTINUE_USING_COUNT, userEntity.getBestContinueUsingCount());
         initialValues.put(USER_SCORE, userEntity.getUserScore());
+        initialValues.put(IS_UPDATE, userEntity.isUpdate() ? "1" : "0");
     }
 
     private ContentValues getContentValue() {
@@ -144,10 +146,12 @@ public class UserDaoImpl extends MyDatabaseHelper implements UserDao, UserSchema
     public UserEntity getUser(String userId) {
         final String selectionArgs[] = {String.valueOf(userId)};
         final String selection = USER_ID + " = ?";
+
         UserEntity userEntity = new UserEntity();
         cursor = super.query(USER_TABLE, USER_COLUMNS, selection, selectionArgs, USER_ID);
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
+
             while (!cursor.isAfterLast()) {
                 userEntity = cursorToEntity(cursor);
                 cursor.moveToNext();
@@ -182,6 +186,19 @@ public class UserDaoImpl extends MyDatabaseHelper implements UserDao, UserSchema
         } catch (SQLiteConstraintException ex) {
             return false;
         }
+    }
+
+    public boolean saveUpdate(String userId, boolean isUpdate) {
+        final String sql = "UPDATE " + USER_TABLE + " SET " + IS_UPDATE + " = " + (isUpdate ? "1" : "0")
+                + " WHERE " + USER_ID + " = '" + userId + "'";
+
+        cursor = super.rawQuery(sql, null);
+
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.close();
+            return true;
+        }
+        return false;
     }
 
     @Override

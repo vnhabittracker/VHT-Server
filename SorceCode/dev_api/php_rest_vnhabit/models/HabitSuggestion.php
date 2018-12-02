@@ -31,7 +31,13 @@ class HabitSuggestion extends Model {
 
     public function search($searck_key) {
         $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . ' WHERE habit_name_ascii LIKE "%' . $searck_key . '%"';
-        // var_dump($query);
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt;
+    }
+
+    public function searchUni($searck_key) {
+        $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . ' WHERE habit_name_uni LIKE "%' . $searck_key . '%"';
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;

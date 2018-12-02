@@ -262,6 +262,8 @@ public class StaticsActivity extends BaseActivity implements OnChartValueSelecte
     }
 
     private ArrayList<BarEntry> loadWeekData(String currentDate) {
+        appDatabase.open();
+
         ArrayList<BarEntry> values = new ArrayList<>();
         String[] daysInWeek = AppGenerator.getDatesInWeek(currentDate);
         String startDate = AppGenerator.format(daysInWeek[0], AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT);
@@ -303,6 +305,8 @@ public class StaticsActivity extends BaseActivity implements OnChartValueSelecte
     }
 
     private ArrayList<BarEntry> loadMonthData(String currentDate) {
+        appDatabase.open();
+
         ArrayList<BarEntry> values = new ArrayList<>();
         String[] daysInMonth = AppGenerator.getDatesInMonth(currentDate, false);
 
@@ -333,6 +337,8 @@ public class StaticsActivity extends BaseActivity implements OnChartValueSelecte
     }
 
     private ArrayList<BarEntry> loadYearData(String currentDate) {
+        appDatabase.open();
+
         ArrayList<BarEntry> values = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(AppGenerator.getDate(currentDate.split("-")[0] + "-12-01", AppGenerator.YMD_SHORT));

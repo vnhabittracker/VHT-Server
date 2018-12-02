@@ -39,7 +39,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static habit.tracker.habittracker.common.util.AppGenerator.YMD_SHORT;
 import static habit.tracker.habittracker.common.util.AppGenerator.getLevel;
 
 public class ProfileActivity extends BaseActivity implements RecyclerViewItemClickListener {
@@ -75,6 +74,7 @@ public class ProfileActivity extends BaseActivity implements RecyclerViewItemCli
     List<HabitSuggestion> displaySuggestList = new ArrayList<>();
     SuggestByGroupAdapter suggestByGroupAdapter;
     VnHabitApiService mService = VnHabitApiUtils.getApiService();
+    Database mDb = new Database(ProfileActivity.this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,9 +94,9 @@ public class ProfileActivity extends BaseActivity implements RecyclerViewItemCli
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
                 if (response.body().getResult().equals(AppConstant.STATUS_OK)) {
+                    mDb.open();
+
                     User user = response.body().getData();
-                    Database db = new Database(ProfileActivity.this);
-                    db.open();
                     if (user != null) {
                         ProfileActivity.this.userEntity = Database.getUserDb().getUser(user.getUserId());
                         userEntity.setUserId(user.getUserId());
@@ -115,7 +115,6 @@ public class ProfileActivity extends BaseActivity implements RecyclerViewItemCli
                         userEntity.setUserScore(user.getUserScore());
                         Database.getUserDb().saveUser(userEntity);
                     }
-                    db.close();
                     initializeScreen();
                 }
             }
@@ -132,13 +131,10 @@ public class ProfileActivity extends BaseActivity implements RecyclerViewItemCli
             @Override
             public void onResponse(Call<SuggestByLevelReponse> call, Response<SuggestByLevelReponse> response) {
                 if (response.body().getResult().equals("1")) {
-                    Database db = Database.getInstance(ProfileActivity.this);
-                    db.open();
+                    mDb.open();
 
                     // 0: low, 1: med, 2: hig
                     List<List<HabitSuggestion>> data = response.body().getData();
-
-                    String currentDate = AppGenerator.getCurrentDate(YMD_SHORT);
                     int habitCount = Database.getHabitDb().countHabitByUser(userEntity.getUserId());
                     int userLevel = AppGenerator.getLevel(Integer.parseInt(userEntity.getUserScore()));
                     String[] level = new String[]{"Thói quen dễ được nhiều người chọn", "Thói quen trung bình được nhiều người chọn", "Thói quen khó được nhiều người chọn"};
@@ -184,8 +180,6 @@ public class ProfileActivity extends BaseActivity implements RecyclerViewItemCli
                     tvContinueUsing.setText(userEntity.getContinueUsingCount() + " ngày");
                     tvTotalHabit.setText(String.valueOf(habitCount));
                     suggestByGroupAdapter.notifyDataSetChanged();
-
-                    db.close();
                 }
             }
 
@@ -213,14 +207,12 @@ public class ProfileActivity extends BaseActivity implements RecyclerViewItemCli
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                     imgAvatar.setImageBitmap(bitmap);
 
-                    Database db = Database.getInstance(ProfileActivity.this);
-                    db.open();
+                    mDb.open();
                     UserEntity userEntity = Database.getUserDb().getUser(MySharedPreference.getUserId(ProfileActivity.this));
                     if (userEntity != null) {
                         userEntity.setAvatar(uri.toString());
                         Database.getUserDb().saveUser(userEntity);
                     }
-                    db.close();
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -238,5 +230,11 @@ public class ProfileActivity extends BaseActivity implements RecyclerViewItemCli
         intent.putExtra(SUGGEST_NAME, item.getHabitNameUni());
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    protected void onStop() {
+        mDb.close();
+        super.onStop();
     }
 }

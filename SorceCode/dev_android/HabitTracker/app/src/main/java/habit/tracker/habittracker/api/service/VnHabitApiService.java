@@ -4,6 +4,7 @@ import habit.tracker.habittracker.api.model.group.Group;
 import habit.tracker.habittracker.api.model.group.GroupResponse;
 import habit.tracker.habittracker.api.model.habit.Habit;
 import habit.tracker.habittracker.api.model.habit.HabitResponse;
+import habit.tracker.habittracker.api.model.reminder.Reminder;
 import habit.tracker.habittracker.api.model.search.SearchResponse;
 import habit.tracker.habittracker.api.model.suggestion.HabitSuggestion;
 import habit.tracker.habittracker.api.model.suggestion.SuggestByLevelReponse;
@@ -55,7 +56,7 @@ public interface VnHabitApiService {
     Call<GroupResponse> deleteGroup(@Query("group_id") String groupId);
 
     @POST("tracking/create_update.php")
-    Call<ResponseBody> updateTracking(@Body TrackingList trackingList);
+    Call<ResponseBody> saveUpdateTracking(@Body TrackingList trackingList);
 
     @GET("suggest/habit_search.php")
     Call<SearchResponse> searchHabitName(@Query("search") String searchKey);
@@ -71,4 +72,7 @@ public interface VnHabitApiService {
 
     @POST("user/update_score.php")
     Call<ResponseBody> updateUserScore(@Body UpdateScoreRequest updateScoreRequest);
+
+    @POST("reminder/create.php")
+    Call<ResponseBody> addReminder(@Body Reminder reminder);
 }

@@ -312,13 +312,12 @@ public class AppGenerator {
     public static String getSearchKey(String str) {
         if (TextUtils.isEmpty(str))
             return null;
-        String temp = Normalizer.normalize(str.toLowerCase().trim(), Normalizer.Form.NFD);
+        String temp = Normalizer.normalize(str, Normalizer.Form.NFD);
         Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-        return pattern.matcher(temp).replaceAll("").toLowerCase();
+        return pattern.matcher(temp).replaceAll("").replace('đ','d').replace('Đ','D').toLowerCase();
     }
 
     public static String getFirstDateNextWeek(String currentDate, String fmIn, String fmOut) {
-        Date date = getDate(currentDate, fmIn);
         Calendar ca = Calendar.getInstance();
         String next;
         for (int i = 0; i < 7; i++) {

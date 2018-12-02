@@ -8,6 +8,7 @@ include_once '../../config/config.php';
 include_once '../../models/Habit.php';
 include_once '../../models/Tracking.php';
 include_once '../../models/Reminder.php';
+include_once '../../models/HabitSuggestion.php';
 
 // Instantiate DB & connect
 $database = new Database();
@@ -17,6 +18,7 @@ $db = $database->connect();
 $habit = new Habit($db);
 $tracker = new Tracking($db);
 $reminder = new Reminder($db);
+$habitSuggestion = new HabitSuggestion($db);
 
 $habit->user_id = isset($_GET['user_id']) ? $_GET['user_id'] : die();
 
@@ -31,53 +33,68 @@ if ($row_count > 0) {
 
     $habits_arr = array();
     
-    while($row = $result->fetch(PDO::FETCH_ASSOC)) {
-        extract($row);
+        while($row = $result->fetch(PDO::FETCH_ASSOC)) {
+            extract($row);
 
-        $tracksArr = array();
-        $tracker->habit_id = $habit_id;
-        $trackRes = $tracker->getTrackByHabit();
-        if ($trackRes) {
-            while($row2 = $trackRes->fetch(PDO::FETCH_ASSOC)) {
-                array_push($tracksArr, $row2);
+            $tracksArr = array();
+            $tracker->habit_id = $habit_id;
+            $trackRes = $tracker->getTrackByHabit();
+            if ($trackRes) {
+                while($row2 = $trackRes->fetch(PDO::FETCH_ASSOC)) {
+                    array_push($tracksArr, $row2);
+                }
             }
-        }
 
-        $remindersArr = array();
-        $reminder->habit_id = $habit_id;
-        $reminderRes = $reminder->getRemindersByHabit();
-        if ($reminderRes) {
-            while($row3 = $reminderRes->fetch(PDO::FETCH_ASSOC)) {
-                array_push($remindersArr, $row3);
+            $remindersArr = array();
+            $reminder->habit_id = $habit_id;
+            $reminderRes = $reminder->getRemindersByHabit();
+            if ($reminderRes) {
+                while($row3 = $reminderRes->fetch(PDO::FETCH_ASSOC)) {
+                    array_push($remindersArr, $row3);
+                }
             }
-        }
 
-        $habit_item = array(
-            'habit_id' => $habit_id, 
-            'user_id' => $user_id, 
-            'group_id' => $group_id, 
-            'monitor_id' => $monitor_id, 
-            'habit_name' => $habit_name, 
-            'habit_target' => $habit_target, 
-            'habit_type' => $habit_type, 
-            'monitor_type' => $monitor_type, 
-            'monitor_unit' => $monitor_unit, 
-            'monitor_number' => $monitor_number,
-            'start_date' => $start_date, 
-            'end_date' => $end_date, 
-            'created_date' => $created_date, 
-            'habit_color' => $habit_color, 
-            'habit_description' => $habit_description,
-            'mon' => $mon,
-            'tue' => $tue,
-            'wed' => $wed,
-            'thu' => $thu,
-            'fri' => $fri,
-            'sat' => $sat,
-            'sun' => $sun,
-            'tracking_list' => $tracksArr,
-            'reminder_list' => $remindersArr
-        );
+            $habit_name_ascii;
+            $habit_name_id;
+            $suggestion = $habitSuggestion->searchUni($habit_name);
+            if ($suggestion->rowCount() > 0) {
+                while($row4 = $suggestion->fetch(PDO::FETCH_ASSOC)) {
+                    if ($row4['habit_name_uni'] == $habit_name) {
+                        $habit_name_id = $row4['habit_name_id'];
+                        $habit_name_ascii = $row4['habit_name_ascii'];
+                        break;
+                    }
+                }
+            }
+
+            $habit_item = array(
+                'habit_id' => $habit_id, 
+                'user_id' => $user_id, 
+                'group_id' => $group_id, 
+                'monitor_id' => $monitor_id, 
+                'habit_name' => $habit_name, 
+                'habit_target' => $habit_target, 
+                'habit_type' => $habit_type, 
+                'monitor_type' => $monitor_type, 
+                'monitor_unit' => $monitor_unit, 
+                'monitor_number' => $monitor_number,
+                'start_date' => $start_date, 
+                'end_date' => $end_date, 
+                'created_date' => $created_date, 
+                'habit_color' => $habit_color, 
+                'habit_description' => $habit_description,
+                'mon' => $mon,
+                'tue' => $tue,
+                'wed' => $wed,
+                'thu' => $thu,
+                'fri' => $fri,
+                'sat' => $sat,
+                'sun' => $sun,
+                'tracking_list' => $tracksArr,
+                'reminder_list' => $remindersArr,
+                'habit_name_id' => $habit_name_id,
+                'habit_name_ascii' => $habit_name_ascii
+            );
 
         // push to "data"
         array_push($habits_arr, $habit_item);

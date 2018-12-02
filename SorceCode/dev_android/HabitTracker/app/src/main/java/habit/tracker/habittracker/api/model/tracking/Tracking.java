@@ -3,6 +3,8 @@ package habit.tracker.habittracker.api.model.tracking;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import habit.tracker.habittracker.repository.tracking.TrackingEntity;
+
 public class Tracking {
     @SerializedName("tracking_id")
     @Expose
@@ -19,7 +21,7 @@ public class Tracking {
     @SerializedName("tracking_description")
     @Expose
     private String description;
-    private boolean isUpdated = false;
+    private boolean isUpdate = false;
 
     public String getTrackingId() {
         return trackingId;
@@ -41,8 +43,8 @@ public class Tracking {
         return description;
     }
 
-    public boolean isUpdated() {
-        return isUpdated;
+    public boolean isUpdate() {
+        return isUpdate;
     }
 
     public void setTrackingId(String trackingId) {
@@ -65,7 +67,18 @@ public class Tracking {
         this.description = trackingDescription;
     }
 
-    public void setUpdated(boolean updated) {
-        isUpdated = updated;
+    public void setUpdate(boolean update) {
+        isUpdate = update;
+    }
+
+    public TrackingEntity toEntity() {
+        TrackingEntity entity = new TrackingEntity();
+        entity.setTrackingId(trackingId);
+        entity.setHabitId(habitId);
+        entity.setCurrentDate(currentDate);
+        entity.setCount(count);
+        entity.setDescription(description);
+        entity.setUpdate(isUpdate);
+        return entity;
     }
 }

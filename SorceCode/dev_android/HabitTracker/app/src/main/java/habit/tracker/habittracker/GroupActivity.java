@@ -77,34 +77,34 @@ public class GroupActivity extends AppCompatActivity implements GroupRecyclerVie
                     Database db = new Database(GroupActivity.this);
                     db.open();
 
-                    List<Group> resultFromServer = response.body().getGroupList();
+                    List<Group> fromServerToLocal = response.body().getGroupList();
                     Map<String, String> mapGroupFromServer = new HashMap<>();
                     GroupEntity entity;
 
-                    for (Group group : resultFromServer) {
-                        entity = Database.getGroupDb().getGroup(group.getGroupId());
-                        if (entity != null && entity.isDelete()) {
+                    // syn data
+                    if (fromServerToLocal != null && fromServerToLocal.size() > 0) {
+                        for (Group group : fromServerToLocal) {
+                            entity = Database.getGroupDb().getGroup(group.getGroupId());
+                            if (entity != null && entity.isDelete()) {
+                                callDeleteGroupApi(entity.getGroupId());
 
-                            callDeleteGroupApi(entity.getGroupId());
+                            } else {
 
-                        } else {
-
-                            group.setDefault(TextUtils.isEmpty(group.getUserId()));
-
-                            Database.getGroupDb().save(group);
-
-                            mapGroupFromServer.put(group.getGroupId(), group.getGroupName());
+                                group.setDefault(TextUtils.isEmpty(group.getUserId()));
+                                Database.getGroupDb().save(group);
+                                mapGroupFromServer.put(group.getGroupId(), group.getGroupName());
+                            }
                         }
                     }
 
-                    List<GroupEntity> groupEntities = Database.getGroupDb().getGroupsByUser(userId);
-                    if (groupEntities == null || groupEntities.size() > 0) {
-                        // get only default group
-                        groupEntities = Database.getGroupDb().getAll();
+                    List<GroupEntity> fromLocalToServer = Database.getGroupDb().getGroupsByUser(userId);
+                    if (fromLocalToServer == null || fromLocalToServer.size() > 0) {
+                        fromLocalToServer = Database.getGroupDb().getAll();
                     }
-                    if (groupEntities != null && groupEntities.size() > 0) {
+
+                    if (fromLocalToServer != null && fromLocalToServer.size() > 0) {
                         Group group;
-                        for (GroupEntity item : groupEntities) {
+                        for (GroupEntity item : fromLocalToServer) {
                             if (!item.isDelete()) {
                                 group = new Group(item.getGroupId(), item.getUserId(), item.getGroupName(), item.getDescription(), item.isDefault());
                                 groupList.add(group);
@@ -237,9 +237,8 @@ public class GroupActivity extends AppCompatActivity implements GroupRecyclerVie
                 groupViewAdapter.notifyDataSetChanged();
 
                 item.setDelete(true);
-                if (item.isDefault()){
-                    Database.getGroupDb().save(item);
-                } else {
+                Database.getGroupDb().save(item);
+                if (!item.isDefault()){
                     callDeleteGroupApi(item.getGroupId());
                 }
 

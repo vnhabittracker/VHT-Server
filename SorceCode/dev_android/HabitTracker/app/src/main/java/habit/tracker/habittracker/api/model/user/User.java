@@ -3,6 +3,8 @@ package habit.tracker.habittracker.api.model.user;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import habit.tracker.habittracker.repository.user.UserEntity;
+
 public class User {
     @SerializedName("user_id")
     @Expose
@@ -30,7 +32,7 @@ public class User {
     private String avatar;
     @SerializedName("user_description")
     @Expose
-    private String userDescription;
+    private String description;
     @SerializedName("created_date")
     @Expose
     private String createdDate;
@@ -49,6 +51,8 @@ public class User {
     @SerializedName("user_score")
     @Expose
     private String userScore;
+
+    private boolean isUpdate = false;
 
     public User() {}
 
@@ -85,7 +89,7 @@ public class User {
     }
 
     public String getDescription() {
-        return userDescription;
+        return description;
     }
 
     public String getCreatedDate() {
@@ -110,6 +114,10 @@ public class User {
 
     public String getUserScore() {
         return userScore;
+    }
+
+    public boolean isUpdate() {
+        return isUpdate;
     }
 
     public void setUserId(String userId) {
@@ -145,7 +153,7 @@ public class User {
     }
 
     public void setDescription(String userDescription) {
-        this.userDescription = userDescription;
+        this.description = userDescription;
     }
 
     public void setCreatedDate(String createdDate) {
@@ -170,5 +178,29 @@ public class User {
 
     public void setUserScore(String userScore) {
         this.userScore = userScore;
+    }
+
+    public void setUpdate(boolean update) {
+        isUpdate = update;
+    }
+
+    public UserEntity toEntity() {
+        UserEntity entity = new UserEntity();
+        entity.setUserId(userId);
+        entity.setUsername(username);
+        entity.setPassword(password);
+        entity.setGender(gender);
+        entity.setEmail(email);
+        entity.setDateOfBirth(dateOfBirth);
+        entity.setAvatar(avatar);
+        entity.setRealName(realName);
+        entity.setDescription(description);
+        entity.setCreatedDate(createdDate);
+        entity.setLastLoginTime(lastLoginTime);
+        entity.setContinueUsingCount(continueUsingCount);
+        entity.setCurrentContinueUsingCount(currentContinueUsingCount);
+        entity.setBestContinueUsingCount(bestContinueUsingCount);
+        entity.setUserScore(userScore);
+        return entity;
     }
 }

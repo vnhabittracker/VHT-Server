@@ -400,7 +400,7 @@ public class ReportDetailsActivity extends BaseActivity {
             trackingEntity.setCurrentDate(currentDate);
         }
         trackingEntity.setCount(String.valueOf(curTrackingCount));
-        Database.getTrackingDb().saveTracking(trackingEntity);
+        Database.getTrackingDb().saveUpdateRecord(trackingEntity);
         db.close();
 
         ArrayList<BarEntry> values = loadData(currentDate);
@@ -416,7 +416,7 @@ public class ReportDetailsActivity extends BaseActivity {
         trackingData.getTrackingList().add(tracking);
 
         VnHabitApiService service = VnHabitApiUtils.getApiService();
-        service.updateTracking(trackingData).enqueue(new Callback<ResponseBody>() {
+        service.saveUpdateTracking(trackingData).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
             }
@@ -550,10 +550,8 @@ public class ReportDetailsActivity extends BaseActivity {
             for (TrackingEntity track : habitTracking.getTrackingList()) {
                 count = Integer.parseInt(track.getCount());
                 curSumCount += count;
-//                if (count >= Integer.parseInt(habit.getMonitorNumber())) {
                 mapDayInMonth.put(track.getCurrentDate(),
                         mapDayInMonth.get(track.getCurrentDate()) + count);
-//                }
             }
         }
 

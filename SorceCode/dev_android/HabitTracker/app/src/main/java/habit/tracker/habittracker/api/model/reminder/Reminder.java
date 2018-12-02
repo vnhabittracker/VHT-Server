@@ -3,6 +3,8 @@ package habit.tracker.habittracker.api.model.reminder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import habit.tracker.habittracker.repository.reminder.ReminderEntity;
+
 public class Reminder {
     @SerializedName("reminder_id")
     @Expose
@@ -25,10 +27,11 @@ public class Reminder {
     @SerializedName("server_id")
     @Expose
     private String serverId;
-    private String habitName;
     @SerializedName("is_delete")
     @Expose
     private boolean isDelete = false;
+
+    private String habitName;
 
     private String userId;
 
@@ -111,5 +114,18 @@ public class Reminder {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public ReminderEntity toEnity() {
+        ReminderEntity entity = new ReminderEntity();
+        entity.setReminderId(reminderId);
+        entity.setHabitId(habitId);
+        entity.setUserId(userId);
+        entity.setRemindText(remindText);
+        entity.setReminderStartTime(remindStartTime);
+        entity.setReminderEndTime(remindEndTime);
+        entity.setRepeatType(repeatType);
+        entity.setServerId(serverId);
+        return entity;
     }
 }

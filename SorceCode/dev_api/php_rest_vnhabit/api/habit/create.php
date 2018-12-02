@@ -7,6 +7,7 @@ header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Access-Control-Allow-Headers,Content-Type,Access-Control-Allow-Methods, Authorization, X-Requested-With');
 
 include_once '../../config/config.php';
+include_once '../../models/Tracking.php';
 include_once '../../models/Reminder.php';
 include_once '../../models/MonitorDate.php';
 include_once '../../models/Habit.php';
@@ -17,6 +18,7 @@ $database = new Database();
 $db = $database->connect();
 
 // Instantiate
+$tracker = new Tracking($db);
 $reminder = new Reminder($db);
 $habit = new Habit($db);
 $date = new MonitorDate($db);
@@ -42,15 +44,23 @@ $habit->created_date = $data->created_date;
 $habit->habit_color = $data->habit_color;
 $habit->habit_description = $data->habit_description;
 
+// reminder list
+$arr_reminder = $data->reminder_list;
+
+// tracking list
+$arr_tracking = $data->tracking_list;
+
 // save to habit_name_suggestion
 $habitSuggestion->habit_name_id = $data->habit_name_id;
 $habitSuggestion->habit_name_uni = $data->habit_name;
 $habitSuggestion->habit_name_ascii = $data->habit_name_ascii;
-$habitSuggestion->habit_name_count = $data->habit_name_count;
 $habitSuggestion->total_track = 0;
 $habitSuggestion->success_track = 0;
 
 if (!$habitSuggestion->isUpdate()) {
+    $habitSuggestion->habit_name_count = 1;
+    $habitSuggestion->total_track = 0;
+    $habitSuggestion->success_track = 0;
     $habitSuggestion->create();
 } else {
     $habitSuggestion->updateCount();
@@ -58,6 +68,7 @@ if (!$habitSuggestion->isUpdate()) {
 
 // save new habit
 if ($habit->create()) {
+
     $date->monitor_id = $data->monitor_id;
     $date->habit_id = $data->habit_id;
     $date->mon = $data->mon;
@@ -67,16 +78,16 @@ if ($habit->create()) {
     $date->fri = $data->fri;
     $date->sat = $data->sat;
     $date->sun = $data->sun;
+    
     // save monitor_dates
     if ($date->create()) {
 
         $habit->monitor_id = $data->monitor_id;
+
         if ($habit->update()) {
 
-            // save reminders
-            $arr_reminder = $data->reminder_list;
+            // reminder list
             for($i = 0; $i < count($arr_reminder); $i++) {
-
                 $item = $arr_reminder[$i];
                 $reminder->reminder_id = $item->server_id;
                 $reminder->habit_id = $item->habit_id;
@@ -84,16 +95,28 @@ if ($habit->create()) {
                 $reminder->remind_end_time = $item->remind_end_time;
                 $reminder->repeat_type = $item->repeat_type;
                 $reminder->reminder_description = $item->reminder_description;
-                
                 if ($reminder->create()) {
                     $error = false;
+                } else {
+                    $error = true;
+                    break;
+                }
+            }
+
+            // tracking list
+            for($i = 0; $i < count($arr_tracking); $i++) {
+                $item = $tracker->getTrackWithParam((array) $arr_tracking[$i]);
+                if($item) {
+                    $tracker->updateWithParam((array) $arr_tracking[$i]);
+                } else {
+                    $tracker->createWithParam((array) $arr_tracking[$i]);
                 }
             }
         }
     }
 }
 
-if ($error) {
+if (!$error) {
     echo json_encode(
         array(
             'result' => '1',

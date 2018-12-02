@@ -7,6 +7,7 @@ header('Access-Control-Allow-Methods: PUT');
 header('Access-Control-Allow-Headers: Access-Control-Allow-Headers,Content-Type,Access-Control-Allow-Methods, Authorization, X-Requested-With');
 
 include_once '../../config/config.php';
+include_once '../../models/Tracking.php';
 include_once '../../models/Reminder.php';
 include_once '../../models/Habit.php';
 include_once '../../models/MonitorDate.php';
@@ -18,6 +19,7 @@ $db = $database->connect();
 $habitSuggestion = new HabitSuggestion($db);
 
 // Instantiate
+$tracker = new Tracking($db);
 $habit = new Habit($db);
 $reminder = new Reminder($db);
 $date = new MonitorDate($db);
@@ -25,11 +27,20 @@ $date = new MonitorDate($db);
 // Get raw posted data
 $data = json_decode(file_get_contents("php://input"));
 
+// reminder list
+$arr_reminder = $data->reminder_list;
+
+// tracking list
+$arr_tracking = $data->tracking_list;
+
 $habitSuggestion->habit_name_id = $data->habit_name_id;
 $habitSuggestion->habit_name_uni = $data->habit_name;
 $habitSuggestion->habit_name_ascii = $data->habit_name_ascii;
-$habitSuggestion->habit_name_count = $data->habit_name_count;
+
 if (!$habitSuggestion->isUpdate()) {
+    $habitSuggestion->habit_name_count = 1;
+    $habitSuggestion->total_track = 0;
+    $habitSuggestion->success_track = 0;
     $habitSuggestion->create();
 } else {
     $habitSuggestion->updateCount();
@@ -46,6 +57,7 @@ $date->sat = $data->sat;
 $date->sun = $data->sun;
 
 if ($date->update()) {
+
     $habit->habit_id = $data->habit_id;
     $habit->user_id = $data->user_id;
     $habit->group_id = $data->group_id;
@@ -64,23 +76,36 @@ if ($date->update()) {
 }
 
 if (isset($habit->habit_id)) {
-    $arr_reminder = $data->reminder_list;
+
     for($i = 0; $i < count($arr_reminder); $i++) {
+
         $item = $arr_reminder[$i];
+
         $reminder->reminder_id = $item->server_id;
         $reminder->habit_id = $habit->habit_id;
         $reminder->remind_start_time = $item->remind_start_time;
         $reminder->remind_end_time = $item->remind_end_time;
         $reminder->repeat_type = $item->repeat_type;
         $reminder->reminder_description = $item->reminder_description;
+
         if ($reminder->lookUp()) {
-            if ($item->is_delete){
+            if ($item->is_delete) {
                 $reminder->delete();
             } else {
                 $reminder->update();
             }
         } else {
             $reminder->create();
+        }
+    }
+
+    // tracking list
+    for($i = 0; $i < count($arr_tracking); $i++) {
+        $item = $tracker->getTrackWithParam($arr_tracking[$i]);
+        if($item) {
+            $tracker->updateWithParam($arr_tracking[$i]);
+        } else {
+            $tracker->createWithParam($arr_tracking[$i]);
         }
     }
 }

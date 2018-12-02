@@ -1,5 +1,7 @@
 package habit.tracker.habittracker.repository.user;
 
+import habit.tracker.habittracker.api.model.user.User;
+
 public class UserEntity {
     private String userId;
     private String username;
@@ -10,16 +12,17 @@ public class UserEntity {
     private String password;
     private String realName;
     private String avatar;
-    private String userDescription;
+    private String description;
     private String createdDate;
     private String lastLoginTime;
     private String continueUsingCount;
     private String currentContinueUsingCount;
     private String bestContinueUsingCount;
     private String userScore;
+    private boolean isUpdate = false;
 
     public UserEntity(String userId, String username, String email, String phone, String gender, String dateOfBirth,
-                      String password, String realName, String avatar, String userDescription,
+                      String password, String realName, String avatar, String description,
                       String lastLoginTime, String continueUsingDate, String currentContinueUsingCount, String bestContinueUsingCount, String userScore) {
         this.userId = userId;
         this.username = username;
@@ -30,7 +33,7 @@ public class UserEntity {
         this.password = password;
         this.realName = realName;
         this.avatar = avatar;
-        this.userDescription = userDescription;
+        this.description = description;
         this.lastLoginTime = lastLoginTime;
         this.continueUsingCount = continueUsingDate;
         this.currentContinueUsingCount = currentContinueUsingCount;
@@ -78,7 +81,7 @@ public class UserEntity {
     }
 
     public String getDescription() {
-        return userDescription;
+        return description;
     }
 
     public String getCreatedDate() {
@@ -105,6 +108,9 @@ public class UserEntity {
         return bestContinueUsingCount;
     }
 
+    public boolean isUpdate() {
+        return isUpdate;
+    }
     public void setUserId(String userId) {
         this.userId = userId;
     }
@@ -142,7 +148,7 @@ public class UserEntity {
     }
 
     public void setDescription(String userDescription) {
-        this.userDescription = userDescription;
+        this.description = userDescription;
     }
 
     public void setCreatedDate(String createdDate) {
@@ -167,5 +173,29 @@ public class UserEntity {
 
     public void setBestContinueUsingCount(String bestContinueUsingCount) {
         this.bestContinueUsingCount = bestContinueUsingCount;
+    }
+
+    public void setUpdate(boolean update) {
+        isUpdate = update;
+    }
+
+    public User toModel() {
+        User user = new User();
+        user.setUserId(userId);
+        user.setUsername(username);
+        user.setPassword(password);
+        user.setGender(gender);
+        user.setEmail(email);
+        user.setDateOfBirth(dateOfBirth);
+        user.setAvatar(avatar);
+        user.setRealName(realName);
+        user.setDescription(description);
+        user.setCreatedDate(createdDate);
+        user.setLastLoginTime(lastLoginTime);
+        user.setContinueUsingCount(continueUsingCount);
+        user.setCurrentContinueUsingCount(currentContinueUsingCount);
+        user.setBestContinueUsingCount(bestContinueUsingCount);
+        user.setUserScore(userScore);
+        return user;
     }
 }

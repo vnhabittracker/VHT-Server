@@ -134,7 +134,7 @@ public class RegisterActivity extends BaseActivity {
             @Override
             public void onResponse(Call<UserResult> call, Response<UserResult> response) {
                 if (response.body().getResult().equals(AppConstant.STATUS_OK)) {
-                    Database.getUserDb().saveUser(Database.getUserDb().convert(user));
+                    Database.getUserDb().saveUser(user.toEntity());
                     Intent intent = getIntent();
                     intent.putExtra(LoginActivity.USERNAME, user.getUsername());
                     RegisterActivity.this.setResult(RESULT_OK, intent);

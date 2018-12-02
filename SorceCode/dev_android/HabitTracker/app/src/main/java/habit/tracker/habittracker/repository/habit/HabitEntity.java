@@ -1,5 +1,7 @@
 package habit.tracker.habittracker.repository.habit;
 
+import habit.tracker.habittracker.api.model.habit.Habit;
+
 /**
  * Created on 10/16/2018
  */
@@ -18,7 +20,7 @@ public class HabitEntity implements TrackingDateInWeek {
     private String endDate;
     private String createdDate;
     private String habitColor;
-    private String habitDescription;
+    private String description;
     private String mon;
     private String tue;
     private String wed;
@@ -26,9 +28,11 @@ public class HabitEntity implements TrackingDateInWeek {
     private String fri;
     private String sat;
     private String sun;
+    private String habitNameId;
+    private String habitNameAscii;
     private String lastDateSyn;
-
     private boolean isDelete = false;
+    private boolean isUpdate = false;
 
     public String getHabitId() {
         return habitId;
@@ -86,8 +90,8 @@ public class HabitEntity implements TrackingDateInWeek {
         return habitColor;
     }
 
-    public String getHabitDescription() {
-        return habitDescription;
+    public String getDescription() {
+        return description;
     }
 
     public String getMon() {
@@ -118,12 +122,24 @@ public class HabitEntity implements TrackingDateInWeek {
         return sun;
     }
 
+    public String getHabitNameId() {
+        return habitNameId;
+    }
+
+    public String getHabitNameAscii() {
+        return habitNameAscii;
+    }
+
     public String getLastDateSyn() {
         return lastDateSyn;
     }
 
     public boolean isDelete() {
         return isDelete;
+    }
+
+    public boolean isUpdate() {
+        return isUpdate;
     }
 
     public void setHabitId(String habitId) {
@@ -182,8 +198,8 @@ public class HabitEntity implements TrackingDateInWeek {
         this.habitColor = habitColor;
     }
 
-    public void setHabitDescription(String habitDescription) {
-        this.habitDescription = habitDescription;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public void setMon(String mon) {
@@ -214,11 +230,54 @@ public class HabitEntity implements TrackingDateInWeek {
         this.sun = sun;
     }
 
+    public void setHabitNameId(String habitNameId) {
+        this.habitNameId = habitNameId;
+    }
+
+    public void setHabitNameAscii(String habitNameAscii) {
+        this.habitNameAscii = habitNameAscii;
+    }
+
     public void setLastDateSyn(String lastDateSyn) {
         this.lastDateSyn = lastDateSyn;
     }
 
     public void setDelete(boolean delete) {
         isDelete = delete;
+    }
+
+    public void setUpdate(boolean update) {
+        isUpdate = update;
+    }
+
+    public Habit toModel() {
+        Habit habit = new Habit();
+        habit.setHabitId(habitId);
+        habit.setUserId(userId);
+        habit.setGroupId(groupId);
+        habit.setMonitorId(monitorId);
+        habit.setHabitName(habitName);
+        habit.setHabitTarget(habitTarget);
+        habit.setHabitType(habitType);
+        habit.setMonitorType(monitorType);
+        habit.setMonitorUnit(monitorUnit);
+        habit.setMonitorNumber(monitorNumber);
+        habit.setCreatedDate(createdDate);
+        habit.setStartDate(startDate);
+        habit.setEndDate(endDate);
+        habit.setHabitColor(habitColor);
+        habit.setDescription(description);
+        habit.setMon(mon);
+        habit.setTue(tue);
+        habit.setWed(wed);
+        habit.setThu(thu);
+        habit.setFri(fri);
+        habit.setSat(sat);
+        habit.setSun(sun);
+        habit.setHabitNameId(habitNameId);
+        habit.setHabitNameAscii(habitNameAscii);
+        habit.setDelete(isDelete);
+        habit.setUpdate(isUpdate);
+        return habit;
     }
 }

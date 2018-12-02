@@ -25,6 +25,7 @@ public class Database {
 
     private DatabaseHelper dbHelper;
     private final Context mContext;
+    private boolean isOpen = false;
 
     public static UserDaoImpl userDaoImpl;
     private static HabitDaoImpl habitDaoImpl;
@@ -66,6 +67,11 @@ public class Database {
     }
 
     public Database open() throws SQLException {
+        if (isOpen) {
+            return this;
+        }
+        isOpen = true;
+
         dbHelper = new DatabaseHelper(mContext);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         userDaoImpl = new UserDaoImpl(db);
@@ -77,7 +83,10 @@ public class Database {
     }
 
     public void close() {
-        dbHelper.close();
+        if (isOpen) {
+            dbHelper.close();
+            isOpen = false;
+        }
     }
 
     public static class DatabaseHelper extends SQLiteOpenHelper implements UserSchema, HabitSchema, GroupSchema, TrackingSchema, ReminderSchema {

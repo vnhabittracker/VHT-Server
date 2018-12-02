@@ -1,14 +1,17 @@
 package habit.tracker.habittracker.repository.reminder;
 
+import habit.tracker.habittracker.api.model.reminder.Reminder;
+
 public class ReminderEntity {
     private String reminderId;
+    private String serverId;
     private String habitId;
+    private String userId;
     private String remindText;
     private String reminderStartTime;
     private String reminderEndTime;
     private String repeatType;
-    private String serverId;
-    private String userId;
+    private boolean isDelete;
 
     public String getReminderId() {
         return reminderId;
@@ -42,6 +45,10 @@ public class ReminderEntity {
         return userId;
     }
 
+    public boolean isDelete() {
+        return isDelete;
+    }
+
     public void setReminderId(String reminderId) {
         this.reminderId = reminderId;
     }
@@ -72,5 +79,22 @@ public class ReminderEntity {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public void setDelete(boolean delete) {
+        isDelete = delete;
+    }
+
+    public Reminder toModel() {
+        Reminder reminder = new Reminder();
+        reminder.setReminderId(reminderId);
+        reminder.setHabitId(habitId);
+        reminder.setServerId(serverId);
+        reminder.setRemindText(remindText);
+        reminder.setRemindStartTime(reminderStartTime);
+        reminder.setRemindEndTime(reminderEndTime);
+        reminder.setRepeatType(repeatType);
+        reminder.setDelete(isDelete);
+        return reminder;
     }
 }

@@ -18,12 +18,13 @@ $reminder = new Reminder($db);
 
 // Get raw posted data
 $data = json_decode(file_get_contents("php://input"));
+$reminder->reminder_id = $data->server_id;
 $reminder->habit_id = $data->habit_id;
-$reminder->reminder_time = $data->reminder_time;
-$reminder->repeat_time = $data->repeat_time;
+$reminder->remind_start_time = $data->remind_start_time;
+$reminder->remind_end_time = $data->remind_end_time;
+$reminder->repeat_type = $data->repeat_type;
 $reminder->reminder_description = $data->reminder_description;
 
-// Create user
 if ($reminder->create()) {
     echo json_encode(
         array(

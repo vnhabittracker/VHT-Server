@@ -2,13 +2,15 @@ package habit.tracker.habittracker.repository.tracking;
 
 import android.text.TextUtils;
 
+import habit.tracker.habittracker.api.model.tracking.Tracking;
+
 public class TrackingEntity {
     private String trackingId;
     private String habitId;
     private String currentDate;
     private String count;
     private String description;
-    private boolean isUpdated = false;
+    private boolean isUpdate = false;
 
     public String getTrackingId() {
         return trackingId;
@@ -37,8 +39,8 @@ public class TrackingEntity {
         return description;
     }
 
-    public boolean isUpdated() {
-        return isUpdated;
+    public boolean isUpdate() {
+        return isUpdate;
     }
 
     public void setTrackingId(String trackingId) {
@@ -61,7 +63,18 @@ public class TrackingEntity {
         this.description = description;
     }
 
-    public void setUpdated(boolean updated) {
-        isUpdated = updated;
+    public void setUpdate(boolean update) {
+        isUpdate = update;
+    }
+
+    public Tracking toModel() {
+        Tracking tracking = new Tracking();
+        tracking.setTrackingId(trackingId);
+        tracking.setHabitId(habitId);
+        tracking.setCurrentDate(currentDate);
+        tracking.setCount(count);
+        tracking.setDescription(description);
+        tracking.setUpdate(isUpdate);
+        return tracking;
     }
 }
