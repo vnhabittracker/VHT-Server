@@ -174,7 +174,7 @@ public class ReportDetailsActivity extends BaseActivity {
 
                 initDefaultUI(habitEntity);
 
-                // load chart displayItemList (default is week)
+                // load chart nonEmptyNoteList (default is week)
                 ArrayList<BarEntry> values = loadData(currentDate);
                 chartStartReportDate = curStartReportDate;
                 chartEndReportDate = curEndReportDate;
@@ -198,7 +198,7 @@ public class ReportDetailsActivity extends BaseActivity {
 
         initDefaultUI(habitEntity);
 
-        // load chart displayItemList (default is week)
+        // load chart nonEmptyNoteList (default is week)
         ArrayList<BarEntry> values = loadData(currentDate);
         chartHelper.setData(values, mode);
 
@@ -514,7 +514,7 @@ public class ReportDetailsActivity extends BaseActivity {
                     hb = habitTracking.getHabit();
                 }
                 int count;
-                // displayItemList per day in month
+                // nonEmptyNoteList per day in month
                 for (TrackingEntity track : habitTracking.getTrackingList()) {
                     count = Integer.parseInt(track.getCount());
                     completedPerMonth[m] += count;

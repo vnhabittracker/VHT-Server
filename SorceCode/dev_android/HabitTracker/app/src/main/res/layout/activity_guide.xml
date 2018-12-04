@@ -7,10 +7,19 @@
     tools:context=".GuideActivity">
 
     <ImageView
-        android:id="@+id/background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/guide1" />
+        android:layout_marginBottom="160dp"
+        android:src="@drawable/bg_dot" />
+
+    <ImageView
+        android:id="@+id/guide_group"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="80dp"
+        android:layout_marginEnd="80dp"
+        android:paddingBottom="100dp"
+        android:src="@drawable/ic_guide1" />
 
     <TextView
         android:id="@+id/tvBack"
@@ -34,5 +43,55 @@
         android:layout_margin="10dp"
         android:textColor="#c83f3faf"
         android:text="Tiếp Theo"/>
+
+    <LinearLayout
+        android:id="@+id/ll_process"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tvNext"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+        <ImageView
+            android:id="@+id/imgDot1"
+            android:layout_width="7dp"
+            android:layout_height="7dp"
+            android:layout_marginEnd="15dp"
+            android:src="@drawable/dot_active" />
+        <ImageView
+            android:id="@+id/imgDot2"
+            android:layout_width="7dp"
+            android:layout_height="7dp"
+            android:layout_marginEnd="15dp"
+            android:src="@drawable/dot_fade" />
+        <ImageView
+            android:id="@+id/imgDot3"
+            android:layout_width="7dp"
+            android:layout_height="7dp"
+            android:src="@drawable/dot_fade" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvGuide"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:layout_above="@+id/ll_process"
+        android:text="Tạo nhanh một thói quen và đề xuất những thói quen phù hợp cho bạn!"/>
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_above="@+id/tvGuide"
+        android:text="TẠO THÓI QUEN"/>
 
 </RelativeLayout>

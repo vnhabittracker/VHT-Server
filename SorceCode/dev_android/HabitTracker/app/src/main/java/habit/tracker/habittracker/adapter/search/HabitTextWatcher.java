@@ -5,9 +5,11 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import habit.tracker.habittracker.api.VnHabitApiUtils;
@@ -80,29 +82,46 @@ public class HabitTextWatcher implements TextWatcher {
                             hbLevel = (int) (((float) sg.getSuccessTrack() / (float) sg.getTotalTrack()) * 100);
                             numOfUser = Integer.parseInt(sg.getHabitNameCount());
                             if (hbLevel >= 80) {
-                                if (numOfUser > topLow) {
-                                    easyHabitList.add(0, sg);
-                                    topLow = numOfUser;
-                                } else {
-                                    easyHabitList.add(sg);
-                                }
+//                                if (numOfUser > topLow) {
+//                                    easyHabitList.add(0, sg);
+//                                    topLow = numOfUser;
+//                                } else {
+                                easyHabitList.add(sg);
+
                             } else if (hbLevel >= 50) {
-                                if (numOfUser > topMed) {
-                                    mediumHabitList.add(0, sg);
-                                    topMed = numOfUser;
-                                } else {
-                                    mediumHabitList.add(sg);
-                                }
+//                                if (numOfUser > topMed) {
+//                                    mediumHabitList.add(0, sg);
+//                                    topMed = numOfUser;
+//                                } else {
+                                mediumHabitList.add(sg);
+//                                }
                             } else {
-                                if (numOfUser > topHig) {
-                                    hardHabitList.add(0, sg);
-                                    topMed = numOfUser;
-                                } else {
-                                    hardHabitList.add(sg);
-                                }
+//                                if (numOfUser > topHig) {
+//                                    hardHabitList.add(0, sg);
+//                                    topMed = numOfUser;
+//                                } else {
+                                hardHabitList.add(sg);
+//                                }
                             }
                         }
 
+                        Comparator<HabitSuggestion> comparator = new Comparator<HabitSuggestion>() {
+                            @Override
+                            public int compare(HabitSuggestion o1, HabitSuggestion o2) {
+                                int n1 = Integer.parseInt(o1.getHabitNameCount());
+                                int n2 = Integer.parseInt(o2.getHabitNameCount());
+                                if (n2 > n1) {
+                                    return -1;
+                                }
+                                if (n1 > n2) {
+                                    return 1;
+                                }
+                                return 0;
+                            }
+                        };
+                        Collections.sort(easyHabitList, comparator);
+                        Collections.sort(mediumHabitList, comparator);
+                        Collections.sort(hardHabitList, comparator);
 
                         if (userLevel <= 3) {
                             sortedHabitList.addAll(easyHabitList);

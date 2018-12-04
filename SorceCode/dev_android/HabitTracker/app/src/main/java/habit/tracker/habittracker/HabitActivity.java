@@ -240,13 +240,15 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                     }
                 }
             } else {
-                Database db = Database.getInstance(HabitActivity.this);
-                db.open();
-                GroupEntity entity = Database.getGroupDb().getGroup(selectedGroupId);
-                if (entity == null || entity.isDelete()) {
-                    selectedGroupId = null;
+                if (!TextUtils.isEmpty(selectedGroupId)) {
+                    Database db = Database.getInstance(HabitActivity.this);
+                    db.open();
+                    GroupEntity entity = Database.getGroupDb().getGroup(selectedGroupId);
+                    if (entity == null || entity.isDelete()) {
+                        selectedGroupId = null;
+                    }
+                    db.close();
                 }
-                db.close();
             }
         } else if (requestCode == ADD_REMINDER) {
             if (resultCode == RESULT_OK) {

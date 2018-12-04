@@ -495,8 +495,10 @@ public class ReportCalendarActivity extends BaseActivity implements TrackingCale
 
     private void loadCalendarByDate(String currentDate) {
         if (timeLine <= 0) {
+            appDatabase.open();
+
             // get today tracking record of current habit
-            TrackingEntity todayTracking = Database.trackingImpl.getTracking(defaultHabitEntity.getHabitId(), currentDate);
+            TrackingEntity todayTracking = Database.getTrackingDb().getTracking(defaultHabitEntity.getHabitId(), currentDate);
             curTrackingCount = 0;
             if (todayTracking != null) {
                 curTrackingCount = Integer.parseInt(todayTracking.getCount());

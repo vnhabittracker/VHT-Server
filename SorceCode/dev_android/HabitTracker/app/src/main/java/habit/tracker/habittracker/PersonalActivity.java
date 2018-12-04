@@ -176,10 +176,13 @@ public class PersonalActivity extends AppCompatActivity {
             }
         }
 
+        String userId = MySharedPreference.getUserId(this);
         final User user = new User();
-        user.setUserId(MySharedPreference.getUserId(this));
+        UserEntity userEntity = Database.getUserDb().getUser(userId);
+        user.setUserId(userId);
         user.setUsername(username);
         user.setRealName(realName);
+        user.setAvatar(userEntity.getAvatar());
         user.setDateOfBirth(dob);
         user.setGender(isMale ? "1" : "0");
         user.setEmail(email);

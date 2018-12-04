@@ -18,11 +18,32 @@ public class GuideActivity extends AppCompatActivity {
     @BindView(R.id.tvNext)
     TextView next;
 
-    @BindView(R.id.background)
-    ImageView background;
+    @BindView(R.id.guide_group)
+    ImageView imgGuideGroup;
 
-    int proc = 0;
-    int[] images = {R.drawable.guide1, R.drawable.guide2, R.drawable.guide3};
+    @BindView(R.id.tvTitle)
+    TextView tvTitle;
+
+    @BindView(R.id.tvGuide)
+    TextView tvGuide;
+
+    @BindView(R.id.imgDot1)
+            ImageView imgDot1;
+    @BindView(R.id.imgDot2)
+            ImageView imgDot2;
+    @BindView(R.id.imgDot3)
+            ImageView imgDot3;
+    ImageView imgCurrentDot;
+    ImageView[] imgDots;
+
+    int process = 0;
+    int[] imgModals = {R.drawable.ic_guide1, R.drawable.ic_guide2, R.drawable.ic_guide3};
+    String[] titles = {"TẠO THÓI QUEN", "QUẢN LÝ THÓI QUEN", "THEO DÕI LỊCH BIỂU"};
+    String[] guides = {
+            "Tạo nhanh một thói quen và đề xuất những thói quen phù hợp cho bạn!",
+            "Quản lý thói quen và theo dõi theo dòng thời gian thông min!",
+            "Bạn có thể lập lịch và xem lịch biểu thói quen một cách dễ dàng!"
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,28 +51,33 @@ public class GuideActivity extends AppCompatActivity {
         setContentView(R.layout.activity_guide);
         ButterKnife.bind(this);
 
-        background.setImageResource(R.drawable.guide1);
+        imgCurrentDot = imgDot1;
+        imgDots = new ImageView[]{imgDot1, imgDot2, imgDot3};
+        imgGuideGroup.setImageResource(R.drawable.ic_guide1);
     }
 
-    @OnClick(R.id.tvBack)
-    public void back(View v) {
-        proc = proc - 1;
-        if (proc < 0) {
-            setResult(RESULT_OK);
-            finish();
-            return;
+    @OnClick({R.id.tvNext, R.id.tvBack})
+    public void nextAndBack(View v) {
+        if (v.getId() == R.id.tvNext) {
+            process = process + 1;
+            if (process > 2) {
+                setResult(RESULT_OK);
+                finish();
+                return;
+            }
+        } else if (v.getId() == R.id.tvBack) {
+            process = process - 1;
+            if (process < 0) {
+                setResult(RESULT_OK);
+                finish();
+                return;
+            }
         }
-        background.setImageResource(images[proc]);
-    }
-
-    @OnClick(R.id.tvNext)
-    public void next(View v) {
-        proc = proc + 1;
-        if (proc > 2) {
-            setResult(RESULT_OK);
-            finish();
-            return;
-        }
-        background.setImageResource(images[proc]);
+        tvTitle.setText(titles[process]);
+        tvGuide.setText(guides[process]);
+        imgGuideGroup.setImageResource(imgModals[process]);
+        imgCurrentDot.setImageResource(R.drawable.dot_fade);
+        imgDots[process].setImageResource(R.drawable.dot_active);
+        imgCurrentDot = imgDots[process];
     }
 }
