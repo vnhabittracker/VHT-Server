@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="7dp">
+
+    <EditText
+        android:id="@+id/editFeedback"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:padding="10dp"
+        android:inputType="textMultiLine"
+        android:gravity="top|left"
+        android:maxLines="10"
+        android:scrollbars="vertical"
+        android:scrollHorizontally="false"
+        android:background="@drawable/bg_input"
+        android:textSize="12sp"
+        android:hint="feedback..."/>
+
+    <LinearLayout
+        android:layout_below="@+id/editFeedback"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="10dp">
+        <ImageView
+            android:id="@+id/star1"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="7dp"
+            android:src="@drawable/ic_star_yellow"/>
+        <ImageView
+            android:id="@+id/star2"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="7dp"
+            android:alpha="0.2"
+            android:src="@drawable/ic_star_yellow"/>
+        <ImageView
+            android:id="@+id/star3"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="7dp"
+            android:alpha="0.2"
+            android:src="@drawable/ic_star_yellow"/>
+        <ImageView
+            android:id="@+id/star4"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="7dp"
+            android:alpha="0.2"
+            android:src="@drawable/ic_star_yellow"/>
+        <ImageView
+            android:id="@+id/star5"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:alpha="0.2"
+            android:src="@drawable/ic_star_yellow"/>
+    </LinearLayout>
+
+</RelativeLayout>

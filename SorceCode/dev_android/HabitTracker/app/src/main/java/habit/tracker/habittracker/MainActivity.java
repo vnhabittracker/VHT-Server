@@ -58,7 +58,7 @@ public class MainActivity extends BaseActivity implements HabitRecyclerViewAdapt
 
     public static final String HABIT_ID = "habit_id";
 
-    List<TrackingItem> trackingItemList = new ArrayList<>();
+    List<TrackingItem> itemList = new ArrayList<>();
     HabitRecyclerViewAdapter trackingAdapter;
     String currentDate;
     String firstCurrentDate;
@@ -100,12 +100,12 @@ public class MainActivity extends BaseActivity implements HabitRecyclerViewAdapt
                 String group = filter.getString("group");
 
                 List<TrackingItem> filteredList = new ArrayList<>();
-                for (int i = 0; i < trackingItemList.size(); i++) {
-                    if ((target.equals("-1") || target.equals(trackingItemList.get(i).getTarget()))
-                            && (type.equals("-1") || type.equals(String.valueOf(trackingItemList.get(i).getHabitType())))
-                            && (group.equals("-1") || group.equals(trackingItemList.get(i).getGroupId()))
+                for (int i = 0; i < itemList.size(); i++) {
+                    if ((target.equals("-1") || target.equals(itemList.get(i).getTarget()))
+                            && (type.equals("-1") || type.equals(String.valueOf(itemList.get(i).getHabitType())))
+                            && (group.equals("-1") || group.equals(itemList.get(i).getGroupId()))
                             ) {
-                        filteredList.add(trackingItemList.get(i));
+                        filteredList.add(itemList.get(i));
                     }
                 }
                 trackingAdapter.setData(filteredList);
@@ -138,7 +138,7 @@ public class MainActivity extends BaseActivity implements HabitRecyclerViewAdapt
         userId = MySharedPreference.getUserId(this);
         mDatabase = Database.getInstance(MainActivity.this);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-        trackingAdapter = new HabitRecyclerViewAdapter(MainActivity.this, trackingItemList);
+        trackingAdapter = new HabitRecyclerViewAdapter(MainActivity.this, itemList);
         trackingAdapter.setClickListener(MainActivity.this);
         recyclerView.setAdapter(trackingAdapter);
         initializeScreen();
@@ -158,7 +158,7 @@ public class MainActivity extends BaseActivity implements HabitRecyclerViewAdapt
         firstCurrentDate = currentDate;
         timeLine = 0;
         updateTitle(currentDate);
-        trackingItemList.clear();
+        itemList.clear();
 
         final String userId = MySharedPreference.getUserId(this);
 
@@ -199,7 +199,7 @@ public class MainActivity extends BaseActivity implements HabitRecyclerViewAdapt
                                 if (trackingEntity != null && trackingEntity.isUpdate()) {
                                     callSaveUpdateTrackingApi(trackingEntity);
                                 } else {
-                                    Database.getTrackingDb().saveUpdateRecord(record.toEntity());
+                                    Database.getTrackingDb().saveUpdateTracking(record.toEntity());
                                 }
                                 mapTrackingFromServer.put(record.getTrackingId(), record.getCurrentDate());
                             }
@@ -255,20 +255,21 @@ public class MainActivity extends BaseActivity implements HabitRecyclerViewAdapt
                                 if (currentDate.compareTo(habitEntity.getStartDate()) >= 0
                                         && (TextUtils.isEmpty(habitEntity.getEndDate()) || currentDate.compareTo(habitEntity.getEndDate()) <= 0)) {
 
-                                    TrackingEntity todayTracking = getTodayTracking(habitEntity.getHabitId(), currentDate, 0);
-                                    totalCount = getSumTrackValueByHabit(habitEntity.getHabitId(), Integer.parseInt(habitEntity.getHabitType()), Integer.parseInt(todayTracking.getCount()));
-                                    trackingItemList.add(new TrackingItem(
-                                            todayTracking.getTrackingId(),
+                                    TrackingEntity record = getTodayTracking(habitEntity.getHabitId(), currentDate, 0);
+                                    totalCount = getSumValueInPeriod(habitEntity.getHabitId(), Integer.parseInt(habitEntity.getHabitType()), Integer.parseInt(record.getCount()));
+
+                                    itemList.add(new TrackingItem(
+                                            record.getTrackingId(),
                                             habitEntity.getHabitId(),
                                             habitEntity.getHabitTarget(),
                                             habitEntity.getGroupId(),
                                             habitEntity.getHabitName(),
                                             habitEntity.getDescription(),
-                                            todayTracking.getDescription(),
+                                            record.getDescription(),
                                             habitEntity.getHabitType(),
                                             Integer.parseInt(habitEntity.getMonitorType()),
                                             habitEntity.getMonitorNumber(),
-                                            Integer.parseInt(todayTracking.getCount()),
+                                            record.getIntCount(),
                                             habitEntity.getMonitorUnit(),
                                             habitEntity.getHabitColor(),
                                             totalCount)
@@ -390,18 +391,17 @@ public class MainActivity extends BaseActivity implements HabitRecyclerViewAdapt
         });
     }
 
-    private void callUpdateTrackRecordApi(final TrackingList trackingData, final String recordId) {
-        mApiService.saveUpdateTracking(trackingData).enqueue(new Callback<ResponseBody>() {
+    private void callUpdateTrackRecordApi(final TrackingList data, final String trackId) {
+        mApiService.saveUpdateTracking(data).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Database db = Database.getInstance(MainActivity.this);
-                db.open();
-                TrackingEntity entity = Database.getTrackingDb().getTracking(recordId);
+                mDatabase.open();
+
+                TrackingEntity entity = Database.getTrackingDb().getTracking(trackId);
                 if (entity != null) {
                     entity.setUpdate(false);
-                    Database.getTrackingDb().saveUpdateRecord(entity);
+                    Database.getTrackingDb().saveUpdateTracking(entity);
                 }
-                db.close();
             }
 
             @Override
@@ -422,7 +422,7 @@ public class MainActivity extends BaseActivity implements HabitRecyclerViewAdapt
         });
     }
 
-    private int getSumTrackValueByHabit(String habitId, int habitType, int count) {
+    private int getSumValueInPeriod(String habitId, int habitType, int count) {
         String[] arr = currentDate.split("-");
         int year = Integer.parseInt(arr[0]);
         int month = Integer.parseInt(arr[1]);
@@ -451,29 +451,29 @@ public class MainActivity extends BaseActivity implements HabitRecyclerViewAdapt
     }
 
     @Override
-    public void onTrackingValueChanged(View view, int type, int position, int totalCount, int count) {
+    public void onItemValueChanged(View view, int type, int position, int totalCount, int count) {
         mDatabase.open();
 
-        final TrackingItem trackingItem = trackingItemList.get(position);
-        trackingItem.setCount(count);
-        trackingItem.setTotalCount(totalCount);
+        TrackingItem item = itemList.get(position);
+        item.setCount(count);
+        item.setTotalCount(totalCount);
 
         // save to appDatabase local
         TrackingList trackingData = new TrackingList();
         Tracking tracking = new Tracking();
-        tracking.setTrackingId(trackingItem.getTrackId());
-        tracking.setHabitId(trackingItem.getHabitId());
-        tracking.setCount(String.valueOf(trackingItem.getCount()));
+        tracking.setTrackingId(item.getTrackId());
+        tracking.setHabitId(item.getHabitId());
+        tracking.setCount(String.valueOf(item.getCount()));
         tracking.setCurrentDate(currentDate);
-        tracking.setDescription(trackingItem.getTrackingDescription());
+        tracking.setDescription(item.getTrackingDescription());
         tracking.setUpdate(true);
         trackingData.getTrackingList().add(tracking);
 
-        if (!Database.getTrackingDb().saveUpdateRecord(tracking.toEntity())) {
+        if (!Database.getTrackingDb().saveUpdateTracking(tracking.toEntity())) {
             return;
         }
 
-        callUpdateTrackRecordApi(trackingData, trackingItem.getTrackId());
+        callUpdateTrackRecordApi(trackingData, item.getTrackId());
     }
 
     @Override
@@ -483,11 +483,11 @@ public class MainActivity extends BaseActivity implements HabitRecyclerViewAdapt
             startActivityForResult(intent, CREATE_NEW_HABIT);
         } else if (TYPE_COUNT == type) {
             Intent intent = new Intent(this, ReportDetailsActivity.class);
-            intent.putExtra(HABIT_ID, trackingItemList.get(position).getHabitId());
+            intent.putExtra(HABIT_ID, itemList.get(position).getHabitId());
             startActivityForResult(intent, REPORT_DETAIL);
         } else if (TYPE_CHECK == type) {
             Intent intent = new Intent(this, ReportCalendarActivity.class);
-            intent.putExtra(HABIT_ID, trackingItemList.get(position).getHabitId());
+            intent.putExtra(HABIT_ID, itemList.get(position).getHabitId());
             startActivityForResult(intent, REPORT_CALENDAR);
         }
     }
@@ -496,7 +496,7 @@ public class MainActivity extends BaseActivity implements HabitRecyclerViewAdapt
         Database db = Database.getInstance(this);
         db.open();
 
-        trackingItemList.clear();
+        itemList.clear();
         String[] arr = currentDate.split("-");
         int year = Integer.parseInt(arr[0]);
         int month = Integer.parseInt(arr[1]);
@@ -514,9 +514,9 @@ public class MainActivity extends BaseActivity implements HabitRecyclerViewAdapt
                 trackingEntity = getTodayTracking(habit.getHabitId(), currentDate, 0);
             }
 
-            totalCount = getSumTrackValueByHabit(habit.getHabitId(), Integer.parseInt(habit.getHabitType()), Integer.parseInt(trackingEntity.getCount()));
+            totalCount = getSumValueInPeriod(habit.getHabitId(), Integer.parseInt(habit.getHabitType()), Integer.parseInt(trackingEntity.getCount()));
 
-            trackingItemList.add(new TrackingItem(
+            itemList.add(new TrackingItem(
                     trackingEntity.getTrackingId(),
                     habit.getHabitId(),
                     habit.getHabitTarget(),
@@ -566,7 +566,7 @@ public class MainActivity extends BaseActivity implements HabitRecyclerViewAdapt
             timeLine++;
             updateTitle(nextDate);
             currentDate = nextDate;
-            trackingItemList.clear();
+            itemList.clear();
             updateByCurrentDate();
         }
     }
@@ -578,7 +578,7 @@ public class MainActivity extends BaseActivity implements HabitRecyclerViewAdapt
             timeLine--;
             updateTitle(preDate);
             currentDate = preDate;
-            trackingItemList.clear();
+            itemList.clear();
             updateByCurrentDate();
         }
     }
@@ -591,7 +591,7 @@ public class MainActivity extends BaseActivity implements HabitRecyclerViewAdapt
         timeLine = 0;
         updateTitle(firstCurrentDate);
         currentDate = firstCurrentDate;
-        trackingItemList.clear();
+        itemList.clear();
         updateByCurrentDate();
     }
 

@@ -400,7 +400,7 @@ public class ReportDetailsActivity extends BaseActivity {
             trackingEntity.setCurrentDate(currentDate);
         }
         trackingEntity.setCount(String.valueOf(curTrackingCount));
-        Database.getTrackingDb().saveUpdateRecord(trackingEntity);
+        Database.getTrackingDb().saveUpdateTracking(trackingEntity);
         db.close();
 
         ArrayList<BarEntry> values = loadData(currentDate);

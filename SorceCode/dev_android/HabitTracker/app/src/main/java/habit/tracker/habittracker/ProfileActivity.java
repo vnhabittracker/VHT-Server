@@ -43,6 +43,7 @@ import static habit.tracker.habittracker.common.util.AppGenerator.getLevel;
 
 public class ProfileActivity extends BaseActivity implements RecyclerViewItemClickListener {
     public static final int PICK_AVATAR = 0;
+    public static final int NEW_HABIT = 1;
     public static String SUGGEST_NAME = "SuggestionByLevelActivity.pick_name";
     public static String SUGGEST_NAME_ID = "SuggestionByLevelActivity.suggest_name_id";
 
@@ -218,6 +219,8 @@ public class ProfileActivity extends BaseActivity implements RecyclerViewItemCli
                     e.printStackTrace();
                 }
             }
+        } else if (requestCode == NEW_HABIT) {
+
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -228,8 +231,7 @@ public class ProfileActivity extends BaseActivity implements RecyclerViewItemCli
         Intent intent = new Intent(this, HabitActivity.class);
         intent.putExtra(SUGGEST_NAME_ID, item.getHabitNameId());
         intent.putExtra(SUGGEST_NAME, item.getHabitNameUni());
-        startActivity(intent);
-        finish();
+        startActivityForResult(intent, NEW_HABIT);
     }
 
     @Override

@@ -126,7 +126,6 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
         holder.layout.setBackground(getBackground(color));
         holder.background.setBackground(getBackground(color));
 
-//        float ratio = (float) item.getCount() / Integer.parseInt(item.getNumber());
         float ratio = (float) item.getTotalCount() / Integer.parseInt(item.getNumber());
         scaleView(holder.background, item.getCompletion(), ratio > 1 ? 1f : ratio, 0);
         item.setRatio(ratio);
@@ -191,27 +190,31 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
                 return;
             }
 
-            int num = mData.get(getAdapterPosition()).getTotalCount();
-            int num2 = mData.get(getAdapterPosition()).getCount();
+            int totalCount = mData.get(getAdapterPosition()).getTotalCount();
+            int todayCount = mData.get(getAdapterPosition()).getCount();
 
             if (view.getId() == R.id.btn_plus) {
-                num = num + 1;
-                num2++;
-                tvCount.setText(String.valueOf(num));
-                mClickListener.onTrackingValueChanged(view, TYPE_COUNT, getAdapterPosition(), num, num2);
+                totalCount = totalCount + 1;
+                todayCount++;
+                tvCount.setText(String.valueOf(totalCount));
+                mClickListener.onItemValueChanged(view, TYPE_COUNT, getAdapterPosition(), totalCount, todayCount);
 
             } else if (view.getId() == R.id.btn_minus) {
-                num = num > 0 ? num - 1 : 0;
-                num2 = num2 > 0 ? num2 - 1 : 0;
-                tvCount.setText(String.valueOf(num));
-                mClickListener.onTrackingValueChanged(view, TYPE_COUNT, getAdapterPosition(), num, num2);
+                totalCount = totalCount > 0 ? totalCount - 1 : 0;
+                if (todayCount > 0) {
+                    todayCount--;
+                    totalCount--;
+                }
+                tvCount.setText(String.valueOf(totalCount));
+                mClickListener.onItemValueChanged(view, TYPE_COUNT, getAdapterPosition(), totalCount, todayCount);
 
             } else if (mClickListener != null) {
                 mClickListener.onItemClick(view, TYPE_COUNT, getAdapterPosition());
             }
 
+            // update background animation
             float goal = mData.get(getAdapterPosition()).getCompletion();
-            float ratio = (float) num / Integer.parseInt(mData.get(getAdapterPosition()).getNumber());
+            float ratio = (float) totalCount / Integer.parseInt(mData.get(getAdapterPosition()).getNumber());
             scaleView(background, goal, ratio > 1 ? 1f : ratio, 400);
             mData.get(getAdapterPosition()).setRatio(ratio);
         }
@@ -249,13 +252,13 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
                 if (isCheck) {
                     isCheck = false;
                     imgCheck.setImageResource(R.drawable.ck_unchecked);
-                    mClickListener.onTrackingValueChanged(view, TYPE_CHECK, getAdapterPosition(), 0, 0);
+                    mClickListener.onItemValueChanged(view, TYPE_CHECK, getAdapterPosition(), 0, 0);
                     scaleView(background, 1f, 0f, 500);
 
                 } else {
                     isCheck = true;
                     imgCheck.setImageResource(R.drawable.ck_checked);
-                    mClickListener.onTrackingValueChanged(view, TYPE_CHECK, getAdapterPosition(), 0, 1);
+                    mClickListener.onItemValueChanged(view, TYPE_CHECK, getAdapterPosition(), 0, 1);
                     scaleView(background, 0f, 1f, 599);
                 }
 
@@ -311,7 +314,7 @@ public class HabitRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
     }
 
     public interface ItemClickListener {
-        void onTrackingValueChanged(View view, int type, int position, int totalCount, int count);
+        void onItemValueChanged(View view, int type, int position, int totalCount, int count);
 
         void onItemClick(View view, int type, int position);
     }

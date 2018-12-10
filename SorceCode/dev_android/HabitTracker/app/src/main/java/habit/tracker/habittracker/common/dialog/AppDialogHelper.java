@@ -12,8 +12,8 @@ import habit.tracker.habittracker.common.habitreminder.HabitReminderManager;
 
 public class AppDialogHelper {
 
-    DialogInterface.OnClickListener positiveListener;
-    DialogInterface.OnClickListener negativeListener;
+    private DialogInterface.OnClickListener positiveListener;
+    private DialogInterface.OnClickListener negativeListener;
 
     public void setPositiveListener(DialogInterface.OnClickListener positiveListener) {
         this.positiveListener = positiveListener;

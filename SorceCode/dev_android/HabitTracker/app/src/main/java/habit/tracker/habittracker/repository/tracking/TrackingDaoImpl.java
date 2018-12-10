@@ -201,7 +201,7 @@ public class TrackingDaoImpl extends MyDatabaseHelper implements TrackingDao, Tr
     }
 
     @Override
-    public boolean saveUpdateRecord(TrackingEntity entity) {
+    public boolean saveUpdateTracking(TrackingEntity entity) {
         setContentValue(entity);
         try {
             boolean res = super.replace(TRACKING_TABLE, getContentValue()) > 0;

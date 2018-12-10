@@ -5,9 +5,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -32,7 +30,7 @@ public class HabitTextWatcher implements TextWatcher {
     private List<HabitSuggestion> searchResultList = new ArrayList<>();
     private VnHabitApiService mService;
 
-    private boolean afterSelectedSuggestion = false;
+    private boolean afterSelection = false;
 
     public HabitTextWatcher(Context context) {
         this.context = context;
@@ -51,8 +49,8 @@ public class HabitTextWatcher implements TextWatcher {
             habitSuggestionAdapter.notifyDataSetChanged();
             return;
         }
-        if (afterSelectedSuggestion) {
-            afterSelectedSuggestion = false;
+        if (afterSelection) {
+            afterSelection = false;
             return;
         }
 
@@ -66,63 +64,44 @@ public class HabitTextWatcher implements TextWatcher {
 
                     List<HabitSuggestion> searchResult = response.body().getSearchResult();
                     UserEntity userEntity = Database.getUserDb().getUser(MySharedPreference.getUserId(context));
-                    int userLevel = AppGenerator.getLevel(Integer.parseInt(userEntity.getUserScore()));
 
                     if (searchResult.size() > 0) {
+
                         List<HabitSuggestion> easyHabitList = new ArrayList<>();
                         List<HabitSuggestion> mediumHabitList = new ArrayList<>();
                         List<HabitSuggestion> hardHabitList = new ArrayList<>();
                         List<HabitSuggestion> sortedHabitList = new ArrayList<>();
-                        int topLow = -1;
-                        int topMed = -1;
-                        int topHig = -1;
+
                         int hbLevel;
-                        int numOfUser;
                         for (HabitSuggestion sg : searchResult) {
                             hbLevel = (int) (((float) sg.getSuccessTrack() / (float) sg.getTotalTrack()) * 100);
-                            numOfUser = Integer.parseInt(sg.getHabitNameCount());
                             if (hbLevel >= 80) {
-//                                if (numOfUser > topLow) {
-//                                    easyHabitList.add(0, sg);
-//                                    topLow = numOfUser;
-//                                } else {
                                 easyHabitList.add(sg);
-
                             } else if (hbLevel >= 50) {
-//                                if (numOfUser > topMed) {
-//                                    mediumHabitList.add(0, sg);
-//                                    topMed = numOfUser;
-//                                } else {
                                 mediumHabitList.add(sg);
-//                                }
                             } else {
-//                                if (numOfUser > topHig) {
-//                                    hardHabitList.add(0, sg);
-//                                    topMed = numOfUser;
-//                                } else {
                                 hardHabitList.add(sg);
-//                                }
                             }
                         }
 
                         Comparator<HabitSuggestion> comparator = new Comparator<HabitSuggestion>() {
                             @Override
-                            public int compare(HabitSuggestion o1, HabitSuggestion o2) {
-                                int n1 = Integer.parseInt(o1.getHabitNameCount());
-                                int n2 = Integer.parseInt(o2.getHabitNameCount());
-                                if (n2 > n1) {
+                            public int compare(HabitSuggestion sg1, HabitSuggestion sg2) {
+                                if (Integer.parseInt(sg2.getHabitNameCount()) > Integer.parseInt(sg1.getHabitNameCount())) {
                                     return -1;
                                 }
-                                if (n1 > n2) {
+                                if (Integer.parseInt(sg2.getHabitNameCount()) < Integer.parseInt(sg1.getHabitNameCount())) {
                                     return 1;
                                 }
                                 return 0;
                             }
                         };
+
                         Collections.sort(easyHabitList, comparator);
                         Collections.sort(mediumHabitList, comparator);
                         Collections.sort(hardHabitList, comparator);
 
+                        int userLevel = AppGenerator.getLevel(Integer.parseInt(userEntity.getUserScore()));
                         if (userLevel <= 3) {
                             sortedHabitList.addAll(easyHabitList);
                             sortedHabitList.addAll(mediumHabitList);
@@ -155,8 +134,8 @@ public class HabitTextWatcher implements TextWatcher {
 
     }
 
-    public boolean isAfterSelectedSuggestion() {
-        return afterSelectedSuggestion;
+    public boolean isAfterSelection() {
+        return afterSelection;
     }
 
     public SearchRecyclerViewAdapter getHabitSuggestionAdapter() {
@@ -167,8 +146,8 @@ public class HabitTextWatcher implements TextWatcher {
         return searchResultList;
     }
 
-    public void setAfterSelectedSuggestion(boolean justSelectedSuggestion) {
-        this.afterSelectedSuggestion = justSelectedSuggestion;
+    public void setAfterSelection(boolean justSelectedSuggestion) {
+        this.afterSelection = justSelectedSuggestion;
     }
 
     public void setAdapter(SearchRecyclerViewAdapter habitSuggestionAdapter) {

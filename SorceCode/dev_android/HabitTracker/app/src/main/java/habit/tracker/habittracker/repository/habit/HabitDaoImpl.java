@@ -6,9 +6,7 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import habit.tracker.habittracker.api.model.habit.Habit;
 import habit.tracker.habittracker.repository.MyDatabaseHelper;
@@ -39,29 +37,23 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
                     + " ON " + "h." + HabitSchema.HABIT_ID + " = t." + TrackingSchema.HABIT_ID
                     + " WHERE h." + USER_ID + " = '" + userId + "'"
                     + " AND t." + TrackingSchema.CURRENT_DATE + " BETWEEN '" + startDate + "' AND '" + endDate + "'" +
-                    " ORDER BY h." + HabitSchema.HABIT_ID + " ASC";
+                    " ORDER BY t." + TrackingSchema.CURRENT_DATE + " ASC";
 
             cursor = super.rawQuery(sql, null);
 
             if (cursor != null && cursor.getCount() > 0) {
                 TrackingDaoImpl trackingDao = new TrackingDaoImpl();
-
                 cursor.moveToFirst();
-
-                // add first item
                 HabitTracking habitTracking = new HabitTracking();
                 HabitEntity habit = cursorToEntity(cursor);
                 TrackingEntity track = trackingDao.cursorToEntity(cursor);
                 habitTracking.setHabit(habit);
                 habitTracking.getTrackingList().add(track);
                 list.add(habitTracking);
-
                 cursor.moveToNext();
                 while (!cursor.isAfterLast()) {
-
                     habit = cursorToEntity(cursor);
                     track = trackingDao.cursorToEntity(cursor);
-
                     if (list.get(list.size() - 1).getHabit().getHabitId().equals(habit.getHabitId())) {
                         list.get(list.size() - 1).getTrackingList().add(track);
                     } else {
@@ -72,7 +64,6 @@ public class HabitDaoImpl extends MyDatabaseHelper implements HabitDao, HabitSch
                     }
                     cursor.moveToNext();
                 }
-
                 cursor.close();
                 return list;
             }

@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -302,24 +303,29 @@ public class NoteActivity extends BaseActivity implements RecyclerViewItemClickL
         entity.setHabitId(habitId);
         entity.setCount("0");
         entity.setCurrentDate(currentDate);
-        Database.getTrackingDb().saveUpdateRecord(entity);
+        Database.getTrackingDb().saveUpdateTracking(entity);
 
         item = new NoteItem(entity.getTrackingId(), entity.getCurrentDate(),
                 AppGenerator.format(entity.getCurrentDate(), AppGenerator.YMD_SHORT, AppGenerator.DMY_SHORT), newNote);
         addToDisplayList(item);
 
-        saveToLocalAndApi(newNote, entity.getHabitId());
+        saveToLocalAndApi(newNote, entity.getTrackingId());
     }
 
     private void addToDisplayList(NoteItem item) {
-        int insertPos = 0;
-        for (int i = 0; i < nonEmptyNoteList.size(); i++) {
-            if (item.getDefDate().compareTo(nonEmptyNoteList.get(i).getDefDate()) > 0) {
-                insertPos = i;
-                break;
+        nonEmptyNoteList.add(item);
+        Collections.sort(nonEmptyNoteList, new Comparator<NoteItem>() {
+            @Override
+            public int compare(NoteItem n1, NoteItem n2) {
+                if (n2.getDefDate().compareTo(n1.getDefDate()) > 0) {
+                    return 1;
+                }
+                if (n2.getDefDate().compareTo(n1.getDefDate()) < 0) {
+                    return -1;
+                }
+                return 0;
             }
-        }
-        nonEmptyNoteList.add(insertPos, item);
+        });
         noteRecyclerViewAdapter.notifyDataSetChanged();
     }
 
@@ -349,7 +355,7 @@ public class NoteActivity extends BaseActivity implements RecyclerViewItemClickL
             // save to local
             entity.setDescription(newNote);
             entity.setUpdate(true);
-            Database.getTrackingDb().saveUpdateRecord(entity);
+            Database.getTrackingDb().saveUpdateTracking(entity);
 
             // call api
             TrackingList trackingData = new TrackingList();
@@ -385,7 +391,7 @@ public class NoteActivity extends BaseActivity implements RecyclerViewItemClickL
         }
         entity.setCount(String.valueOf(curTrackingCount));
         entity.setUpdate(true);
-        Database.getTrackingDb().saveUpdateRecord(entity);
+        Database.getTrackingDb().saveUpdateTracking(entity);
 
         updateUI();
 

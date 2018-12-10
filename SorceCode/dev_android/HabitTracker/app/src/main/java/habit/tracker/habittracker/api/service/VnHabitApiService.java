@@ -1,5 +1,7 @@
 package habit.tracker.habittracker.api.service;
 
+import habit.tracker.habittracker.api.model.feedback.Feedback;
+import habit.tracker.habittracker.api.model.feedback.FeedbackResponse;
 import habit.tracker.habittracker.api.model.group.Group;
 import habit.tracker.habittracker.api.model.group.GroupResponse;
 import habit.tracker.habittracker.api.model.habit.Habit;
@@ -75,4 +77,10 @@ public interface VnHabitApiService {
 
     @POST("reminder/create.php")
     Call<ResponseBody> addReminder(@Body Reminder reminder);
+
+    @POST("feedback/create_update.php")
+    Call<FeedbackResponse> getFeedback(@Query("user_id") String userId);
+
+    @POST("feedback/create_update.php")
+    Call<ResponseBody> sendFeedback(@Body Feedback feedback);
 }
