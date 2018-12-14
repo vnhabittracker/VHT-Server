@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 02, 2018 at 10:25 AM
+-- Generation Time: Dec 13, 2018 at 11:23 AM
 -- Server version: 10.1.35-MariaDB
 -- PHP Version: 7.2.9
 
@@ -108,8 +108,11 @@ CREATE TABLE `habit` (
 --
 
 INSERT INTO `habit` (`habit_id`, `user_id`, `group_id`, `monitor_id`, `habit_name`, `habit_target`, `habit_type`, `monitor_type`, `monitor_unit`, `monitor_number`, `start_date`, `end_date`, `created_date`, `habit_color`, `habit_description`) VALUES
+('02291adc-da', '1e88b87e-c6', NULL, '615abaa2-61', 'hi', 0, 0, 0, NULL, 1, '2018-12-03', '2018-12-04', '2018-12-03', '#789c54d4', ''),
 ('5766eadf-40', '1e88b87e-c6', NULL, '998d59f0-36', 'Đi Hút thuốc', 1, 1, 1, 'lần', 5, '2018-12-01', '2018-12-03', '2018-12-02', '#78ed872a', 'test'),
-('b9dc1973-30', '1e88b87e-c6', '2', 'edd888f5-2c', 'Đi Chạy bộ', 0, 0, 1, 'km', 5, '2018-12-02', '2018-12-03', '2018-12-02', '#784a90e6', 'run des');
+('b9dc1973-30', '1e88b87e-c6', '2', 'edd888f5-2c', 'Đi Chạy bộ', 0, 0, 1, 'km', 5, '2018-12-02', '2018-12-03', '2018-12-02', '#784a90e6', 'run des'),
+('bf380b0e-5c', 'b758a029-6c', '3', '44f46342-04', 'Đi Thức đêm', 1, 1, 0, NULL, 1, '2018-12-02', '2018-12-03', '2018-12-02', '#784a90e6', 'dat'),
+('e890cf7b-a8', 'b40f3a2c-3c', NULL, '3090920a-67', 'Đi Chạy bộ', 0, 2, 1, 'lần', 10, '2018-12-02', NULL, '2018-12-02', '#784a90e6', '');
 
 -- --------------------------------------------------------
 
@@ -135,19 +138,12 @@ CREATE TABLE `habit_suggestion` (
 INSERT INTO `habit_suggestion` (`habit_name_id`, `group_id`, `habit_name_uni`, `habit_name_ascii`, `habit_name_count`, `total_track`, `success_track`) VALUES
 ('154fsd', '2', 'Đi chợ', 'di cho', 23, 35, 35),
 ('1dv43fsd', '3', 'Đi bộ', 'di bo', 12, 90, 20),
-('2b1bfef1-2d', NULL, 'Đi Hút thuốc', 'đi hut thuoc', 2, 0, 0),
-('45c8dadb-54', NULL, 'Đi Chạy bộ', 'đi chay bo', 1, 0, 0),
-('474e07f0-17', NULL, 'Đi Hút thuốc', 'đi hut thuoc', 1, 0, 0),
-('523a0cd7-fa', NULL, 'Đi Hút thuốc', 'đi hut thuoc', 1, 0, 0),
-('852b8733-8f', NULL, 'Đi Chạy bộ', 'đi chay bo', 1, 0, 0),
+('833f09f9-3e', NULL, 'hi', 'hi', 1, 0, 0),
 ('a0fde794-38', '4', 'an com', 'an com', 1, 0, 0),
-('a2f20713-9f', NULL, 'Đi Hút thuốc', 'đi hut thuoc', 1, 0, 0),
 ('dasf', '1', 'Đi Uống thuốc', 'di uong thuoc', 1, 200, 119),
-('dsfgsd', '2', 'Đi Chạy bộ', 'di chay bo', 17, 11, 10),
-('e4ae4437-78', NULL, 'Đi Hút thuốc', 'đi hut thuoc', 1, 0, 0),
-('fe23ca4c-6f', NULL, 'Đi Chạy bộ', 'đi chay bo', 4, 0, 0),
+('dsfgsd', '2', 'Đi Chạy bộ', 'di chay bo', 19, 11, 10),
 ('fsd-345', '3', 'Đi Uống rượu', 'di uong ruou', 4, 1000, 10),
-('fsd545', '3', 'Đi Thức đêm', 'di thuc dem', 50, 60, 59),
+('fsd545', '3', 'Đi Thức đêm', 'di thuc dem', 51, 60, 59),
 ('gfdh', '1', 'Đi Hút thuốc', 'di hut thuoc', 12, 100, 99),
 ('Gym', '1', 'Gym', 'gym', 0, 0, 0);
 
@@ -175,6 +171,9 @@ CREATE TABLE `monitor_date` (
 --
 
 INSERT INTO `monitor_date` (`monitor_id`, `habit_id`, `mon`, `tue`, `wed`, `thu`, `fri`, `sat`, `sun`) VALUES
+('3090920a-67', 'e890cf7b-a8', 1, 1, 1, 1, 1, 1, 1),
+('44f46342-04', 'bf380b0e-5c', 1, 1, 1, 1, 1, 1, 1),
+('615abaa2-61', '02291adc-da', 1, 1, 1, 1, 1, 1, 1),
 ('998d59f0-36', '5766eadf-40', 1, 1, 1, 1, 1, 1, 1),
 ('edd888f5-2c', 'b9dc1973-30', 1, 1, 1, 1, 1, 1, 1);
 
@@ -223,9 +222,15 @@ CREATE TABLE `tracking` (
 --
 
 INSERT INTO `tracking` (`tracking_id`, `habit_id`, `current_date`, `count`, `tracking_description`) VALUES
-('3618f0a6-49', 'b9dc1973-30', '2018-12-02', 1, 'abc'),
+('20daa23d-02', 'bf380b0e-5c', '2018-12-02', 0, NULL),
+('3618f0a6-49', 'b9dc1973-30', '2018-12-02', 1, 'nnnnnnnn'),
 ('6197bf71-86', '5766eadf-40', '2018-12-01', 1, 'abc'),
-('89ef956e-bf', '5766eadf-40', '2018-12-02', 2, 'abc');
+('653b39f2-94', '02291adc-da', '2018-12-04', 0, 'note ngay 4/12'),
+('6af72e6a-ac', '02291adc-da', '2018-12-03', 1, '3/12 note'),
+('6fa8958b-ee', 'e890cf7b-a8', '2018-12-02', 2, NULL),
+('84e39ab8-b0', 'b9dc1973-30', '2018-12-03', 1, '3/12 note. upre'),
+('89ef956e-bf', '5766eadf-40', '2018-12-02', 2, 'abc'),
+('fbf88283-8e', 'b9dc1973-30', '2018-12-04', 1, 'note sb');
 
 -- --------------------------------------------------------
 
@@ -256,7 +261,9 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`user_id`, `username`, `password`, `email`, `date_of_birth`, `gender`, `real_name`, `user_description`, `created_date`, `last_login_time`, `continue_using_count`, `current_continue_using_count`, `best_continue_using_count`, `user_score`) VALUES
-('1e88b87e-c6', 'test01', '12345678', 'test01@mail.com', '1990-11-12', 0, NULL, NULL, '2018-12-01', '2018-12-01', 1, 1, 1, 2),
+('1e88b87e-c6', 'test01', '12345678', 'test01@mail.com', '1990-11-12', 0, 'test01', 'test01 something', '2018-12-01', '2018-12-01', 1, 1, 1, 2),
+('b40f3a2c-3c', 'test02', '123456', 'test02@mail.com', '1999-01-02', 1, 'test02', 'something', '2018-12-02', '2018-12-02', 1, 1, 1, 2),
+('b758a029-6c', 'dat', '12345678', 'dat@mail.com', NULL, NULL, NULL, NULL, '2018-12-02', '2018-12-02', 1, 1, 1, 2),
 ('d233c193-6e', 'user01', '12345678', 'user01@mail.com', '1999-12-12', 1, 'joncena', 'something good', '2018-11-10', '2018-11-28', 1, 1, 1, 2);
 
 --

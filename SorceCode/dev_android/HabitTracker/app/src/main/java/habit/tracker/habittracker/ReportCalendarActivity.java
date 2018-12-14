@@ -34,6 +34,7 @@ import habit.tracker.habittracker.adapter.calendar.TrackingCalendarItem;
 import habit.tracker.habittracker.api.VnHabitApiUtils;
 import habit.tracker.habittracker.api.model.tracking.Tracking;
 import habit.tracker.habittracker.api.model.tracking.TrackingList;
+import habit.tracker.habittracker.api.model.user.User;
 import habit.tracker.habittracker.api.service.VnHabitApiService;
 import habit.tracker.habittracker.common.util.AppGenerator;
 import habit.tracker.habittracker.repository.Database;
@@ -427,7 +428,7 @@ public class ReportCalendarActivity extends BaseActivity implements TrackingCale
     }
 
     private void updateLocalAndApi(String habitId, String currentDate, String curTrackingCount) {
-        // save to appDatabase
+        // save to mDb
         TrackingEntity trackingEntity = Database.getTrackingDb().getTracking(habitId, currentDate);
         if (trackingEntity == null) {
             trackingEntity = new TrackingEntity();

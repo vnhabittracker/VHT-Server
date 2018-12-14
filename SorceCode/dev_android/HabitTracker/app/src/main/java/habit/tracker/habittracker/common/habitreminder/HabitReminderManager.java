@@ -12,12 +12,14 @@ import java.util.List;
 
 import habit.tracker.habittracker.api.model.reminder.Reminder;
 import habit.tracker.habittracker.common.util.AppGenerator;
+import habit.tracker.habittracker.common.util.MySharedPreference;
 
 public class HabitReminderManager {
-    public static final String REMIND_ID = "remind_id";
-    public static final String REMIND_TEXT = "remind_text";
-    public static final String REMIND_TITLE = "remind_title";
-    public static final String END_TIME = "end_time";
+     static final String USER_ID = "user_id";
+     static final String REMIND_ID = "remind_id";
+     static final String REMIND_TEXT = "remind_text";
+     static final String REMIND_TITLE = "remind_title";
+     static final String END_TIME = "end_time";
 
     private Context context;
     private AlarmManager alarmMgr;
@@ -60,30 +62,14 @@ public class HabitReminderManager {
 
     private void remind(Reminder reminder, int year, int month, int day, int hour, int minute) {
         alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
         Intent intent = new Intent(context, HabitReminderServiceReceiver.class);
-        intent.putExtra(REMIND_ID, reminder.getHabitId());
+        intent.putExtra(USER_ID, MySharedPreference.getUserId(context));
+        intent.putExtra(REMIND_ID, reminder.getReminderId());
         intent.putExtra(REMIND_TEXT, reminder.getRemindText());
-        String title = null;
-        if (TextUtils.isEmpty(reminder.getHabitName())) {
-            switch (reminder.getRepeatType()) {
-                case "0":
-                    title = "Hăng ngày";
-                    break;
-                case "1":
-                    title = "Hăng tuần";
-                    break;
-                case "2":
-                    title = "Hăng tháng";
-                    break;
-                case "3":
-                    title = "Hăng năm";
-                    break;
-            }
-        } else {
-            title = reminder.getHabitName();
-        }
-        intent.putExtra(REMIND_TITLE, title);
+        intent.putExtra(REMIND_TITLE, gettitle(reminder.getRepeatType()));
         intent.putExtra(END_TIME, reminder.getRemindEndTime());
+
         alarmIntent = PendingIntent.getBroadcast(context, Integer.parseInt(reminder.getReminderId()), intent, 0);
 
         Calendar calendar = Calendar.getInstance();
@@ -124,7 +110,21 @@ public class HabitReminderManager {
         }
     }
 
-    public void cancelReminder(int requestCode) {
+    private String gettitle(String type) {
+        switch (type) {
+            case "0":
+                return "Hăng ngày";
+            case "1":
+                return "Hăng tuần";
+            case "2":
+                return "Hăng tháng";
+            case "3":
+                return "Hăng năm";
+        }
+        return null;
+    }
+
+    private void cancelReminder(int requestCode) {
         Intent i = new Intent(context, HabitReminderServiceReceiver.class);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(context, requestCode, i, 0);
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);

@@ -17,7 +17,7 @@
         android:scrollHorizontally="false"
         android:background="@drawable/bg_input"
         android:textSize="12sp"
-        android:hint="feedback..."/>
+        android:hint="Nhận xét..."/>
 
     <LinearLayout
         android:layout_below="@+id/editFeedback"
@@ -27,36 +27,37 @@
         android:layout_marginTop="10dp">
         <ImageView
             android:id="@+id/star1"
+            android:tag="1"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginEnd="7dp"
             android:src="@drawable/ic_star_yellow"/>
         <ImageView
             android:id="@+id/star2"
+            android:tag="2"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginEnd="7dp"
-            android:alpha="0.2"
             android:src="@drawable/ic_star_yellow"/>
         <ImageView
             android:id="@+id/star3"
+            android:tag="3"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginEnd="7dp"
-            android:alpha="0.2"
             android:src="@drawable/ic_star_yellow"/>
         <ImageView
             android:id="@+id/star4"
+            android:tag="4"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginEnd="7dp"
-            android:alpha="0.2"
             android:src="@drawable/ic_star_yellow"/>
         <ImageView
             android:id="@+id/star5"
+            android:tag="5"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:alpha="0.2"
             android:src="@drawable/ic_star_yellow"/>
     </LinearLayout>
 

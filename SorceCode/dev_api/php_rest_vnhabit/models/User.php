@@ -110,6 +110,24 @@ include_once '../../models/Model.php';
             }
         }
 
+        public function find_by_id() {
+            // Create query
+            $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . ' WHERE user_id = :user_id LIMIT 0,1';
+            // Prepare statement
+            $stmt = $this->conn->prepare($query);
+            // Bind params
+            $stmt = $this->bind_param($stmt, array('user_id' => $this->user_id));
+            // Execute query
+            $stmt->execute();
+            // get row count
+            $rowNum = $stmt->rowCount();
+            if ($rowNum == 1) {
+                return $stmt->fetch(PDO::FETCH_ASSOC);
+            } else {
+                return NULL;
+            }
+        }
+
         public function find_by_username() {
             // Create query
             $query = 'SELECT ' . $this->cols . ' FROM ' . $this->table . ' WHERE username = :username LIMIT 0,1';
@@ -122,8 +140,7 @@ include_once '../../models/Model.php';
             // get row count
             $num = $stmt->rowCount();
             if ($num == 1) {
-                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                return $row;
+                return $stmt->fetch(PDO::FETCH_ASSOC);
             } else {
                 return NULL;
             }
@@ -141,8 +158,7 @@ include_once '../../models/Model.php';
             // get row count
             $num = $stmt->rowCount();
             if ($num == 1) {
-                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                return $row;
+                return $stmt->fetch(PDO::FETCH_ASSOC);
             } else {
                 return NULL;
             }
@@ -160,7 +176,6 @@ include_once '../../models/Model.php';
             if ($stmt->execute()) {
                 return true;
             }
-            printf("Error: %s.\n", $stmt->error);
             return false;
         }
 
@@ -174,7 +189,6 @@ include_once '../../models/Model.php';
             if ($stmt->execute()) {
                 return true;
             }
-            printf("Error: %s.\n", $stmt->error);
             return false;
         }
 
@@ -185,7 +199,6 @@ include_once '../../models/Model.php';
             if ($stmt->execute()) {
                 return true;
             }
-            printf("Error: %s.\n", $stmt->error);
             return false;
         }
 
@@ -207,8 +220,6 @@ include_once '../../models/Model.php';
             if($stmt->execute()) {
                 return true;
             }
-            // Print error if something goes wrong
-            printf("Error: %s.\n", $stmt->error);
             return false;
         }
     }

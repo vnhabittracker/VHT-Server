@@ -25,7 +25,9 @@ public class FeedbackDaoImpl extends MyDatabaseHelper implements FeedbackDao, Fe
             entity.setUserId(cursor.getString(cursor.getColumnIndexOrThrow(USER_ID)));
         }
         if (cursor.getColumnIndex(STAR_NUM) != -1) {
-            entity.setStarNum(cursor.getString(cursor.getColumnIndexOrThrow(STAR_NUM)));
+            if (cursor.getString(cursor.getColumnIndexOrThrow(STAR_NUM)) != null) {
+                entity.setStarNum(Integer.parseInt(cursor.getString(cursor.getColumnIndexOrThrow(STAR_NUM))));
+            }
         }
         if (cursor.getColumnIndex(FEEDBACK_DESCRIPTION) != -1) {
             entity.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(FEEDBACK_DESCRIPTION)));

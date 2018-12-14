@@ -41,19 +41,19 @@ public class RegisterActivity extends BaseActivity {
     @BindView(R.id.edit_conf_password)
     EditText edPasswordConfirm;
 
-    Database appDatabase = Database.getInstance(RegisterActivity.this);
+    VnHabitApiService mService = VnHabitApiUtils.getApiService();
+    Database mDb = Database.getInstance(RegisterActivity.this);
 
     @Override
     protected void onStart() {
-        appDatabase.open();
+        mDb.open();
         super.onStart();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_register);
         ButterKnife.bind(this);
 
@@ -71,7 +71,7 @@ public class RegisterActivity extends BaseActivity {
                 String password = edPassword.getText().toString();
                 String email = edEmail.getText().toString();
                 String passwordConfirm = edPasswordConfirm.getText().toString();
-                User newUser = new User();
+
                 Validator validator = new Validator();
                 validator.setErrorMsgListener(new Validator.ErrorMsg() {
                     @Override
@@ -107,6 +107,8 @@ public class RegisterActivity extends BaseActivity {
                 if (!validator.checkEqual(password, passwordConfirm, "Mật khẩu")) {
                     return;
                 }
+
+                User newUser = new User();
                 newUser.setUserId(AppGenerator.getNewId());
                 newUser.setUsername(username);
                 newUser.setEmail(email);
@@ -118,7 +120,7 @@ public class RegisterActivity extends BaseActivity {
                 newUser.setBestContinueUsingCount("1");
                 newUser.setUserScore("2");
 
-                register(newUser);
+                registNewUser(newUser);
 
                 break;
             case R.id.btn_fb_login:
@@ -133,8 +135,7 @@ public class RegisterActivity extends BaseActivity {
         }
     }
 
-    private void register(final User user) {
-        VnHabitApiService mService = VnHabitApiUtils.getApiService();
+    private void registNewUser(final User user) {
         mService.registerUser(user).enqueue(new Callback<UserResult>() {
             @Override
             public void onResponse(Call<UserResult> call, Response<UserResult> response) {
@@ -168,7 +169,7 @@ public class RegisterActivity extends BaseActivity {
 
     @Override
     protected void onStop() {
-        appDatabase.close();
+        mDb.close();
         super.onStop();
     }
 }

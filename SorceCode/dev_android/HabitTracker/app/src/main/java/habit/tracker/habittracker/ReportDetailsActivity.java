@@ -27,6 +27,7 @@ import butterknife.OnClick;
 import habit.tracker.habittracker.api.VnHabitApiUtils;
 import habit.tracker.habittracker.api.model.tracking.Tracking;
 import habit.tracker.habittracker.api.model.tracking.TrackingList;
+import habit.tracker.habittracker.api.model.user.User;
 import habit.tracker.habittracker.api.service.VnHabitApiService;
 import habit.tracker.habittracker.common.AppConstant;
 import habit.tracker.habittracker.common.chart.ChartHelper;
@@ -389,7 +390,7 @@ public class ReportDetailsActivity extends BaseActivity {
                 break;
         }
 
-        // save to appDatabase
+        // save to mDb
         Database db = Database.getInstance(this);
         db.open();
         TrackingEntity trackingEntity = Database.getTrackingDb().getTracking(habitEntity.getHabitId(), currentDate);

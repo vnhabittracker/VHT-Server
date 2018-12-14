@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "604397301458",
+    "firebase_url": "https://vnhabit.firebaseio.com",
+    "project_id": "vnhabit",
+    "storage_bucket": "vnhabit.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:604397301458:android:df456a8ea9d56506",
+        "android_client_info": {
+          "package_name": "habit.tracker.habittracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "604397301458-poon0082hd502q9fgeo5qkpheq86k4vh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "habit.tracker.habittracker",
+            "certificate_hash": "4ae45bff9fac4a03f921d87dc7fc0216babe9b93"
+          }
+        },
+        {
+          "client_id": "604397301458-jegujtc7t4c4a02p5l8gkf7chafmbar5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAIX0hF0r5aZCCjUHzKFUJf8zDl2Fz82k"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "604397301458-jegujtc7t4c4a02p5l8gkf7chafmbar5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

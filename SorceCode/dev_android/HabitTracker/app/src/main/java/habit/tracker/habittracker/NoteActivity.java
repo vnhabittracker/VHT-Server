@@ -33,6 +33,7 @@ import habit.tracker.habittracker.adapter.note.NoteItem;
 import habit.tracker.habittracker.adapter.note.NoteRecyclerViewAdapter;
 import habit.tracker.habittracker.api.VnHabitApiUtils;
 import habit.tracker.habittracker.api.model.tracking.TrackingList;
+import habit.tracker.habittracker.api.model.user.User;
 import habit.tracker.habittracker.api.service.VnHabitApiService;
 import habit.tracker.habittracker.common.swipe.SwipeToDeleteCallback;
 import habit.tracker.habittracker.common.util.AppGenerator;
@@ -381,7 +382,7 @@ public class NoteActivity extends BaseActivity implements RecyclerViewItemClickL
                 break;
         }
 
-        // save to appDatabase
+        // save to mDb
         TrackingEntity entity = Database.getTrackingDb().getTracking(habitEntity.getHabitId(), currentDate);
         if (entity == null) {
             entity = new TrackingEntity();

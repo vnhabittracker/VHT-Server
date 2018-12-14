@@ -8,6 +8,8 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioAttributes;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
@@ -16,6 +18,7 @@ import java.util.Date;
 
 import habit.tracker.habittracker.R;
 import habit.tracker.habittracker.common.util.AppGenerator;
+import habit.tracker.habittracker.common.util.MySharedPreference;
 
 public class HabitReminderServiceReceiver extends BroadcastReceiver {
 
@@ -25,6 +28,7 @@ public class HabitReminderServiceReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Bundle extras = intent.getExtras();
         if (extras != null) {
+            String userId = extras.getString(HabitReminderManager.USER_ID);
             String remindId = extras.getString(HabitReminderManager.REMIND_ID);
             String remindText = extras.getString(HabitReminderManager.REMIND_TEXT);
             String remindTitle = extras.getString(HabitReminderManager.REMIND_TITLE);
@@ -56,13 +60,21 @@ public class HabitReminderServiceReceiver extends BroadcastReceiver {
             Notification notification = null;
             long[] pattern = {100, 200, 300, 400, 500, 400, 300, 200, 400};
 
+            Uri soundUri = Uri.parse(MySharedPreference.get(context, userId + "_sound"));
+
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+
+                AudioAttributes att = new AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                        .build();
 
                 NotificationChannel mChannel = notificationManager.getNotificationChannel(defaultId);
                 if (mChannel == null) {
                     mChannel = new NotificationChannel(defaultId, remindTitle, NotificationManager.IMPORTANCE_HIGH);
                     mChannel.enableVibration(true);
                     mChannel.setVibrationPattern(pattern);
+                    mChannel.setSound(soundUri, att);
                     notificationManager.createNotificationChannel(mChannel);
                 }
 
@@ -76,6 +88,7 @@ public class HabitReminderServiceReceiver extends BroadcastReceiver {
                         .setSmallIcon(R.drawable.app_launcher)
                         .setContentTitle("VN Habit Tracker: " + remindTitle)
                         .setVibrate(pattern)
+                        .setSound(soundUri)
                         .setContentText(remindText).build();
             }
 

@@ -47,7 +47,6 @@ if ($user->find_by_username()) {
         )
     );
 } else {
-    // Create user
     if ($user->create()) {
         echo json_encode(
             array(

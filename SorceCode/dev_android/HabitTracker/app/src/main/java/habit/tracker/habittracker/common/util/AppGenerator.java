@@ -65,6 +65,14 @@ public class AppGenerator {
         return id;
     }
 
+    public static String getNewPassword() {
+        String id = UUID.randomUUID().toString();
+        if (id.length() > 6) {
+            return id.substring(0, 6);
+        }
+        return id;
+    }
+
     public static String getDayPreWeek(String currentDate) {
         try {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());

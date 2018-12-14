@@ -3,7 +3,7 @@ package habit.tracker.habittracker.repository.feedback;
 public class FeedbackEntity {
     private String feedbackId;
     private String userId;
-    private String starNum;
+    private int starNum;
     private String description;
     private boolean isUpdate = false;
 
@@ -15,7 +15,7 @@ public class FeedbackEntity {
         return userId;
     }
 
-    public String getStarNum() {
+    public int getStarNum() {
         return starNum;
     }
 
@@ -35,7 +35,7 @@ public class FeedbackEntity {
         this.userId = userId;
     }
 
-    public void setStarNum(String starNum) {
+    public void setStarNum(int starNum) {
         this.starNum = starNum;
     }
 

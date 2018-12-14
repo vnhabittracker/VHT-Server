@@ -16,10 +16,8 @@ $db = $database->connect();
 // Instantiate
 $user = new User($db);
 
-// Get raw posted data
 $data = json_decode(file_get_contents("php://input"));
 
-// Set ID to update
 $user->user_id = $data->user_id;
 $user->username = $data->username;
 $user->password = $data->password;
