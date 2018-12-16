@@ -79,9 +79,7 @@ if ($date->update()) {
 if (isset($habit->habit_id)) {
 
     for($i = 0; $i < count($arr_reminder); $i++) {
-
         $item = $arr_reminder[$i];
-
         $reminder->reminder_id = $item->server_id;
         $reminder->habit_id = $habit->habit_id;
         $reminder->remind_start_time = $item->remind_start_time;

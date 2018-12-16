@@ -33,8 +33,8 @@ import habit.tracker.habittracker.adapter.note.NoteItem;
 import habit.tracker.habittracker.adapter.note.NoteRecyclerViewAdapter;
 import habit.tracker.habittracker.api.VnHabitApiUtils;
 import habit.tracker.habittracker.api.model.tracking.TrackingList;
-import habit.tracker.habittracker.api.model.user.User;
 import habit.tracker.habittracker.api.service.VnHabitApiService;
+import habit.tracker.habittracker.common.AppConstant;
 import habit.tracker.habittracker.common.swipe.SwipeToDeleteCallback;
 import habit.tracker.habittracker.common.util.AppGenerator;
 import habit.tracker.habittracker.repository.Database;
@@ -122,7 +122,7 @@ public class NoteActivity extends BaseActivity implements RecyclerViewItemClickL
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-            habitId = bundle.getString(MainActivity.HABIT_ID);
+            habitId = bundle.getString(AppConstant.HABIT_ID);
         }
 
         initializeScreen(habitId);

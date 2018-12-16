@@ -11,6 +11,7 @@ include_once '../../models/Model.php';
 
         public $reminder_id;
         public $habit_id;
+        public $user_id;
         public $remind_start_time;
         public $remind_end_time;
         public $repeat_type;

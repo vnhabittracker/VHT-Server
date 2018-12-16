@@ -62,6 +62,12 @@ public class ReminderDaoImpl extends MyDatabaseHelper implements ReminderDao, Re
         if (cursor.getColumnIndex(SERVICE_ID) != -1) {
             entity.setServerId(cursor.getString(cursor.getColumnIndexOrThrow(SERVICE_ID)));
         }
+        if (cursor.getColumnIndex(IS_DELETE) != -1) {
+            entity.setDelete(cursor.getString(cursor.getColumnIndexOrThrow(IS_DELETE)).equals("1"));
+        }
+        if (cursor.getColumnIndex(IS_UPDATE) != -1) {
+            entity.setUpdate(cursor.getString(cursor.getColumnIndexOrThrow(IS_UPDATE)).equals("1"));
+        }
         return entity;
     }
 
@@ -75,23 +81,12 @@ public class ReminderDaoImpl extends MyDatabaseHelper implements ReminderDao, Re
         initialValues.put(REMINDER_END_TIME, entity.getReminderEndTime());
         initialValues.put(REPEAT_TYPE, entity.getRepeatType());
         initialValues.put(SERVICE_ID, entity.getServerId());
+        initialValues.put(IS_DELETE, entity.isDelete() ? "1" : "0");
+        initialValues.put(IS_UPDATE, entity.isUpdate() ? "1" : "0");
     }
 
     private ContentValues getContentValue() {
         return initialValues;
-    }
-
-    public ReminderEntity convert(Reminder reminder) {
-        ReminderEntity entity = new ReminderEntity();
-        entity.setReminderId(reminder.getReminderId());
-        entity.setHabitId(reminder.getHabitId());
-        entity.setUserId(reminder.getUserId());
-        entity.setRemindText(reminder.getRemindText());
-        entity.setReminderStartTime(reminder.getRemindStartTime());
-        entity.setReminderEndTime(reminder.getRemindEndTime());
-        entity.setRepeatType(reminder.getRepeatType());
-        entity.setServerId(reminder.getServerId());
-        return entity;
     }
 
     @Override

@@ -36,6 +36,7 @@ import habit.tracker.habittracker.api.model.tracking.Tracking;
 import habit.tracker.habittracker.api.model.tracking.TrackingList;
 import habit.tracker.habittracker.api.model.user.User;
 import habit.tracker.habittracker.api.service.VnHabitApiService;
+import habit.tracker.habittracker.common.AppConstant;
 import habit.tracker.habittracker.common.util.AppGenerator;
 import habit.tracker.habittracker.repository.Database;
 import habit.tracker.habittracker.repository.habit.HabitEntity;
@@ -145,7 +146,7 @@ public class ReportCalendarActivity extends BaseActivity implements TrackingCale
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-            String habitId = bundle.getString(MainActivity.HABIT_ID);
+            String habitId = bundle.getString(AppConstant.HABIT_ID);
             initializeScreen(habitId);
         }
     }

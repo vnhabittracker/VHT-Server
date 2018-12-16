@@ -168,7 +168,7 @@ public class ReportDetailsActivity extends BaseActivity {
         db.open();
         Bundle data = getIntent().getExtras();
         if (data != null) {
-            String habitId = data.getString(MainActivity.HABIT_ID);
+            String habitId = data.getString(AppConstant.HABIT_ID);
 
             if (!TextUtils.isEmpty(habitId)) {
                 habitEntity = Database.getHabitDb().getHabit(habitId);

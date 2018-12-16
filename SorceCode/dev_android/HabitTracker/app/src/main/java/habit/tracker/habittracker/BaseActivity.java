@@ -127,7 +127,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public void editHabitDetails(String habitId) {
         Intent intent = new Intent(this, HabitActivity.class);
-        intent.putExtra(MainActivity.HABIT_ID, habitId);
+        intent.putExtra(AppConstant.HABIT_ID, habitId);
         startActivityForResult(intent, HabitActivity.REQUEST_UPDATE);
     }
 
@@ -145,21 +145,21 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public void showNoteScreen(String habitId) {
         Intent intent = new Intent(this, NoteActivity.class);
-        intent.putExtra(MainActivity.HABIT_ID, habitId);
+        intent.putExtra(AppConstant.HABIT_ID, habitId);
         startActivity(intent);
         finish();
     }
 
     public void showDetailsChart(String habitId) {
         Intent intent = new Intent(this, ReportDetailsActivity.class);
-        intent.putExtra(MainActivity.HABIT_ID, habitId);
+        intent.putExtra(AppConstant.HABIT_ID, habitId);
         startActivity(intent);
         finish();
     }
 
     public void showOnCalendar(String habitId) {
         Intent intent = new Intent(this, ReportCalendarActivity.class);
-        intent.putExtra(MainActivity.HABIT_ID, habitId);
+        intent.putExtra(AppConstant.HABIT_ID, habitId);
         startActivity(intent);
         finish();
     }

@@ -1,14 +1,18 @@
 package habit.tracker.habittracker;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -38,6 +42,8 @@ import habit.tracker.habittracker.api.VnHabitApiUtils;
 import habit.tracker.habittracker.api.model.feedback.Feedback;
 import habit.tracker.habittracker.api.model.reminder.Reminder;
 import habit.tracker.habittracker.api.service.VnHabitApiService;
+import habit.tracker.habittracker.common.AppConstant;
+import habit.tracker.habittracker.common.dialog.AppDialogHelper;
 import habit.tracker.habittracker.common.habitreminder.HabitReminderManager;
 import habit.tracker.habittracker.common.util.AppGenerator;
 import habit.tracker.habittracker.common.util.MySharedPreference;
@@ -49,6 +55,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+@SuppressLint("ResourceType")
 public class SettingActivity extends AppCompatActivity {
     private static final int ADD_USER_REMINDER = 0;
     private static final int SELECT_REMINDER_RINHTONE = 1;
@@ -57,46 +64,44 @@ public class SettingActivity extends AppCompatActivity {
     TextView lbPersonal;
     @BindView(R.id.tvLogout)
     TextView tvLogout;
-
     @BindView(R.id.tvReminder)
     TextView tvReminder;
     @BindView(R.id.rvRemind)
     RecyclerView rvRemind;
-
     @BindView(R.id.lbExport)
     TextView lbExport;
-
     @BindView(R.id.lbSound)
     TextView lbSound;
+
+    int starNumber = 5;
 
     VnHabitApiService mService = VnHabitApiUtils.getApiService();
     Database mDb = Database.getInstance(this);
     List<Reminder> reminderDisplayList = new ArrayList<>();
     RemindRecyclerViewAdapter reminderAdapter;
 
-    int starNumber = 5;
-
     @Override
-    @SuppressLint("DefaultLocale")
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == ADD_USER_REMINDER && resultCode == RESULT_OK && data != null) {
             mDb.open();
-            String format = "%02d";
+
             boolean isDelete = data.getBooleanExtra(ReminderCreateActivity.IS_DELETE_REMINDER, false);
             int pos = data.getIntExtra(ReminderCreateActivity.POSITION_IN_LIST, -1);
 
             String reminderId = data.getStringExtra(ReminderCreateActivity.REMINDER_ID);
             String remindType = String.valueOf(data.getIntExtra(ReminderCreateActivity.REMIND_TYPE, -1));
             String remindText = data.getStringExtra(ReminderCreateActivity.REMIND_TEXT);
-            String hour = String.format(format, data.getIntExtra(ReminderCreateActivity.REMIND_HOUR, 0));
-            String minute = String.format(format, data.getIntExtra(ReminderCreateActivity.REMIND_MINUTE, 0));
+            String hour = String.format(AppConstant.format2D, data.getIntExtra(ReminderCreateActivity.REMIND_HOUR, 0));
+            String minute = String.format(AppConstant.format2D, data.getIntExtra(ReminderCreateActivity.REMIND_MINUTE, 0));
             String date = data.getStringExtra(ReminderCreateActivity.REMIND_DATE);
             String time = date + " " + hour + ":" + minute;
 
             List<Reminder> updateList = new ArrayList<>();
 
             Reminder reminder;
+            // add new reminder
             if (TextUtils.isEmpty(reminderId)) {
                 reminder = new Reminder();
                 reminder.setUserId(MySharedPreference.getUserId(this));
@@ -104,26 +109,31 @@ public class SettingActivity extends AppCompatActivity {
                 reminder.setRepeatType(remindType);
                 reminder.setRemindText(remindText);
                 reminder.setRemindStartTime(time);
-                reminder.setReminderId(Database.getReminderDb().saveReminder(Database.getReminderDb().convert(reminder)));
+                reminder.setReminderId(Database.getReminderDb().saveReminder(reminder.toEntity()));
                 reminderDisplayList.add(reminder);
 
             } else {
+                // update ot delete
                 reminder = reminderDisplayList.get(pos);
                 reminder.setRemindText(remindText);
                 reminder.setRepeatType(remindType);
                 reminder.setRemindStartTime(date + " " + hour + ":" + minute);
                 if (isDelete) {
-                    reminder.setDelete(true);
                     reminderDisplayList.remove(pos);
-                    Database.getReminderDb().delete(reminderId);
+                    reminder.setDelete(true);
+
                 } else {
-                    Database.getReminderDb().saveReminder(Database.getReminderDb().convert(reminder));
+                    reminder.setUpdate(true);
                 }
             }
+
             reminderAdapter.notifyDataSetChanged();
+
             updateList.add(reminder);
             HabitReminderManager habitReminderManager = new HabitReminderManager(SettingActivity.this, updateList);
             habitReminderManager.start();
+
+            callUpdateReminderApi(reminder);
 
         } else if (resultCode == RESULT_OK && requestCode == SELECT_REMINDER_RINHTONE) {
             Uri uri;
@@ -181,11 +191,18 @@ public class SettingActivity extends AppCompatActivity {
 
     @OnClick(R.id.tvLogout)
     public void logout(View v) {
-        MySharedPreference.saveUser(this, null, null, null);
-        Intent intent = getIntent();
-        intent.putExtra("logout", true);
-        setResult(RESULT_OK, intent);
-        finish();
+        AppDialogHelper appDialogHelper = new AppDialogHelper();
+        appDialogHelper.setPositiveListener(new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                MySharedPreference.saveUser(SettingActivity.this, null, null, null);
+                Intent intent = getIntent();
+                intent.putExtra("logout", true);
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        });
+        appDialogHelper.getDialog(this, "Bạn có chắc muốn thoát?", "Có", "Không").show();
     }
 
     @OnClick(R.id.lbPersonal)
@@ -202,16 +219,24 @@ public class SettingActivity extends AppCompatActivity {
 
     @OnClick(R.id.lbExport)
     public void exportData(View v) {
+        if (isStoragePermissionGranted()) {
+            exportDb2Ex();
+        }
+    }
+
+    private void exportDb2Ex() {
         String directory_path = Environment.getExternalStorageDirectory().getPath() + "/Backup/";
 
         File file = new File(directory_path);
         if (!file.exists()) {
-            file.mkdirs();
+            if (!file.mkdirs()) {
+                return;
+            }
         }
 
         // Export SQLite DB as EXCEL FILE
         SQLiteToExcel sqliteToExcel = new SQLiteToExcel(getApplicationContext(), Database.DATABASE_NAME, directory_path);
-        sqliteToExcel.exportSingleTable("my_user","users.csv", new SQLiteToExcel.ExportListener() {
+        sqliteToExcel.exportSingleTable("my_user", "users.csv", new SQLiteToExcel.ExportListener() {
             @Override
             public void onStart() {
             }
@@ -229,7 +254,6 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.lbFeedback)
-    @SuppressLint("ResourceType")
     public void sendFeedback(View v) {
         mDb.open();
 
@@ -311,7 +335,6 @@ public class SettingActivity extends AppCompatActivity {
                 });
         final AlertDialog alertDialog = builder.create();
         alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-
             @Override
             public void onShow(DialogInterface dialog) {
                 edFeedback.setText("");
@@ -331,6 +354,28 @@ public class SettingActivity extends AppCompatActivity {
         startActivityForResult(intent, SELECT_REMINDER_RINHTONE);
     }
 
+    public boolean isStoragePermissionGranted() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                return true;
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            exportDb2Ex();
+        }
+    }
+
     private void updateRatingUI(ImageView[] starArray, int num) {
         for (int i = 0; i < num; i++) {
             setGoldStar(starArray[i]);
@@ -338,6 +383,24 @@ public class SettingActivity extends AppCompatActivity {
         for (int i = num; i < 5; i++) {
             unsetGoldStar(starArray[i]);
         }
+    }
+
+    private void callUpdateReminderApi(final Reminder reminder) {
+        mService.addUpdateReminder(reminder).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (reminder.isDelete()) {
+                    Database.getReminderDb().delete(reminder.getReminderId());
+                } else if (reminder.isUpdate()) {
+                    reminder.setUpdate(false);
+                    Database.getReminderDb().saveReminder(reminder.toEntity());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            }
+        });
     }
 
     private void setGoldStar(ImageView img) {

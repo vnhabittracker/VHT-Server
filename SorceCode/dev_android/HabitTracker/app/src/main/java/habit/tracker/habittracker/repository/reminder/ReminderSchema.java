@@ -10,6 +10,8 @@ public interface ReminderSchema {
     String REMINDER_END_TIME = "reminder_end_time";
     String REPEAT_TYPE = "repeat_type";
     String SERVICE_ID = "service_id";
+    String IS_DELETE = "is_delete";
+    String IS_UPDATE = "is_update";
     String CREATE_REMINDER_TABLE =
             "CREATE TABLE IF NOT EXISTS " + REMINDER_TABLE + " ("
                     + REMINDER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -19,7 +21,9 @@ public interface ReminderSchema {
                     + REMINDER_END_TIME + " TEXT, "
                     + REPEAT_TYPE + " TEXT, "
                     + HABIT_ID + " TEXT, "
-                    + SERVICE_ID + " TEXT"
+                    + SERVICE_ID + " TEXT, "
+                    + IS_UPDATE + " TEXT, "
+                    + IS_DELETE + " TEXT"
                     + ")";
-    String[] REMINDER_COLUMNS = {REMINDER_ID, HABIT_ID, USER_ID, REMIND_TEXT, REMINDER_START_TIME, REMINDER_END_TIME, REPEAT_TYPE, SERVICE_ID};
+    String[] REMINDER_COLUMNS = {REMINDER_ID, HABIT_ID, USER_ID, REMIND_TEXT, REMINDER_START_TIME, REMINDER_END_TIME, REPEAT_TYPE, SERVICE_ID, IS_UPDATE, IS_DELETE};
 }

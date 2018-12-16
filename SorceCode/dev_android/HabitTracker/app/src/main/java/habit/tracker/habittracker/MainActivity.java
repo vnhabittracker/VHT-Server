@@ -28,8 +28,8 @@ import habit.tracker.habittracker.api.model.habit.HabitResponse;
 import habit.tracker.habittracker.api.model.reminder.Reminder;
 import habit.tracker.habittracker.api.model.tracking.Tracking;
 import habit.tracker.habittracker.api.model.tracking.TrackingList;
-import habit.tracker.habittracker.api.model.user.User;
 import habit.tracker.habittracker.api.service.VnHabitApiService;
+import habit.tracker.habittracker.common.AppConstant;
 import habit.tracker.habittracker.common.util.AppGenerator;
 import habit.tracker.habittracker.common.util.MySharedPreference;
 import habit.tracker.habittracker.repository.Database;
@@ -56,8 +56,6 @@ public class MainActivity extends BaseActivity implements HabitRecyclerViewAdapt
     private static final int SHOW_STATICS = 5;
     private static final int SHOW_PROFILE = 6;
     private static final int SETTING = 7;
-
-    public static final String HABIT_ID = "habit_id";
 
     List<TrackingItem> itemList = new ArrayList<>();
     HabitRecyclerViewAdapter trackingAdapter;
@@ -207,7 +205,7 @@ public class MainActivity extends BaseActivity implements HabitRecyclerViewAdapt
 
                             // update reminder list from server
                             for (Reminder reminder : habit.getReminderList()) {
-                                Database.getReminderDb().saveReminder(reminder.toEnity(), reminder.getReminderId());
+                                Database.getReminderDb().saveReminder(reminder.toEntity(), reminder.getReminderId());
                                 mapReminderFromServer.put(reminder.getReminderId(), reminder.getHabitId());
                             }
                         }
@@ -412,7 +410,7 @@ public class MainActivity extends BaseActivity implements HabitRecyclerViewAdapt
     }
 
     private void callAddReminderApi(Reminder reminder) {
-        mApiService.addReminder(reminder).enqueue(new Callback<ResponseBody>() {
+        mApiService.addUpdateReminder(reminder).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
             }
@@ -437,8 +435,8 @@ public class MainActivity extends BaseActivity implements HabitRecyclerViewAdapt
                 end = dates[6];
                 break;
             case 2:
-                start = year + "-" + String.format("%02d", month) + "-01";
-                end = year + "-" + String.format("%02d", month) + "-" + AppGenerator.getMaxDayInMonth(year, month - 1);
+                start = year + "-" + String.format(AppConstant.format2D, month) + "-01";
+                end = year + "-" + String.format(AppConstant.format2D, month) + "-" + AppGenerator.getMaxDayInMonth(year, month - 1);
                 break;
             case 3:
                 start = year + "-01-01";
@@ -484,11 +482,11 @@ public class MainActivity extends BaseActivity implements HabitRecyclerViewAdapt
             startActivityForResult(intent, CREATE_NEW_HABIT);
         } else if (TYPE_COUNT == type) {
             Intent intent = new Intent(this, ReportDetailsActivity.class);
-            intent.putExtra(HABIT_ID, itemList.get(position).getHabitId());
+            intent.putExtra(AppConstant.HABIT_ID, itemList.get(position).getHabitId());
             startActivityForResult(intent, REPORT_DETAIL);
         } else if (TYPE_CHECK == type) {
             Intent intent = new Intent(this, ReportCalendarActivity.class);
-            intent.putExtra(HABIT_ID, itemList.get(position).getHabitId());
+            intent.putExtra(AppConstant.HABIT_ID, itemList.get(position).getHabitId());
             startActivityForResult(intent, REPORT_CALENDAR);
         }
     }

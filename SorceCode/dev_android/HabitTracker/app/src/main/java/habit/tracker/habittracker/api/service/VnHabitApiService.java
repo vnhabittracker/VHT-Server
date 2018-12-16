@@ -78,8 +78,8 @@ public interface VnHabitApiService {
     @POST("user/update_score.php")
     Call<ResponseBody> updateUserScore(@Body UpdateScoreRequest updateScoreRequest);
 
-    @POST("reminder/create.php")
-    Call<ResponseBody> addReminder(@Body Reminder reminder);
+    @POST("reminder/create_update.php")
+    Call<ResponseBody> addUpdateReminder(@Body Reminder reminder);
 
     @POST("feedback/create_update.php")
     Call<FeedbackResponse> getFeedback(@Query("user_id") String userId);

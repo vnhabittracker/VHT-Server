@@ -1,6 +1,5 @@
 package habit.tracker.habittracker;
 
-import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -41,6 +40,7 @@ import habit.tracker.habittracker.api.model.habit.Habit;
 import habit.tracker.habittracker.api.model.reminder.Reminder;
 import habit.tracker.habittracker.api.model.search.HabitSuggestion;
 import habit.tracker.habittracker.api.service.VnHabitApiService;
+import habit.tracker.habittracker.common.AppConstant;
 import habit.tracker.habittracker.common.dialog.AppDialogHelper;
 import habit.tracker.habittracker.common.habitreminder.HabitReminderManager;
 import habit.tracker.habittracker.common.util.AppGenerator;
@@ -222,7 +222,6 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
     RemindRecyclerViewAdapter reminderAdapter;
 
     @Override
-    @SuppressLint("DefaultLocale")
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == SELECT_GROUP) {
             if (resultCode == RESULT_OK) {
@@ -251,14 +250,15 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         } else if (requestCode == ADD_REMINDER) {
             if (resultCode == RESULT_OK) {
                 if (data != null && data.getExtras() != null) {
-                    String format = "%02d";
+
                     boolean isDelete = data.getBooleanExtra(ReminderCreateActivity.IS_DELETE_REMINDER, false);
                     int pos = data.getIntExtra(ReminderCreateActivity.POSITION_IN_LIST, -1);
+
                     String reminderId = data.getStringExtra(ReminderCreateActivity.REMINDER_ID);
                     String remindType = String.valueOf(data.getIntExtra(ReminderCreateActivity.REMIND_TYPE, -1));
                     String remindText = data.getStringExtra(ReminderCreateActivity.REMIND_TEXT);
-                    String hour = String.format(format, data.getIntExtra(ReminderCreateActivity.REMIND_HOUR, 0));
-                    String minute = String.format(format, data.getIntExtra(ReminderCreateActivity.REMIND_MINUTE, 0));
+                    String hour = String.format(AppConstant.format2D, data.getIntExtra(ReminderCreateActivity.REMIND_HOUR, 0));
+                    String minute = String.format(AppConstant.format2D, data.getIntExtra(ReminderCreateActivity.REMIND_MINUTE, 0));
                     String date = data.getStringExtra(ReminderCreateActivity.REMIND_DATE);
 
                     if (TextUtils.isEmpty(reminderId)) {
@@ -270,22 +270,23 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                         reminder.setRepeatType(remindType);
                         reminderDisplayList.add(reminder);
                         reminderUpdateList.add(reminder);
+
                     } else {
                         // update
                         boolean f = false;
-                        Reminder updateReminder = reminderDisplayList.get(pos);
-                        updateReminder.setRemindText(remindText);
-                        updateReminder.setRepeatType(remindType);
-                        updateReminder.setRemindStartTime(date + " " + hour + ":" + minute);
-                        for (Reminder reminder : reminderUpdateList) {
-                            if (reminder.getReminderId().equals(reminderId)) {
-                                reminder.setDelete(isDelete);
+                        Reminder reminder = reminderDisplayList.get(pos);
+                        reminder.setRemindText(remindText);
+                        reminder.setRepeatType(remindType);
+                        reminder.setRemindStartTime(date + " " + hour + ":" + minute);
+                        for (Reminder item : reminderUpdateList) {
+                            if (item.getReminderId().equals(reminderId)) {
+                                item.setDelete(isDelete);
                                 f = true;
                                 break;
                             }
                         }
                         if (!f) {
-                            reminderUpdateList.add(updateReminder);
+                            reminderUpdateList.add(reminder);
                         }
                         if (isDelete) {
                             reminderDisplayList.remove(pos);
@@ -294,6 +295,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                     reminderAdapter.notifyDataSetChanged();
                 }
             }
+
         } else if (requestCode == GET_SUGGEST) {
             if (resultCode == RESULT_OK) {
                 if (data != null) {
@@ -377,7 +379,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         Bundle data = getIntent().getExtras();
 
         if (data != null) {
-            initHabitId = data.getString(MainActivity.HABIT_ID, null);
+            initHabitId = data.getString(AppConstant.HABIT_ID, null);
             suggestHabitNameId = data.getString(ProfileActivity.SUGGEST_NAME_ID, null);
             suggestHabitName = data.getString(ProfileActivity.SUGGEST_NAME, null);
             editHabitName.setText(suggestHabitName);
@@ -564,7 +566,6 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         }
     }
 
-    @SuppressLint("ResourceType")
     @OnClick(R.id.btn_save)
     public void saveHabit(View v) {
         Database db = new Database(HabitActivity.this);
@@ -682,7 +683,7 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
                 if (reminder.isDelete()) {
                     Database.getReminderDb().delete(reminder.getReminderId());
                 } else {
-                    reminderId = Database.getReminderDb().saveReminder(Database.getReminderDb().convert(reminder));
+                    reminderId = Database.getReminderDb().saveReminder(reminder.toEntity());
                     reminder.setReminderId(reminderId);
                 }
             }

@@ -24,16 +24,18 @@ public class Reminder {
     @SerializedName("habit_id")
     @Expose
     private String habitId;
+    @SerializedName("user_id")
+    @Expose
+    private String userId;
     @SerializedName("server_id")
     @Expose
     private String serverId;
     @SerializedName("is_delete")
     @Expose
     private boolean isDelete = false;
+    private boolean isUpdate = false;
 
     private String habitName;
-
-    private String userId;
 
     public String getReminderId() {
         return reminderId;
@@ -70,6 +72,10 @@ public class Reminder {
 
     public boolean isDelete() {
         return isDelete;
+    }
+
+    public boolean isUpdate() {
+        return isUpdate;
     }
 
     public String getUserId() {
@@ -112,11 +118,15 @@ public class Reminder {
         isDelete = delete;
     }
 
+    public void setUpdate(boolean update) {
+        isUpdate = update;
+    }
+
     public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public ReminderEntity toEnity() {
+    public ReminderEntity toEntity() {
         ReminderEntity entity = new ReminderEntity();
         entity.setReminderId(reminderId);
         entity.setHabitId(habitId);
@@ -126,6 +136,8 @@ public class Reminder {
         entity.setReminderEndTime(remindEndTime);
         entity.setRepeatType(repeatType);
         entity.setServerId(serverId);
+        entity.setDelete(isDelete);
+        entity.setUpdate(isUpdate);
         return entity;
     }
 }

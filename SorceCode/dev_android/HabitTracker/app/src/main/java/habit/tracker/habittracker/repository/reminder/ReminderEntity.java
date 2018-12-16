@@ -11,7 +11,8 @@ public class ReminderEntity {
     private String reminderStartTime;
     private String reminderEndTime;
     private String repeatType;
-    private boolean isDelete;
+    private boolean isDelete = false;
+    private boolean isUpdate = false;
 
     public String getReminderId() {
         return reminderId;
@@ -47,6 +48,10 @@ public class ReminderEntity {
 
     public boolean isDelete() {
         return isDelete;
+    }
+
+    public boolean isUpdate() {
+        return isUpdate;
     }
 
     public void setReminderId(String reminderId) {
@@ -85,6 +90,10 @@ public class ReminderEntity {
         isDelete = delete;
     }
 
+    public void setUpdate(boolean update) {
+        isUpdate = update;
+    }
+
     public Reminder toModel() {
         Reminder reminder = new Reminder();
         reminder.setReminderId(reminderId);
@@ -95,6 +104,7 @@ public class ReminderEntity {
         reminder.setRemindEndTime(reminderEndTime);
         reminder.setRepeatType(repeatType);
         reminder.setDelete(isDelete);
+        reminder.setUpdate(isUpdate);
         return reminder;
     }
 }

@@ -18,6 +18,7 @@ import butterknife.OnClick;
 import habit.tracker.habittracker.api.VnHabitApiUtils;
 import habit.tracker.habittracker.api.model.user.User;
 import habit.tracker.habittracker.api.service.VnHabitApiService;
+import habit.tracker.habittracker.common.AppConstant;
 import habit.tracker.habittracker.common.util.AppGenerator;
 import habit.tracker.habittracker.common.util.MySharedPreference;
 import habit.tracker.habittracker.common.validator.Validator;
@@ -79,9 +80,9 @@ public class PersonalActivity extends AppCompatActivity {
 
             if (userEntity.getDateOfBirth() != null) {
                 ca.setTime(AppGenerator.getDate(userEntity.getDateOfBirth(), AppGenerator.YMD_SHORT));
-                editDay.setText(String.format("%02d", ca.get(Calendar.DAY_OF_MONTH)));
-                editMonth.setText(String.format("%02d", ca.get(Calendar.MONTH) + 1));
-                editYear.setText(String.format("%02d", ca.get(Calendar.YEAR)));
+                editDay.setText(String.format(AppConstant.format2D, ca.get(Calendar.DAY_OF_MONTH)));
+                editMonth.setText(String.format(AppConstant.format2D, ca.get(Calendar.MONTH) + 1));
+                editYear.setText(String.format(AppConstant.format2D, ca.get(Calendar.YEAR)));
             }
 
             if (userEntity.getGender() != null && userEntity.getGender().equals("0")) {
