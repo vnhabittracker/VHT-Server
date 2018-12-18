@@ -114,7 +114,6 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
-            android:layout_marginStart="10dp"
             android:textAlignment="textStart"
             android:textAllCaps="false"
             android:background="@drawable/bg_google" />
@@ -132,5 +131,12 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.3" />
+        android:layout_weight="0.2" />
+
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/btn_fb_login_real"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
+        android:visibility="invisible"/>
 </LinearLayout>

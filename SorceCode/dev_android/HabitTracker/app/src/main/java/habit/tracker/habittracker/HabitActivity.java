@@ -75,6 +75,8 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
 
     VnHabitApiService mApiService = VnHabitApiUtils.getApiService();
 
+    @BindView(R.id.header)
+    View header;
     @BindView(R.id.edit_habitName)
     EditText editHabitName;
     @BindView(R.id.rvHabitSuggestion)
@@ -1068,7 +1070,8 @@ public class HabitActivity extends AppCompatActivity implements DatePickerDialog
         int x = Math.round(ev.getX());
         int y = Math.round(ev.getY());
 
-        if (x < rvHabitSuggestion.getLeft() || x > rvHabitSuggestion.getRight() || y < rvHabitSuggestion.getTop() || y > rvHabitSuggestion.getBottom()) {
+        if (x < rvHabitSuggestion.getLeft() || x > rvHabitSuggestion.getRight()
+                || y < rvHabitSuggestion.getTop() || y > (rvHabitSuggestion.getBottom() + header.getBottom() )) {
             searchResultList.clear();
             habitSuggestionAdapter.notifyDataSetChanged();
         }

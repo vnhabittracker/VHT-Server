@@ -123,7 +123,6 @@
         android:gravity="center_horizontal">
 
         <Button
-            android:onClick="showEmpty"
             android:id="@+id/btn_fb_login"
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -134,7 +133,6 @@
             android:background="@drawable/bg_facebook" />
 
         <Button
-            android:onClick="showEmpty"
             android:id="@+id/btn_google_login"
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -159,4 +157,11 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>
+
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/btn_fb_login_real"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
+        android:visibility="invisible"/>
 </LinearLayout>

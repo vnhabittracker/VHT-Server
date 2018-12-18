@@ -56,7 +56,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 @SuppressLint("ResourceType")
-public class SettingActivity extends AppCompatActivity {
+public class SettingActivity extends BaseActivity {
     private static final int ADD_USER_REMINDER = 0;
     private static final int SELECT_REMINDER_RINHTONE = 1;
 
@@ -195,9 +195,10 @@ public class SettingActivity extends AppCompatActivity {
         appDialogHelper.setPositiveListener(new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                signOutSocialLogin();
                 MySharedPreference.saveUser(SettingActivity.this, null, null, null);
                 Intent intent = getIntent();
-                intent.putExtra("logout", true);
+                intent.putExtra("logoutSocialLogin", true);
                 setResult(RESULT_OK, intent);
                 finish();
             }
@@ -257,22 +258,21 @@ public class SettingActivity extends AppCompatActivity {
     public void sendFeedback(View v) {
         mDb.open();
 
-        FeedbackEntity feedbackEntity = Database.getFeedbackDb().getFeedbackByUser(MySharedPreference.getUserId(this));
+        final FeedbackEntity feedbackEntity = Database.getFeedbackDb().getFeedbackByUser(MySharedPreference.getUserId(this));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View inflatedView = inflater.inflate(R.layout.dialog_edit_feedback, null);
 
         final EditText edFeedback = inflatedView.findViewById(R.id.editFeedback);
-        edFeedback.setText(feedbackEntity.getDescription());
+
         ImageView imgStart1 = inflatedView.findViewById(R.id.star1);
         ImageView imgStart2 = inflatedView.findViewById(R.id.star2);
         ImageView imgStart3 = inflatedView.findViewById(R.id.star3);
         ImageView imgStart4 = inflatedView.findViewById(R.id.star4);
         ImageView imgStart5 = inflatedView.findViewById(R.id.star5);
         final ImageView[] starArray = {imgStart1, imgStart2, imgStart3, imgStart4, imgStart5};
-        starNumber = feedbackEntity.getStarNum();
-        updateRatingUI(starArray, starNumber);
+
 
         View.OnClickListener startClick = new View.OnClickListener() {
             @Override
@@ -307,7 +307,7 @@ public class SettingActivity extends AppCompatActivity {
                         fb.setFeedbackId(MySharedPreference.getUserId(SettingActivity.this));
                         fb.setUserId(MySharedPreference.getUserId(SettingActivity.this));
                         fb.setStarNum(starNumber);
-                        fb.setDescription(edFeedback.toString().trim());
+                        fb.setDescription(edFeedback.getText().toString().trim());
 
                         Database.getFeedbackDb().saveFeedback(fb.toEntity(true));
 
@@ -337,7 +337,12 @@ public class SettingActivity extends AppCompatActivity {
         alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
-                edFeedback.setText("");
+                if (feedbackEntity != null) {
+                    edFeedback.setText(feedbackEntity.getDescription());
+                    starNumber = feedbackEntity.getStarNum();
+                    updateRatingUI(starArray, starNumber);
+                }
+
                 alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor(SettingActivity.this.getString(R.color.colorAccent)));
                 alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor(SettingActivity.this.getString(R.color.colorAccent)));
             }

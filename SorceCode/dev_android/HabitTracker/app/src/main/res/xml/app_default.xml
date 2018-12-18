@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<initializion>
+    <user>
+        <usage>1</usage>
+        <current_usage_chain>1</current_usage_chain>
+        <best_usage_chain>1</best_usage_chain>
+        <user_score>2</user_score>
+        <levels>
+            <level1>10</level1>
+            <level2>20</level2>
+            <level3>50</level3>
+            <level4>120</level4>
+            <level5>290</level5>
+            <level6>700</level6>
+            <level7>1690</level7>
+            <level8>4080</level8>
+            <level9>9850</level9>
+            <level10>23780</level10>
+            <level11>23781</level11>
+        </levels>
+    </user>
+</initializion>

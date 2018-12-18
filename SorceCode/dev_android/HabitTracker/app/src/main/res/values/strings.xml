@@ -1,4 +1,5 @@
 <resources>
+    <string name="app_id">884959081895567</string>
     <string name="app_name">HabitTracker</string>
 
     <!-- login -->
